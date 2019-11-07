@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_profile"
+        android:title="@string/title_profile_tab" />
+
+    <item
+        android:id="@+id/navigation_map"
+        android:title="@string/title_map_tab" />
+
+    <item
+        android:id="@+id/navigation_challenges"
+        android:title="@string/title_challenges_tab" />
+
+    <item
+        android:id="@+id/navigation_leaderboards"
+        android:title="@string/title_leaderboards_tab"/>
+
+    <item
+        android:id="@+id/navigation_teams"
+        android:title="@string/title_teams_tab"/>
+</menu>

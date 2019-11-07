@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Athletier</string>
+    <string name="navigation_main">Navigation</string>
+    <string name="title_profile_tab">Profile</string>
+    <string name="title_map_tab">Map</string>
+    <string name="title_challenges_tab">Challenges</string>
+    <string name="title_leaderboards_tab">Rankings</string>
+    <string name="title_teams_tab">Teams</string>
+</resources>
