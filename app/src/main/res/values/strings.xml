@@ -6,4 +6,5 @@
     <string name="title_challenges_tab">Challenges</string>
     <string name="title_leaderboards_tab">Rankings</string>
     <string name="title_teams_tab">Teams</string>
+    <string name="create_challenge_title">Create New Challenge</string>
 </resources>
