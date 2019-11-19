@@ -6,12 +6,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.android.gms.location.LocationRequest;
+import java.util.List;
 
 public class MapTabViewModel extends ViewModel {
 
     private Location userLocation;
-
+    private MutableLiveData<List<Location>> challengeLocations;
 
 
     public void setUserLocation(Location location) {
@@ -20,6 +20,10 @@ public class MapTabViewModel extends ViewModel {
 
     public Location getUserLocation() {
         return userLocation;
+    }
+
+    public LiveData<List<Location>> getChallengeLocations() {
+        return challengeLocations;
     }
 
 

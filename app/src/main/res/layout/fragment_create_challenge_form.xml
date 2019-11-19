@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <fragment
+        android:id="@+id/sportSpinnerFragment"
+        android:name="com.CS5520.athletier.ui.Map.SpinnerInputFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <fragment
+        android:id="@+id/streetAddressInputFragment"
+        android:name="com.CS5520.athletier.ui.Map.TextInputFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:baselineAligned="false">
+
+        <fragment
+            android:id="@+id/cityInputFragment"
+            android:name="com.CS5520.athletier.ui.Map.TextInputFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <fragment
+            android:id="@+id/stateSpinnerFragment"
+            android:name="com.CS5520.athletier.ui.Map.SpinnerInputFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+    <fragment
+        android:id="@+id/zipCodeInputFragment"
+        android:name="com.CS5520.athletier.ui.Map.TextInputFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <fragment
+        android:id="@+id/dateInputFragment"
+        android:name="com.CS5520.athletier.ui.Map.DateInputFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
