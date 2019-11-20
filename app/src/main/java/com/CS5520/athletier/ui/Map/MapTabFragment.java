@@ -1,6 +1,7 @@
 package com.CS5520.athletier.ui.Map;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -16,10 +17,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.Utilities.RequestCodes;
+import com.CS5520.athletier.ui.Map.CreateChallenge.CreateChallengeActivity;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -31,9 +34,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+
+import java.util.List;
 
 public class MapTabFragment extends Fragment implements OnMapReadyCallback, LocationUpdateListener {
 
@@ -86,11 +92,22 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
 
     @Override
     public void onDestroy() {
-        if (locationRequester != null) {
-            locationRequester.stopUpdatingLocation();
-        }
+        stopLocationUpdates();
         super.onDestroy();
     }
+
+    @Override
+    public void onPause() {
+        stopLocationUpdates();
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        checkLocationSettings(getActivity());
+    }
+
     //endregion
 
     @Override
@@ -138,7 +155,13 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
     }
 
     private void createNewOpenChallenge(){
-        // TODO: Create new activity for creating a new challenge
+        Activity currentActivity = getActivity();
+        if (currentActivity != null) {
+            stopLocationUpdates();
+            Intent intent = new Intent(currentActivity, CreateChallengeActivity.class);
+            startActivity(intent);
+            currentActivity.overridePendingTransition(R.anim.slide_up, R.anim.no_slide);
+        }
     }
 
     private void setupLocationRequester(Context context) {
@@ -152,6 +175,20 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+    private void listenForOpenChallenges() {
+        mapTabViewModel.getChallengeLocations().observe(this, new Observer<List<Location>>() {
+            @Override
+            public void onChanged(List<Location> locations) {
+                for (Location location : locations) {
+                    LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+                    mapView.addMarker(
+                            new MarkerOptions()
+                                    .position(position));
+                }
+            }
+        });
+    }
+
     @Override
     public void updateWithLocation(Location location) {
         mapTabViewModel.setUserLocation(location);
@@ -163,6 +200,12 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
                     )
             );
             didPreviouslyZoom = true;
+        }
+    }
+
+    private void stopLocationUpdates() {
+        if (locationRequester != null) {
+            locationRequester.stopUpdatingLocation();
         }
     }
 

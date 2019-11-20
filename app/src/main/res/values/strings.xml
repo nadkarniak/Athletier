@@ -7,4 +7,9 @@
     <string name="title_leaderboards_tab">Rankings</string>
     <string name="title_teams_tab">Teams</string>
     <string name="create_challenge_title">Create New Challenge</string>
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
+    <string name="create_title">Create</string>
+    <string name="date_title">Date</string>
+    <string name="invalid_address_msg">Entered address is invalid. Please try again.</string>
 </resources>

@@ -18,9 +18,6 @@ public class User {
     private HashMap<Sport, Integer> sportsExperienceMap;
     private HashMap<SportsBadge, Integer> badges;
 
-
-
-
     public float getAvgSportsmanshipRating() {
         if (challenges.size() == 0) {
             return 0;

@@ -1,7 +1,6 @@
 package com.CS5520.athletier.ui.Map;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.os.Looper;
