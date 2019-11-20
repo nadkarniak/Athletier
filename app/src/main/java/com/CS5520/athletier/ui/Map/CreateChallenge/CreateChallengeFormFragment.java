@@ -18,8 +18,13 @@ import androidx.lifecycle.ViewModelProviders;
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.State;
 import com.CS5520.athletier.R;
+import com.CS5520.athletier.ui.Map.DateInputFragment;
 import com.CS5520.athletier.ui.Map.SpinnerInputFragment;
 import com.CS5520.athletier.ui.Map.TextInputFragment;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 public class CreateChallengeFormFragment extends Fragment {
@@ -33,6 +38,7 @@ public class CreateChallengeFormFragment extends Fragment {
     private TextInputFragment cityInput;
     private SpinnerInputFragment stateSpinnerInput;
     private TextInputFragment zipCodeInput;
+    private DateInputFragment dateInput;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -54,10 +60,35 @@ public class CreateChallengeFormFragment extends Fragment {
         super.onStart();
         setupSpinnerObservers();
         setupTextInputObservers();
+        setupDateInputObserver();
     }
 
-    public LiveData<Boolean> getHasRequiredFields() {
+    LiveData<Boolean> getHasRequiredFields() {
         return viewModel.getHasRequiredFields();
+    }
+
+    Sport getSport() {
+        return viewModel.getSport();
+    }
+
+    String getCurrentStreetAddress() {
+        return streetInput.getInputText().getValue();
+    }
+
+    String getCurrentCity() {
+        return cityInput.getInputText().getValue();
+    }
+
+    String getZipCode() {
+        return zipCodeInput.getInputText().getValue();
+    }
+
+    State getState() {
+        return viewModel.getState();
+    }
+
+    Date getDate() {
+        return viewModel.getDate();
     }
 
     private void findChildFragments() {
@@ -67,6 +98,7 @@ public class CreateChallengeFormFragment extends Fragment {
         cityInput = (TextInputFragment) manager.findFragmentById(R.id.cityInputFragment);
         stateSpinnerInput = (SpinnerInputFragment) manager.findFragmentById(R.id.stateSpinnerFragment);
         zipCodeInput = (TextInputFragment) manager.findFragmentById(R.id.zipCodeInputFragment);
+        dateInput = (DateInputFragment) manager.findFragmentById(R.id.dateInputFragment);
     }
 
     private void setupSpinnerInputs(Context context) {
@@ -105,28 +137,39 @@ public class CreateChallengeFormFragment extends Fragment {
     }
 
     private void setupTextInputObservers() {
-        setupObserverForTextInput(streetInput, cityInput, zipCodeInput);
-        setupObserverForTextInput(cityInput, streetInput, zipCodeInput);
-        setupObserverForTextInput(zipCodeInput, streetInput, cityInput);
-
+        setupTextInputObservers(streetInput, cityInput, zipCodeInput);
+        setupTextInputObservers(cityInput, streetInput, zipCodeInput);
+        setupTextInputObservers(zipCodeInput, streetInput, cityInput);
     }
 
-    private void setupObserverForTextInput(TextInputFragment primaryInput,
-                                           final TextInputFragment accessoryInputOne,
-                                           final TextInputFragment accessoryInputTwo) {
+    private void setupTextInputObservers(final TextInputFragment primaryInput,
+                                         final TextInputFragment... otherInputs) {
         primaryInput.getHasNonEmptyInput().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean primaryHasInput) {
-                if (accessoryInputOne.getHasNonEmptyInput().getValue() == null ||
-                        accessoryInputTwo.getHasNonEmptyInput().getValue() == null) {
-                    viewModel.setHasRequiredFields(false);
-                } else {
-                    viewModel.setHasRequiredFields(
-                            primaryHasInput,
-                            accessoryInputOne.getHasNonEmptyInput().getValue(),
-                            accessoryInputTwo.getHasNonEmptyInput().getValue()
-                    );
+                List<Boolean> requiredFieldChecks = new ArrayList<>();
+                requiredFieldChecks.add(primaryHasInput);
+
+                for (TextInputFragment otherInput : otherInputs) {
+                    Boolean otherHasInput = otherInput.getHasNonEmptyInput().getValue();
+                    if (otherHasInput == null) {
+                        requiredFieldChecks.add(false);
+                        break;
+                    } else {
+                        requiredFieldChecks.add(otherHasInput);
+                    }
                 }
+
+                viewModel.setHasRequiredFields(requiredFieldChecks);
+            }
+        });
+    }
+
+    private void setupDateInputObserver() {
+        dateInput.getSelectedDate().observe(getViewLifecycleOwner(), new Observer<Date>() {
+            @Override
+            public void onChanged(Date date) {
+                viewModel.setSelectedDate(date);
             }
         });
     }

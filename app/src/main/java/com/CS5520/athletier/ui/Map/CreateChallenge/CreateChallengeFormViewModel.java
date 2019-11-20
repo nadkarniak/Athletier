@@ -3,16 +3,20 @@ package com.CS5520.athletier.ui.Map.CreateChallenge;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
-import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.State;
 
+import java.util.Date;
+import java.util.List;
+
 public class CreateChallengeFormViewModel extends ViewModel {
-    // Indicates if all of the required inputs in the form have been filled in
+    // Indicates if all of the required inputs in the form have been filled in. The required fields
+    // only include the text inputs because a default value is provided for the spinner and date
+    // input fields.
     private MutableLiveData<Boolean> hasRequiredFields = new MutableLiveData<>(false);
     private Sport sport;
     private State state;
+    private Date date;
 
 
     public CreateChallengeFormViewModel() { }
@@ -21,7 +25,7 @@ public class CreateChallengeFormViewModel extends ViewModel {
         return hasRequiredFields;
     }
 
-    void setHasRequiredFields(boolean... hasFields) {
+    void setHasRequiredFields(List<Boolean> hasFields) {
         boolean hasAllFields = false;
         for (boolean hasField : hasFields) {
             hasAllFields = hasField;
@@ -38,6 +42,22 @@ public class CreateChallengeFormViewModel extends ViewModel {
 
     void setSelectedState(String stateName) {
         this.state = State.valueOf(stateName);
+    }
+
+    void setSelectedDate(Date date) {
+        this.date = date;
+    }
+
+    Sport getSport() {
+        return this.sport;
+    }
+
+    State getState() {
+        return this.state;
+    }
+
+    Date getDate() {
+        return this.date;
     }
 
 }

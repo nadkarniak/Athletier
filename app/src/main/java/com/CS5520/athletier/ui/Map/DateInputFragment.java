@@ -13,11 +13,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.CS5520.athletier.R;
 
 import java.util.Calendar;
+import java.util.Date;
 
 public class DateInputFragment extends Fragment {
     private DateInputViewModel viewModel;
@@ -38,6 +40,10 @@ public class DateInputFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         viewModel = ViewModelProviders.of(this).get(DateInputViewModel.class);
         setupTextViews();
+    }
+
+    public LiveData<Date> getSelectedDate() {
+        return viewModel.getSelectedDate();
     }
 
     private void setupTextViews() {

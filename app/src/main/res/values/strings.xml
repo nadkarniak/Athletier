@@ -11,4 +11,5 @@
     <string name="cancel">Cancel</string>
     <string name="create_title">Create</string>
     <string name="date_title">Date</string>
+    <string name="invalid_address_msg">Entered address is invalid. Please try again.</string>
 </resources>

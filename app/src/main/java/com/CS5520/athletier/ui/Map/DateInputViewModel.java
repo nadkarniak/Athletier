@@ -1,5 +1,6 @@
 package com.CS5520.athletier.ui.Map;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -21,6 +22,10 @@ public class DateInputViewModel extends ViewModel {
         } catch (ParseException exception) {
             System.out.println("Failed to parse date: " + dateString);
         }
+    }
+
+    LiveData<Date> getSelectedDate() {
+        return selectedDate;
     }
 
 }
