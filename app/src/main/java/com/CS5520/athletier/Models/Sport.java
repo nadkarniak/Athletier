@@ -12,6 +12,27 @@ public enum Sport {
     GOLF,
     SPIKEBALL;
 
+
+    // Returns a list of possible badges for the input sport
+    public List<SportsBadge> getBadgeOptions() {
+        // TODO: Add badges for each sport below...
+        switch (this) {
+            case ONE_V_ONE_BASKETBALL:
+                return new ArrayList<>();
+            case SQUASH:
+                return new ArrayList<>();
+            case TENNIS:
+                return new ArrayList<>();
+            case GOLF:
+                return new ArrayList<>();
+            case SPIKEBALL:
+                return new ArrayList<>();
+            default:
+                return new ArrayList<>();
+        }
+    }
+
+
     @NonNull
     @Override
     public String toString() {

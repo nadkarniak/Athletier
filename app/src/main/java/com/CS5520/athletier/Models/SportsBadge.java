@@ -1,7 +1,6 @@
 package com.CS5520.athletier.Models;
 
 public class SportsBadge {
-    private int id;
     private String name;
     private Sport sport;
     private String description;

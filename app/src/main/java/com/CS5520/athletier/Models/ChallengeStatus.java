@@ -1,9 +1,7 @@
 package com.CS5520.athletier.Models;
 
-import androidx.annotation.NonNull;
-
 public enum ChallengeStatus {
-    CREATED,
+    AWAITING_PLAYERS,
     IN_PROGRESS,
     COMPLETE;
 }
