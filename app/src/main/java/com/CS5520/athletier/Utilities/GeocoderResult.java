@@ -1,7 +1,5 @@
 package com.CS5520.athletier.Utilities;
 
-import android.location.Geocoder;
-
 import com.google.android.gms.maps.model.LatLng;
 
 public class GeocoderResult {
