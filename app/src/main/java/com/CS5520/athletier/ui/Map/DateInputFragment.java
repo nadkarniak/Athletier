@@ -60,6 +60,7 @@ public class DateInputFragment extends Fragment {
 
         // Prevent date input edit text from being selected and from showing keyboard
         dateInputText.setFocusable(false);
+        dateInputText.setShowSoftInputOnFocus(false);
         dateInputText.setInputType(0);
 
         // Show date picker dialog on click
