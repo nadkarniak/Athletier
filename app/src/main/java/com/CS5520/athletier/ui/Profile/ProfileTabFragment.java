@@ -29,7 +29,6 @@ import java.util.List;
 public class ProfileTabFragment extends Fragment {
 
     private ProfileTabViewModel profileTabViewModel;
-    private User user;
     private TextView usernameText;
     private TextView recordText;
     private RatingBar sportsmanshipBar;
