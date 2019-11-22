@@ -1,5 +1,6 @@
 package com.CS5520.athletier.ui.Profile;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,33 +24,21 @@ import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ProfileTabFragment extends Fragment {
 
     private ProfileTabViewModel profileTabViewModel;
     private User user;
-    private TextView username = (TextView)getView().findViewById(R.id.userName);
-    private TextView record = (TextView)getView().findViewById(R.id.record);
-    private RatingBar sportsmanship = getView().findViewById(R.id.ratingBar);
-    private ListView sports = getView().findViewById(R.id.sports_view);
+    private TextView usernameText;
+    private TextView recordText;
+    private RatingBar sportsmanshipBar;
+    private ListView sportsList;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        username.setText(user.getUsername());
-        record.setText(user.getRecord());
-        sportsmanship.setRating(user.getAvgSportsmanshipRating());
-        ArrayList<String> sportsList = new ArrayList<>();
-        sportsList.add(Sport.GOLF.toString());
-        sportsList.add(Sport.ONE_V_ONE_BASKETBALL.toString());
-        sportsList.add(Sport.SPIKEBALL.toString());
-        sportsList.add(Sport.TENNIS.toString());
-        sportsList.add(Sport.SQUASH.toString());
-
-        ArrayAdapter adapter = new ArrayAdapter(this.getActivity(), android.R.layout.simple_list_item_1,
-                sportsList);
-
-        sports.setAdapter(adapter);
-
+        View view = inflater.inflate(R.layout.fragment_profile_tab, container, false);
+        setupViews(view);
         return inflater.inflate(R.layout.fragment_profile_tab, container, false);
     }
 
@@ -57,8 +46,38 @@ public class ProfileTabFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         profileTabViewModel =
                 ViewModelProviders.of(this).get(ProfileTabViewModel.class);
+        profileTabViewModel.findUserWithId("Id which should come from login");
+        setupObservers();
+        setupSportsList(getContext());
     }
 
+    private void setupViews(View view) {
+        // Find views using id's
+        usernameText = view.findViewById(R.id.userName);
+        recordText = view.findViewById(R.id.record);
+        sportsmanshipBar = view.findViewById(R.id.ratingBar);
+        sportsList = view.findViewById(R.id.sports_view);
+    }
 
+    private void setupSportsList(Context context) {
+        List<String> sports = Sport.getAllSportsNames();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                context,
+                android.R.layout.simple_expandable_list_item_1,
+                sports
+        );
+        sportsList.setAdapter(adapter);
+    }
+
+    private void setupObservers() {
+        profileTabViewModel.getCurrentUser().observe(getViewLifecycleOwner(), new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                usernameText.setText(user.getUsername());
+                recordText.setText(user.getRecord());
+                sportsmanshipBar.setRating(user.getAvgSportsmanshipRating());
+            }
+        });
+    }
 
 }
