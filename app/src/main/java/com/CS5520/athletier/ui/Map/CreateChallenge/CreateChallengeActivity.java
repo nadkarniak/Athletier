@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Context;
 import android.location.Address;
@@ -17,7 +19,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.CS5520.athletier.Models.Challenge;
+import com.CS5520.athletier.Models.State;
 import com.CS5520.athletier.R;
+import com.CS5520.athletier.Utilities.GeocoderInput;
 import com.CS5520.athletier.Utilities.GeocoderResult;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -27,17 +32,27 @@ import java.util.List;
 
 public class CreateChallengeActivity extends AppCompatActivity {
 
+    // ViewModel
+    private CreateChallengeActivityViewModel viewModel;
+
+    // Fragments/Views
     private CreateChallengeFormFragment createChallengeForm;
     private Button createButton;
+
+    // AsyncTasks
     private AsyncTask geocodeAsyncTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_challenge);
+        viewModel = ViewModelProviders.of(this).get(CreateChallengeActivityViewModel.class);
         setupActionBar();
         setupFragments();
         setupCreateButtonListener();
+
+        // TODO: Pass in actual user id from savedInstanceState
+        viewModel.setCurrentUser("A");
     }
 
     @Override
@@ -47,9 +62,16 @@ public class CreateChallengeActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        endGeocodeAsyncTask();
+        super.onStop();
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.no_slide, R.anim.slide_down);
+        endGeocodeAsyncTask();
     }
 
     @Override
@@ -65,7 +87,16 @@ public class CreateChallengeActivity extends AppCompatActivity {
 
     public void handleGeocoderResult(GeocoderResult result) {
         if (result.getGeocodingSucceeded()) {
-            System.out.println(result.getLatLng());
+            geocodeAsyncTask.cancel(true);
+            viewModel.makeChallenge(
+                    createChallengeForm.getSport(),
+                    createChallengeForm.getDate(),
+                    result.getInputStreet(),
+                    result.getInputCity(),
+                    result.getInputState(),
+                    result.getInputZipCode(),
+                    result.getLatLng()
+            );
         } else {
             Toast.makeText(this, R.string.invalid_address_msg, Toast.LENGTH_LONG).show();
         }
@@ -97,13 +128,21 @@ public class CreateChallengeActivity extends AppCompatActivity {
                 createButton.setEnabled(hasRequiredFields);
             }
         });
+
+        viewModel.getCreatedChallenge().observe(this, new Observer<Challenge>() {
+            @Override
+            public void onChanged(Challenge challenge) {
+                // Finish this Activity once challenge has been created
+                finish();
+            }
+        });
     }
 
     private void setupCreateButtonListener() {
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Attempt to create a new challenge
+                // Attempt to get latitude and longitude of input address
                 attemptToGeocodeAddress();
             }
         });
@@ -112,19 +151,23 @@ public class CreateChallengeActivity extends AppCompatActivity {
     private void attemptToGeocodeAddress() {
         String streetAddress = createChallengeForm.getCurrentStreetAddress();
         String city = createChallengeForm.getCurrentCity();
-        String state = createChallengeForm.getState().name();
+        State state = createChallengeForm.getState();
         String zipCode = createChallengeForm.getZipCode();
 
         if (streetAddress != null && city != null && zipCode != null) {
-            String locationName = streetAddress + ", " + city + ", " + state + ", " + zipCode;
-             if (geocodeAsyncTask != null) {
-                 geocodeAsyncTask.cancel(true);
-             }
-             geocodeAsyncTask = new GeocodeAsyncTask(this).execute(locationName);
+             endGeocodeAsyncTask();
+             GeocoderInput input = new GeocoderInput(streetAddress, city, state, zipCode);
+             geocodeAsyncTask = new GeocodeAsyncTask(this).execute(input);
         }
     }
 
-    private static class GeocodeAsyncTask extends AsyncTask<String, GeocoderResult, Void> {
+    private void endGeocodeAsyncTask() {
+        if (geocodeAsyncTask != null) {
+            geocodeAsyncTask.cancel(true);
+        }
+    }
+
+    private static class GeocodeAsyncTask extends AsyncTask<GeocoderInput, GeocoderResult, Void> {
         private static final String EXCEPTION_TAG = "GEOCODE_ASYNC_ERROR";
         WeakReference<CreateChallengeActivity> activityWeakReference;
 
@@ -133,25 +176,26 @@ public class CreateChallengeActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Void doInBackground(String... locationNames) {
+        protected Void doInBackground(GeocoderInput... geocoderInputs) {
             Context context = activityWeakReference.get();
             if (context == null) {
                 return null;
             }
 
             Geocoder geocoder = new Geocoder(context);
+            GeocoderInput input = geocoderInputs[0];
 
             try {
                 List<Address> addresses = geocoder.getFromLocationName(
-                        locationNames[0],
+                        input.getLocationName(),
                         5
                 );
                 if (addresses != null && addresses.size() > 0) {
                     Address result = addresses.get(0);
                     LatLng latLng = new LatLng(result.getLatitude(), result.getLongitude());
-                    publishProgress(new GeocoderResult(latLng, true));
+                    publishProgress(new GeocoderResult(input, latLng, true));
                 } else {
-                    publishProgress(new GeocoderResult(null, false));
+                    publishProgress(new GeocoderResult(input, null, false));
                 }
             } catch (IOException exception) {
                 String message = exception.getLocalizedMessage();
