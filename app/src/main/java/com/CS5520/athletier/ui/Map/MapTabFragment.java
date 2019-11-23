@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.Utilities.RequestCodes;
 import com.CS5520.athletier.ui.Map.CreateChallenge.CreateChallengeActivity;
@@ -33,11 +34,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -63,18 +66,11 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
 
     private GoogleMap mapView;
     private SelectedChallengeFragment selectedChallengeFragment;
+    private List<Marker> challengeMarkers = new ArrayList<>();
 
     //endregion
 
     //region - Fragment Lifecycle
-
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_map_tab, container, false);
-        setupFragments();
-        setupCreateChallengeButton(view);
-        return view;
-    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -86,10 +82,19 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
                         == PackageManager.PERMISSION_GRANTED;
     }
 
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_map_tab, container, false);
+        setupFragments();
+        setupCreateChallengeButton(view);
+        return view;
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mapTabViewModel = ViewModelProviders.of(this).get(MapTabViewModel.class);
+        listenForChallenges();
     }
 
     @Override
@@ -122,6 +127,18 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
                 LatLng position = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
                 mapView.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
             }
+
+            mapView.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    // Get all challenges at location of marker and pass to selectedChallengeFragment
+                    List<Challenge> challenges = mapTabViewModel.getChallengesAtLatLng(marker.getPosition());
+                    if (challenges != null) {
+                        selectedChallengeFragment.setChallengesAtSelectedLocation(challenges);
+                    }
+                    return false;
+                }
+            });
         }
     }
 
@@ -191,19 +208,53 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-    private void listenForOpenChallenges() {
-        mapTabViewModel.getChallengeLocations().observe(this, new Observer<List<Location>>() {
+    private void listenForChallenges() {
+        mapTabViewModel.getMapChallenges().observe(getViewLifecycleOwner(), new Observer<List<Challenge>>() {
             @Override
-            public void onChanged(List<Location> locations) {
-                for (Location location : locations) {
-                    LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
-                    mapView.addMarker(
-                            new MarkerOptions()
-                                    .position(position));
+            public void onChanged(List<Challenge> challenges) {
+                if (mapView == null) {
+                    return;
+                }
+
+                // Clear existing markers
+                clearMarkers();
+
+                // Create new markers
+                for (Challenge challenge : challenges) {
+                    LatLng latLng = new LatLng(challenge.getLatitude(), challenge.getLongitude());
+                    if (!locationAlreadyMarked(latLng)) {
+                        // Mark the location of the challenge and add to list of markers
+                        challengeMarkers.add(
+                                mapView.addMarker(
+                                        new MarkerOptions().position(latLng)
+                                )
+                        );
+                    }
                 }
             }
         });
 
+    }
+
+    private boolean locationAlreadyMarked(LatLng location) {
+        if (challengeMarkers == null || challengeMarkers.size() == 0) {
+            return false;
+        }
+        for (Marker marker : challengeMarkers) {
+            if (marker.getPosition().equals(location)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void clearMarkers() {
+        if (challengeMarkers == null || challengeMarkers.size() == 0) {
+            return;
+        }
+        for (Marker marker : challengeMarkers) {
+            marker.remove();
+        }
     }
 
     @Override
@@ -238,7 +289,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 setupLocationRequester(activity);
                 if (hasPermissions) {
-                    mapView.setMyLocationEnabled(true);
+                    if (mapView != null) { mapView.setMyLocationEnabled(true); }
                     locationRequester.startUpdatingLocation(locationRequest);
                 } else {
                     requestPermissions(new String[] { LocationRequester.requiredPermission },

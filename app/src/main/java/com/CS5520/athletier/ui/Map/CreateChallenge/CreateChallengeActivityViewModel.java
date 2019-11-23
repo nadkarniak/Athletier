@@ -18,8 +18,11 @@ public class CreateChallengeActivityViewModel extends ViewModel {
 
 
     void setCurrentUser(String userId) {
-        // TODO: Get User from Firebase using input userId
-        this.currentUser = new User();
+        // TODO: Replace dummy user below with a user from Firebase with the  input userId
+        this.currentUser = new User("1",
+                "Dummy User 1",
+                null, "dummy@gmail.com",
+                "1111111");
     }
 
     void makeChallenge(Sport sport,
@@ -36,6 +39,7 @@ public class CreateChallengeActivityViewModel extends ViewModel {
         // Create challenge and pass to createdChallenge LiveData
         Challenge newChallenge = new Challenge(
                 currentUser.getId(),
+                currentUser.getUsername(),
                 sport,
                 date,
                 streetAddress,

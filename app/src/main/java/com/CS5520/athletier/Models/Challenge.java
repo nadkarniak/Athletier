@@ -7,10 +7,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 public class Challenge implements Parcelable {
     private String hostId;
+    private String hostName;
     private String opponentId;
+    private String opponentName;
 
     private String sport;
     private String challengeStatus;
@@ -33,7 +36,9 @@ public class Challenge implements Parcelable {
     public Challenge() { }
 
     public Challenge(String hostId,
+                     String hostName,
                      String opponentId,
+                     String opponentName,
                      Sport sport,
                      ChallengeStatus challengeStatus,
                      AcceptanceStatus acceptanceStatus,
@@ -47,7 +52,9 @@ public class Challenge implements Parcelable {
                      State state,
                      String zip) {
         this.hostId = hostId;
+        this.hostName = hostName;
         this.opponentId = opponentId;
+        this.opponentName = opponentName;
         this.sport = sport.toString();
         this.challengeStatus = challengeStatus.name();
         this.acceptanceStatus = acceptanceStatus.name();
@@ -64,6 +71,7 @@ public class Challenge implements Parcelable {
 
     // Constructor for newly created challenge from Map Screen
     public Challenge(String hostId,
+                     String hostName,
                      Sport sport,
                      Date date,
                      String streetName,
@@ -73,6 +81,7 @@ public class Challenge implements Parcelable {
                      double latitude,
                      double longitude) {
         this.hostId = hostId;
+        this.hostName = hostName;
         this.sport = sport.toString();
         this.challengeStatus = ChallengeStatus.AWAITING_PLAYERS.name();
         this.acceptanceStatus = AcceptanceStatus.PENDING.name();
@@ -107,7 +116,11 @@ public class Challenge implements Parcelable {
 
     public String getHostId() { return hostId; }
 
+    public String getHostName() { return hostName; }
+
     public String getOpponentId() { return opponentId; }
+
+    public String getOpponentName() { return opponentName; }
 
     public String getSport() { return sport; }
 
@@ -178,6 +191,44 @@ public class Challenge implements Parcelable {
         this.latitude = latitude;
         this.longitude = longitude;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) { return true; }
+        if (other instanceof Challenge) {
+            Challenge otherChallenge = (Challenge) other;
+            return this.hostId.equals(otherChallenge.hostId)
+                    && this.opponentId.equals(otherChallenge.hostId)
+                    && this.sport.equals(otherChallenge.sport)
+                    && this.hostIsWinner == otherChallenge.hostIsWinner
+                    && this.challengeStatus.equals(otherChallenge.challengeStatus)
+                    && this.acceptanceStatus.equals(otherChallenge.acceptanceStatus)
+                    && this.resultStatus.equals(otherChallenge.resultStatus)
+                    && this.streetName.equals(otherChallenge.streetName)
+                    && this.city.equals(otherChallenge.city)
+                    && this.zip.equals(otherChallenge.zip)
+                    && this.state.equals(otherChallenge.state)
+                    && this.date == otherChallenge.date;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                this.hostId,
+                this.opponentId,
+                this.sport,
+                this.challengeStatus,
+                this.acceptanceStatus,
+                this.resultStatus,
+                this.date,
+                this.streetName,
+                this.city,
+                this.state,
+                this.zip);
+    }
+
 
     // Parcelable implementation so Challenges can be passed between Activities and Fragments
     public static final Creator<Challenge> CREATOR = new Creator<Challenge>() {

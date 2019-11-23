@@ -10,6 +10,8 @@ public class User {
     private String id;
     private String username;
     private String photoUrl;
+    private String emailAddress;
+    private String phoneNumber;
     private int totalSportmanshipRating;
 
     private List<Challenge> challenges = new ArrayList<>();
@@ -24,6 +26,18 @@ public class User {
 
     // Empty public constructor required by Firebase
     public User() { }
+
+    public User(String id,
+                String username,
+                String photoUrl,
+                String emailAddress,
+                String phoneNumber) {
+        this.id = id;
+        this.username = username;
+        this.photoUrl = photoUrl;
+        this.emailAddress = emailAddress;
+        this.phoneNumber = phoneNumber;
+    }
 
     public float getAvgSportsmanshipRating() {
         // TODO: We should only be counting Challenges that are completed where the user has been rated

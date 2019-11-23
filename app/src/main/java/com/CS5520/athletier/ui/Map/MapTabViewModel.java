@@ -9,6 +9,9 @@ import androidx.lifecycle.ViewModel;
 
 import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.ui.Map.CreateChallenge.CreateChallengeKeys;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +19,6 @@ import java.util.List;
 public class MapTabViewModel extends ViewModel {
 
     private Location userLocation;
-    private MutableLiveData<List<Location>> challengeLocations = new MutableLiveData<>();
     private MutableLiveData<List<Challenge>> challenges = new MutableLiveData<>();
 
     void setUserLocation(Location location) {
@@ -24,8 +26,11 @@ public class MapTabViewModel extends ViewModel {
     }
 
     void addCreatedChallenge(Intent challengeData) {
+        // Extract new challenge from Intent
         Challenge newChallenge = challengeData.getParcelableExtra(
                 CreateChallengeKeys.CREATED_CHALLENGE);
+
+        // If new challenge is not null, add it to existing challenges
         if (newChallenge != null) {
             List<Challenge> currentChallenges = challenges.getValue() != null ?
                     challenges.getValue() : new ArrayList<Challenge>();
@@ -39,13 +44,26 @@ public class MapTabViewModel extends ViewModel {
         return userLocation;
     }
 
-    LiveData<List<Location>> getChallengeLocations() {
-        // TODO: Query challenges from Firebase and set challenges = to the returned stream of live
-        //  data
-        return challengeLocations;
+    LiveData<List<Challenge>> getMapChallenges() {
+        return challenges;
     }
 
-    public LiveData<List<Challenge>> getMapChallenges() { return challenges; }
+    List<Challenge> getChallengesAtLatLng(LatLng latLng) {
+        if (challenges.getValue() == null) {
+            return null;
+        }
+
+        List<Challenge> challengesAtLatLng = new ArrayList<>();
+        for (Challenge challenge : challenges.getValue()) {
+            if (challenge.getLatitude() == latLng.latitude
+                    && challenge.getLongitude() == latLng.longitude) {
+                challengesAtLatLng.add(challenge);
+            }
+        }
+
+        return challengesAtLatLng;
+    }
+
 
 
 }

@@ -18,6 +18,7 @@ import com.CS5520.athletier.R;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class SelectedChallengeFragment extends Fragment {
@@ -27,9 +28,6 @@ public class SelectedChallengeFragment extends Fragment {
     private TextDisplayFragment dateDisplayFrag;
     private TextDisplayFragment addressTextFrag;
     private TextDisplayFragment statusTextFrag;
-    private Button joinButton;
-    private Button viewProfileButton;
-
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -46,8 +44,12 @@ public class SelectedChallengeFragment extends Fragment {
         setupObservers();
     }
 
+    void setChallengesAtSelectedLocation(List<Challenge> challenges) {
+        viewModel.setChallengesAtLocation(challenges);
+    }
+
     private void setupButtons(View view) {
-        joinButton = view.findViewById(R.id.joinRequestButton);
+        Button joinButton = view.findViewById(R.id.joinRequestButton);
         joinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -55,7 +57,7 @@ public class SelectedChallengeFragment extends Fragment {
             }
         });
 
-        viewProfileButton = view.findViewById(R.id.viewHostProfileButton);
+        Button viewProfileButton = view.findViewById(R.id.viewHostProfileButton);
         viewProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -85,7 +87,7 @@ public class SelectedChallengeFragment extends Fragment {
             public void onChanged(Challenge challenge) {
                 // Update the displayed challenge information once a challenge is selected
                 // TODO: May need to change this to show the username, not the Id;
-                hostUserTextFrag.setDetailsText(challenge.getHostId());
+                hostUserTextFrag.setDetailsText(challenge.getHostName());
                 sportTextFrag.setDetailsText(challenge.getSport());
                 dateDisplayFrag.setDetailsText(challenge.getFormattedDate());
                 addressTextFrag.setDetailsText(challenge.getFormattedAddress());
