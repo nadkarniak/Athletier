@@ -8,15 +8,12 @@
     android:orientation="vertical"
     tools:context="com.CS5520.athletier.ui.Leaderboards.LeaderboardsTabFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:text="First Last"
-        android:textColor="#fff"
-        android:textSize="21sp"
-        android:textStyle="bold" />
+    <Spinner
+        android:id="@+id/sportsSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@android:drawable/btn_dropdown"
+        android:spinnerMode="dropdown" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -137,15 +134,6 @@
         android:textColor="#fff"
         android:textSize="21sp"
         android:textStyle="bold" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:text="First Last"
-        android:textColor="#fff"
-        android:textSize="21sp"
-        android:textStyle="bold" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -166,6 +154,7 @@
         android:textColor="#fff"
         android:textSize="21sp"
         android:textStyle="bold" />
+
 
     <TextView
         android:layout_width="wrap_content"
