@@ -1,29 +1,26 @@
 package com.CS5520.athletier.ui.Profile;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.CS5520.athletier.Models.DataBase;
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileTabFragment extends Fragment {
@@ -31,14 +28,14 @@ public class ProfileTabFragment extends Fragment {
     private ProfileTabViewModel profileTabViewModel;
     private TextView usernameText;
     private TextView recordText;
-    private RatingBar sportsmanshipBar;
-    private ListView sportsList;
+    //private RatingBar sportsmanshipBar;
+    //private ListView sportsList;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile_tab, container, false);
         setupViews(view);
-        return inflater.inflate(R.layout.fragment_profile_tab, container, false);
+        return view;
     }
 
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -52,10 +49,10 @@ public class ProfileTabFragment extends Fragment {
 
     private void setupViews(View view) {
         // Find views using id's
-        usernameText = view.findViewById(R.id.userName);
-        recordText = view.findViewById(R.id.record);
-        sportsmanshipBar = view.findViewById(R.id.ratingBar);
-        sportsList = view.findViewById(R.id.sports_view);
+        usernameText = ((LinearLayout)view).findViewById(R.id.userName);
+        recordText = ((LinearLayout)view).findViewById(R.id.record);
+        //sportsmanshipBar = ((LinearLayout)view).findViewById(R.id.ratingBar);
+        //sportsList = ((LinearLayout)view).findViewById(R.id.sportsView);
     }
 
     private void setupSportsList(Context context) {
@@ -65,7 +62,7 @@ public class ProfileTabFragment extends Fragment {
                 android.R.layout.simple_expandable_list_item_1,
                 sports
         );
-        sportsList.setAdapter(adapter);
+        //sportsList.setAdapter(adapter);
     }
 
     private void setupObservers() {
@@ -74,7 +71,7 @@ public class ProfileTabFragment extends Fragment {
             public void onChanged(User user) {
                 usernameText.setText(user.getUsername());
                 recordText.setText(user.getRecord());
-                sportsmanshipBar.setRating(user.getAvgSportsmanshipRating());
+               //sportsmanshipBar.setRating(user.getAvgSportsmanshipRating());
             }
         });
     }
