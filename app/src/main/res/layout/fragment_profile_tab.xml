@@ -41,7 +41,6 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="10dp"
-                        android:text="First Last"
                         android:textColor="#fff"
                         android:textSize="21sp"
                         android:textStyle="bold" />
@@ -52,7 +51,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/follow_button"
-                        android:text="Follow Me"
+                        android:text="@string/follow_me"
                         android:textColor="#fff" />
 
                 </LinearLayout>
@@ -80,7 +79,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Following"
+                                android:text="@string/following"
                                 android:textSize="20sp" />
 
                             <TextView
@@ -102,7 +101,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Followers"
+                                android:text="@string/followers"
                                 android:textSize="20sp" />
 
                             <TextView
@@ -124,7 +123,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Record"
+                                android:text="@string/record_string"
                                 android:textSize="20sp" />
 
                             <TextView

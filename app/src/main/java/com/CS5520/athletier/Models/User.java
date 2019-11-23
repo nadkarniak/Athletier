@@ -14,6 +14,7 @@ public class User {
 
     private List<Challenge> challenges = new ArrayList<>();
     private List<SportsAchievementSummary> sportsAchievementSummaries = new ArrayList<>();
+    private List<Team> userTeams = new ArrayList<>();
 
     private List<User> following = new ArrayList<>();
     private List<User> followers = new ArrayList<>();
@@ -56,6 +57,10 @@ public class User {
 
     public List<User> getFollowers() {
         return followers;
+    }
+
+    public List<Team> getUserTeams() {
+        return userTeams;
     }
 
 }
