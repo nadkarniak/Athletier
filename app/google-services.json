@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1065172566022",
+    "firebase_url": "https://athletier-ab9e9.firebaseio.com",
+    "project_id": "athletier-ab9e9",
+    "storage_bucket": "athletier-ab9e9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1065172566022:android:58581330cfe6416995c387",
+        "android_client_info": {
+          "package_name": "com.CS5520.athletier"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1065172566022-h97h4c2ijv96lv84kj7u0u4qic32ss0n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCj9HPYUFdhKZEmb4EiYqVDk1g3hxxWAxI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1065172566022-h97h4c2ijv96lv84kj7u0u4qic32ss0n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

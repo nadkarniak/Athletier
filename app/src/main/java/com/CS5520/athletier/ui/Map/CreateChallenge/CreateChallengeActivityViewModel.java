@@ -12,7 +12,6 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Date;
 
-
 public class CreateChallengeActivityViewModel extends ViewModel {
     private User currentUser;
     private MutableLiveData<Challenge> createdChallenge = new MutableLiveData<>();
