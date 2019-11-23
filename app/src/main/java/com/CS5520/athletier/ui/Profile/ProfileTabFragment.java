@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RatingBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -28,8 +29,10 @@ public class ProfileTabFragment extends Fragment {
     private ProfileTabViewModel profileTabViewModel;
     private TextView usernameText;
     private TextView recordText;
-    //private RatingBar sportsmanshipBar;
-    //private ListView sportsList;
+    private TextView followersText;
+    private TextView followingText;
+    private RatingBar sportsmanshipBar;
+    private Spinner sportsList;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -51,18 +54,20 @@ public class ProfileTabFragment extends Fragment {
         // Find views using id's
         usernameText = ((LinearLayout)view).findViewById(R.id.userName);
         recordText = ((LinearLayout)view).findViewById(R.id.record);
-        //sportsmanshipBar = ((LinearLayout)view).findViewById(R.id.ratingBar);
-        //sportsList = ((LinearLayout)view).findViewById(R.id.sportsView);
+        followersText = ((LinearLayout)view).findViewById(R.id.followers);
+        followingText = ((LinearLayout)view).findViewById(R.id.following);
+        sportsmanshipBar = ((LinearLayout)view).findViewById(R.id.ratingBar);
+        sportsList = ((LinearLayout)view).findViewById(R.id.sportsSpinner);
     }
 
     private void setupSportsList(Context context) {
         List<String> sports = Sport.getAllSportsNames();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 context,
-                android.R.layout.simple_expandable_list_item_1,
+                android.R.layout.simple_spinner_dropdown_item,
                 sports
         );
-        //sportsList.setAdapter(adapter);
+        sportsList.setAdapter(adapter);
     }
 
     private void setupObservers() {
@@ -71,7 +76,9 @@ public class ProfileTabFragment extends Fragment {
             public void onChanged(User user) {
                 usernameText.setText(user.getUsername());
                 recordText.setText(user.getRecord());
-               //sportsmanshipBar.setRating(user.getAvgSportsmanshipRating());
+                followersText.setText(String.valueOf(user.getFollowers().size()));
+                followingText.setText(String.valueOf(user.getFollowing().size()));
+                sportsmanshipBar.setRating(user.getAvgSportsmanshipRating());
             }
         });
     }
