@@ -1,8 +1,14 @@
 package com.CS5520.athletier.Models;
 
-import java.util.Date;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Challenge {
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+public class Challenge implements Parcelable {
     private String hostId;
     private String opponentId;
 
@@ -80,6 +86,22 @@ public class Challenge {
         this.longitude = longitude;
     }
 
+    protected Challenge(Parcel in) {
+        hostId = in.readString();
+        opponentId = in.readString();
+        sport = in.readString();
+        challengeStatus = in.readString();
+        acceptanceStatus = in.readString();
+        resultStatus = in.readString();
+        hostIsWinner = in.readByte() != 0;
+        date = in.readLong();
+        longitude = in.readDouble();
+        latitude = in.readDouble();
+        streetName = in.readString();
+        city = in.readString();
+        state = in.readString();
+        zip = in.readString();
+    }
 
     // Public Getters
 
@@ -110,6 +132,16 @@ public class Challenge {
     public String getState() { return  state; }
 
     public String getZip() { return zip; }
+
+    public String getFormattedDate() {
+        DateFormat formatter = new SimpleDateFormat("MM-dd-YYYY", Locale.US);
+        Date dateObj = new Date(this.date);
+        return formatter.format(dateObj);
+    }
+
+    public String getFormattedAddress() {
+        return streetName + "\n" + city + ", " + state + ", " + zip;
+    }
 
     // Public Setters
 
@@ -147,5 +179,39 @@ public class Challenge {
         this.longitude = longitude;
     }
 
+    // Parcelable implementation so Challenges can be passed between Activities and Fragments
+    public static final Creator<Challenge> CREATOR = new Creator<Challenge>() {
+        @Override
+        public Challenge createFromParcel(Parcel in) {
+            return new Challenge(in);
+        }
 
+        @Override
+        public Challenge[] newArray(int size) {
+            return new Challenge[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(hostId);
+        parcel.writeString(opponentId);
+        parcel.writeString(sport);
+        parcel.writeString(challengeStatus);
+        parcel.writeString(acceptanceStatus);
+        parcel.writeString(resultStatus);
+        parcel.writeByte((byte) (hostIsWinner ? 1 : 0));
+        parcel.writeLong(date);
+        parcel.writeDouble(longitude);
+        parcel.writeDouble(latitude);
+        parcel.writeString(streetName);
+        parcel.writeString(city);
+        parcel.writeString(state);
+        parcel.writeString(zip);
+    }
 }

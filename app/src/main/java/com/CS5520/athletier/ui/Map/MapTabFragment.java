@@ -40,6 +40,8 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
+
 public class MapTabFragment extends Fragment implements OnMapReadyCallback, LocationUpdateListener {
 
     //region - View Model
@@ -60,6 +62,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
     //region - Views/UI
 
     private GoogleMap mapView;
+    private SelectedChallengeFragment selectedChallengeFragment;
 
     //endregion
 
@@ -68,7 +71,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map_tab, container, false);
-        setupMapFragment();
+        setupFragments();
         setupCreateChallengeButton(view);
         return view;
     }
@@ -136,12 +139,25 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         }
     }
 
-    private void setupMapFragment() {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RequestCodes.CREATE_MAP_CHALLENGE) {
+            if (resultCode == RESULT_OK) {
+                mapTabViewModel.addCreatedChallenge(data);
+            }
+        }
+    }
+
+    private void setupFragments() {
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
+        selectedChallengeFragment = (SelectedChallengeFragment)
+                getChildFragmentManager().findFragmentById(R.id.selectedChallengeFragment);
     }
 
     private void setupCreateChallengeButton(View view) {
@@ -159,7 +175,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         if (currentActivity != null) {
             stopLocationUpdates();
             Intent intent = new Intent(currentActivity, CreateChallengeActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, RequestCodes.CREATE_MAP_CHALLENGE);
             currentActivity.overridePendingTransition(R.anim.slide_up, R.anim.no_slide);
         }
     }
@@ -187,6 +203,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
                 }
             }
         });
+
     }
 
     @Override

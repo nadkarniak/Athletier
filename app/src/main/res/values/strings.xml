@@ -10,7 +10,7 @@
     <string name="done">Done</string>
     <string name="cancel">Cancel</string>
     <string name="create_title">Create</string>
-    <string name="date_title">Date</string>
+    <string name="date_title">Date:</string>
     <string name="invalid_address_msg">Entered address is invalid. Please try again.</string>
     <string name="user_name">Username</string>
     <string name="log_out">Sign Out</string>
@@ -27,4 +27,11 @@
     <string name="following">Following</string>
     <string name="followers">Followers</string>
     <string name="record_string">Record</string>
+    <string name="selected_challenge_title">Selected Challenge</string>
+    <string name="join_request_title">Join</string>
+    <string name="sport_title">Sport:</string>
+    <string name="host_title">Host User:</string>
+    <string name="address_title">Address:</string>
+    <string name="status_title">Status:</string>
+    <string name="view_profile_title">View Profile</string>
 </resources>

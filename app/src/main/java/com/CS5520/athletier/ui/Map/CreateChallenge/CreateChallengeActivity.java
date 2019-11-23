@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
@@ -132,7 +133,10 @@ public class CreateChallengeActivity extends AppCompatActivity {
         viewModel.getCreatedChallenge().observe(this, new Observer<Challenge>() {
             @Override
             public void onChanged(Challenge challenge) {
-                // Finish this Activity once challenge has been created
+                // Finish this Activity once challenge has been created and pass it back
+                Intent newChallengeIntent = new Intent();
+                newChallengeIntent.putExtra(CreateChallengeKeys.CREATED_CHALLENGE, challenge);
+                setResult(RESULT_OK, newChallengeIntent);
                 finish();
             }
         });
