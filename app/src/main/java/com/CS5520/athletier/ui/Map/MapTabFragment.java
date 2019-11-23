@@ -112,12 +112,13 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mapView = googleMap;
-        mapView.setMyLocationEnabled(true);
-
-        Location userLocation = mapTabViewModel.getUserLocation();
-        if (userLocation != null) {
-            LatLng position = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
-            mapView.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+        mapView.setMyLocationEnabled(hasPermissions);
+        if (hasPermissions) {
+            Location userLocation = mapTabViewModel.getUserLocation();
+            if (userLocation != null) {
+                LatLng position = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+                mapView.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+            }
         }
     }
 
@@ -220,6 +221,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 setupLocationRequester(activity);
                 if (hasPermissions) {
+                    mapView.setMyLocationEnabled(true);
                     locationRequester.startUpdatingLocation(locationRequest);
                 } else {
                     requestPermissions(new String[] { LocationRequester.requiredPermission },
