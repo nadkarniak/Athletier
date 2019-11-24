@@ -1,15 +1,15 @@
 package com.CS5520.athletier.login.ui.login;
 
+import android.util.Patterns;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import android.util.Patterns;
-
+import com.CS5520.athletier.R;
 import com.CS5520.athletier.login.data.LoginRepository;
 import com.CS5520.athletier.login.data.Result;
 import com.CS5520.athletier.login.data.model.LoggedInUser;
-import com.CS5520.athletier.login.R;
 
 public class LoginViewModel extends ViewModel {
 
