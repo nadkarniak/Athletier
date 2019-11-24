@@ -14,12 +14,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.R;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class SelectedChallengeFragment extends Fragment {
     private SelectedChallengeViewModel viewModel;
@@ -92,6 +87,7 @@ public class SelectedChallengeFragment extends Fragment {
             @Override
             public void onChanged(Challenge challenge) {
                 // Update the displayed challenge information once a challenge is selected
+                System.out.println(challenge.getHostName());
                 hostUserTextFrag.setDetailsText(challenge.getHostName());
                 sportTextFrag.setDetailsText(challenge.getSport());
                 dateDisplayFrag.setDetailsText(challenge.getFormattedDate());

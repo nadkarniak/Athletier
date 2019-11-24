@@ -97,7 +97,9 @@ public class Challenge implements Parcelable {
 
     protected Challenge(Parcel in) {
         hostId = in.readString();
+        hostName = in.readString();
         opponentId = in.readString();
+        opponentName = in.readString();
         sport = in.readString();
         challengeStatus = in.readString();
         acceptanceStatus = in.readString();
@@ -231,6 +233,31 @@ public class Challenge implements Parcelable {
 
 
     // Parcelable implementation so Challenges can be passed between Activities and Fragments
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(hostId);
+        dest.writeString(hostName);
+        dest.writeString(opponentId);
+        dest.writeString(opponentName);
+        dest.writeString(sport);
+        dest.writeString(challengeStatus);
+        dest.writeString(acceptanceStatus);
+        dest.writeString(resultStatus);
+        dest.writeByte((byte) (hostIsWinner ? 1 : 0));
+        dest.writeLong(date);
+        dest.writeDouble(longitude);
+        dest.writeDouble(latitude);
+        dest.writeString(streetName);
+        dest.writeString(city);
+        dest.writeString(state);
+        dest.writeString(zip);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     public static final Creator<Challenge> CREATOR = new Creator<Challenge>() {
         @Override
         public Challenge createFromParcel(Parcel in) {
@@ -242,27 +269,4 @@ public class Challenge implements Parcelable {
             return new Challenge[size];
         }
     };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(hostId);
-        parcel.writeString(opponentId);
-        parcel.writeString(sport);
-        parcel.writeString(challengeStatus);
-        parcel.writeString(acceptanceStatus);
-        parcel.writeString(resultStatus);
-        parcel.writeByte((byte) (hostIsWinner ? 1 : 0));
-        parcel.writeLong(date);
-        parcel.writeDouble(longitude);
-        parcel.writeDouble(latitude);
-        parcel.writeString(streetName);
-        parcel.writeString(city);
-        parcel.writeString(state);
-        parcel.writeString(zip);
-    }
 }
