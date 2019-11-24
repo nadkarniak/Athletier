@@ -1,5 +1,6 @@
 package com.CS5520.athletier;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.CS5520.athletier.ui.Map.LocationRequester;
@@ -29,5 +30,10 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

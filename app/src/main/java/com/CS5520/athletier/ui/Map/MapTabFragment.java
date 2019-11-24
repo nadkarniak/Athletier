@@ -16,9 +16,14 @@ import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.CS5520.athletier.Models.Challenge;
+import com.CS5520.athletier.Models.ChallengeStatus;
+import com.CS5520.athletier.Models.Sport;
+import com.CS5520.athletier.Models.State;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.Utilities.RequestCodes;
 import com.CS5520.athletier.ui.Map.CreateChallenge.CreateChallengeActivity;
@@ -32,13 +37,20 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
 
 public class MapTabFragment extends Fragment implements OnMapReadyCallback, LocationUpdateListener {
 
@@ -60,18 +72,12 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
     //region - Views/UI
 
     private GoogleMap mapView;
+    private SelectedChallengeFragment selectedChallengeFragment;
+    private List<Marker> challengeMarkers = new ArrayList<>();
 
     //endregion
 
     //region - Fragment Lifecycle
-
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_map_tab, container, false);
-        setupMapFragment();
-        setupCreateChallengeButton(view);
-        return view;
-    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -83,10 +89,53 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
                         == PackageManager.PERMISSION_GRANTED;
     }
 
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_map_tab, container, false);
+        setupFragments();
+        setupCreateChallengeButton(view);
+        return view;
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mapTabViewModel = ViewModelProviders.of(this).get(MapTabViewModel.class);
+        listenForChallenges();
+    }
+
+    // TODO: Delete this method when Firebase query for challenges is implemented
+    private List<Challenge> createDummyChallenges() {
+        List<Challenge> newDummyChallenges = new ArrayList<>();
+        Challenge dummyChallengeOne = new Challenge(
+                "2",
+                "Dummy User 2",
+                Sport.TENNIS,
+                Calendar.getInstance().getTime(),
+                "1 Amphitheatre Pkway",
+                "Mountain View",
+                State.CA,
+                "94043",
+                37.423920,
+                -122.090010
+        );
+
+        Challenge dummyChallengeTwo = new Challenge(
+                "3",
+                "Dummy User 3",
+                Sport.SQUASH,
+                Calendar.getInstance().getTime(),
+                "1 Amphitheatre Pkway",
+                "Mountain View",
+                State.CA,
+                "94043",
+                37.423920,
+                -122.090010
+        );
+
+        newDummyChallenges.add(dummyChallengeOne);
+        newDummyChallenges.add(dummyChallengeTwo);
+        return newDummyChallenges;
     }
 
     @Override
@@ -112,12 +161,39 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mapView = googleMap;
-        mapView.setMyLocationEnabled(true);
+        mapView.setMyLocationEnabled(hasPermissions);
+        if (hasPermissions) {
+            Location userLocation = mapTabViewModel.getUserLocation();
+            mapTabViewModel.setChallenges(createDummyChallenges());
+            if (userLocation != null) {
+                LatLng position = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+                mapView.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+            }
 
-        Location userLocation = mapTabViewModel.getUserLocation();
-        if (userLocation != null) {
-            LatLng position = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
-            mapView.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+            mapView.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    // Get all challenges at location of marker and pass to selectedChallengeFragment
+                    List<Challenge> challenges = mapTabViewModel.getChallengesAtLatLng(marker.getPosition());
+                    if (challenges != null) {
+                        selectedChallengeFragment.setChallengesAtSelectedLocation(challenges);
+                        if (selectedChallengeFragment.isHidden()) {
+                            toggleSelectedChallengeFragmentVisibility(true, true);
+                        }
+                    }
+                    return false;
+                }
+            });
+
+            mapView.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng latLng) {
+                    if (!selectedChallengeFragment.isHidden()) {
+                        toggleSelectedChallengeFragmentVisibility(false,
+                                true);
+                    }
+                }
+            });
         }
     }
 
@@ -135,13 +211,46 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         }
     }
 
-    private void setupMapFragment() {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RequestCodes.CREATE_MAP_CHALLENGE) {
+            if (resultCode == RESULT_OK) {
+                mapTabViewModel.addCreatedChallenge(data);
+            }
+        }
+    }
+
+    private void setupFragments() {
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
+        selectedChallengeFragment = (SelectedChallengeFragment)
+                getChildFragmentManager().findFragmentById(R.id.selectedChallengeFragment);
+
+        // Initially hide selected challenge fragment since no challenges are selected
+        toggleSelectedChallengeFragmentVisibility(false, false);
     }
+
+    private void toggleSelectedChallengeFragmentVisibility(boolean shouldShow, boolean withAnimation) {
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+
+        if (shouldShow) {
+            transaction = transaction.show(selectedChallengeFragment);
+        } else {
+            transaction = transaction.hide(selectedChallengeFragment);
+        }
+
+        if (withAnimation) {
+            transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down);
+        }
+
+        transaction.commit();
+    }
+
 
     private void setupCreateChallengeButton(View view) {
         Button createChallengeButton = view.findViewById(R.id.openChallengeButton);
@@ -158,7 +267,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         if (currentActivity != null) {
             stopLocationUpdates();
             Intent intent = new Intent(currentActivity, CreateChallengeActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, RequestCodes.CREATE_MAP_CHALLENGE);
             currentActivity.overridePendingTransition(R.anim.slide_up, R.anim.no_slide);
         }
     }
@@ -174,18 +283,68 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-    private void listenForOpenChallenges() {
-        mapTabViewModel.getChallengeLocations().observe(this, new Observer<List<Location>>() {
+    private void listenForChallenges() {
+        mapTabViewModel.getMapChallenges().observe(getViewLifecycleOwner(), new Observer<List<Challenge>>() {
             @Override
-            public void onChanged(List<Location> locations) {
-                for (Location location : locations) {
-                    LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
-                    mapView.addMarker(
-                            new MarkerOptions()
-                                    .position(position));
+            public void onChanged(List<Challenge> challenges) {
+                if (mapView == null) {
+                    return;
+                }
+
+                // Clear existing markers
+                clearMarkers();
+
+                // Create new markers
+                for (Challenge challenge : challenges) {
+                    LatLng latLng = new LatLng(challenge.getLatitude(), challenge.getLongitude());
+                    if (!locationAlreadyMarked(latLng)) {
+                        float color = getChallengeMarkerColor(
+                                ChallengeStatus.valueOf(challenge.getChallengeStatus())
+                        );
+                        // Mark the location of the challenge and add to list of markers
+                        challengeMarkers.add(
+                                mapView.addMarker(
+                                        new MarkerOptions()
+                                                .position(latLng)
+                                                .icon(BitmapDescriptorFactory.defaultMarker(color))
+                                )
+                        );
+                    }
                 }
             }
         });
+    }
+
+    private float getChallengeMarkerColor(ChallengeStatus status) {
+        switch (status) {
+            case IN_PROGRESS:
+                return BitmapDescriptorFactory.HUE_YELLOW;
+            case AWAITING_PLAYERS:
+                return BitmapDescriptorFactory.HUE_GREEN;
+            default:
+                return BitmapDescriptorFactory.HUE_RED;
+        }
+    }
+
+    private boolean locationAlreadyMarked(LatLng location) {
+        if (challengeMarkers == null || challengeMarkers.size() == 0) {
+            return false;
+        }
+        for (Marker marker : challengeMarkers) {
+            if (marker.getPosition().equals(location)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void clearMarkers() {
+        if (challengeMarkers == null || challengeMarkers.size() == 0) {
+            return;
+        }
+        for (Marker marker : challengeMarkers) {
+            marker.remove();
+        }
     }
 
     @Override
@@ -220,6 +379,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 setupLocationRequester(activity);
                 if (hasPermissions) {
+                    if (mapView != null) { mapView.setMyLocationEnabled(true); }
                     locationRequester.startUpdatingLocation(locationRequest);
                 } else {
                     requestPermissions(new String[] { LocationRequester.requiredPermission },
