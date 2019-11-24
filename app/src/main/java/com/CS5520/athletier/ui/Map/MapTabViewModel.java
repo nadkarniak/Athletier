@@ -21,6 +21,10 @@ public class MapTabViewModel extends ViewModel {
     private Location userLocation;
     private MutableLiveData<List<Challenge>> challenges = new MutableLiveData<>();
 
+    void setChallenges(List<Challenge> newChallenges) {
+        challenges.postValue(newChallenges);
+    }
+
     void setUserLocation(Location location) {
         userLocation = location;
     }
@@ -63,7 +67,4 @@ public class MapTabViewModel extends ViewModel {
 
         return challengesAtLatLng;
     }
-
-
-
 }

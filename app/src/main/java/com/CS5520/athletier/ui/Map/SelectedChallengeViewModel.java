@@ -24,7 +24,6 @@ public class SelectedChallengeViewModel extends ViewModel {
             // Default selected challenge to the first
             selectedChallengeIndex = 0;
             selectedChallenge.setValue(challenges.get(selectedChallengeIndex));
-            // TODO: Get the user for the selected challenge  using the user's Id
         }
     }
 
@@ -51,11 +50,26 @@ public class SelectedChallengeViewModel extends ViewModel {
     }
 
     int getNumberOfChallengesAtLocation() {
-        return challengesAtLocation.size();
+        if (challengesAtLocation != null) {
+            return challengesAtLocation.size();
+        } else {
+            return 0;
+        }
     }
 
     int getSelectedChallengeIndex() {
         return selectedChallengeIndex;
+    }
+
+    String getChallengeTitle() {
+        if (challengesAtLocation == null || challengesAtLocation.size() < 2) {
+            return "Challenge";
+        } else {
+            return "Challenge (" + (selectedChallengeIndex + 1) + "/"
+                    + (challengesAtLocation.size()) +  ")";
+        }
+
+
     }
 
 }

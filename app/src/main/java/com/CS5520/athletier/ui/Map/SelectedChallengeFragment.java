@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -18,6 +19,10 @@ import java.util.List;
 
 public class SelectedChallengeFragment extends Fragment {
     private SelectedChallengeViewModel viewModel;
+
+    private TextView titleTextView;
+    private Button previousButton;
+    private Button nextButton;
     private TextDisplayFragment hostUserTextFrag;
     private TextDisplayFragment sportTextFrag;
     private TextDisplayFragment dateDisplayFrag;
@@ -28,7 +33,7 @@ public class SelectedChallengeFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_selected_challenge, container,
                 false);
-        setupButtons(view);
+        setupViews(view);
         setupFragments();
         return view;
     }
@@ -43,7 +48,28 @@ public class SelectedChallengeFragment extends Fragment {
         viewModel.setChallengesAtLocation(challenges);
     }
 
-    private void setupButtons(View view) {
+    private void setupViews(View view) {
+        titleTextView = view.findViewById(R.id.selectedChallengeTitleText);
+        previousButton = view.findViewById(R.id.previousButton);
+        nextButton = view.findViewById(R.id.nextButton);
+
+        previousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewModel.selectPreviousChallenge();
+                titleTextView.setText(viewModel.getChallengeTitle());
+            }
+        });
+
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewModel.selectNextChallenge();
+                titleTextView.setText(viewModel.getChallengeTitle());
+            }
+        });
+
+
         Button joinButton = view.findViewById(R.id.joinRequestButton);
         joinButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,8 +112,9 @@ public class SelectedChallengeFragment extends Fragment {
         viewModel.getSelectedChallenge().observe(getViewLifecycleOwner(), new Observer<Challenge>() {
             @Override
             public void onChanged(Challenge challenge) {
+                setPreviousAndNextButtonVisibility();
+
                 // Update the displayed challenge information once a challenge is selected
-                System.out.println(challenge.getHostName());
                 hostUserTextFrag.setDetailsText(challenge.getHostName());
                 sportTextFrag.setDetailsText(challenge.getSport());
                 dateDisplayFrag.setDetailsText(challenge.getFormattedDate());
@@ -95,5 +122,20 @@ public class SelectedChallengeFragment extends Fragment {
                 statusTextFrag.setDetailsText(challenge.getChallengeStatus());
             }
         });
+    }
+
+    private void setPreviousAndNextButtonVisibility() {
+        titleTextView.setText(viewModel.getChallengeTitle());
+        if (viewModel.getNumberOfChallengesAtLocation() > 1) {
+            previousButton.setEnabled(true);
+            nextButton.setEnabled(true);
+            previousButton.setVisibility(View.VISIBLE);
+            nextButton.setVisibility(View.VISIBLE);
+        } else {
+            previousButton.setEnabled(false);
+            nextButton.setEnabled(false);
+            previousButton.setVisibility(View.GONE);
+            nextButton.setVisibility(View.GONE);
+        }
     }
 }
