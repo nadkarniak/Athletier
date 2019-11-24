@@ -6,8 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -19,9 +19,11 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.CS5520.athletier.Models.Sport;
+import com.CS5520.athletier.Models.SportsBadge;
 import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileTabFragment extends Fragment {
@@ -33,6 +35,11 @@ public class ProfileTabFragment extends Fragment {
     private TextView followingText;
     private RatingBar sportsmanshipBar;
     private Spinner sportsList;
+    private ImageView firstBadge;
+    private ImageView secondBadge;
+    private ImageView thirdBadge;
+    private ImageView fourthBadge;
+    private ImageView fifthBadge;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -48,6 +55,7 @@ public class ProfileTabFragment extends Fragment {
         profileTabViewModel.findUserWithId("Id which should come from login");
         setupObservers();
         setupSportsList(getContext());
+        setupBadges(getContext());
     }
 
     private void setupViews(View view) {
@@ -58,6 +66,11 @@ public class ProfileTabFragment extends Fragment {
         followingText = ((LinearLayout)view).findViewById(R.id.following);
         sportsmanshipBar = ((LinearLayout)view).findViewById(R.id.ratingBar);
         sportsList = ((LinearLayout)view).findViewById(R.id.sportsSpinner);
+        firstBadge = ((LinearLayout)view).findViewById(R.id.first_badge);
+        secondBadge = ((LinearLayout)view).findViewById(R.id.second_badge);
+        thirdBadge = ((LinearLayout)view).findViewById(R.id.third_badge);
+        fourthBadge = ((LinearLayout)view).findViewById(R.id.fourth_badge);
+        fifthBadge = ((LinearLayout)view).findViewById(R.id.fifth_badge);
     }
 
     private void setupSportsList(Context context) {
@@ -68,6 +81,25 @@ public class ProfileTabFragment extends Fragment {
                 sports
         );
         sportsList.setAdapter(adapter);
+        sportsList.setSelection(0);
+    }
+
+    private List<SportsBadge> getBadgeList(Context context) {
+        switch(sportsList.getSelectedItem().toString()) {
+            case("1v1 Basketball"):
+                return Sport.ONE_V_ONE_BASKETBALL.getBadgeOptions();
+            default:
+                return new ArrayList<>();
+        }
+    }
+
+    private void setupBadges(Context context) {
+        List<SportsBadge> badges = getBadgeList(context);
+        firstBadge.setImageResource(badges.get(0).getResId());
+        secondBadge.setImageResource(badges.get(1).getResId());
+        thirdBadge.setImageResource(badges.get(2).getResId());
+        fourthBadge.setImageResource(badges.get(3).getResId());
+        fifthBadge.setImageResource(badges.get(4).getResId());
     }
 
     private void setupObservers() {

@@ -2,7 +2,10 @@ package com.CS5520.athletier.Models;
 
 import androidx.annotation.NonNull;
 
+import com.CS5520.athletier.R;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public enum Sport {
@@ -15,10 +18,28 @@ public enum Sport {
 
     // Returns a list of possible badges for the input sport
     public List<SportsBadge> getBadgeOptions() {
+        SportsBadge ballHandler =  new SportsBadge("Ball Handler",
+                ONE_V_ONE_BASKETBALL, "Good at dribbling.",
+                R.drawable.ball_handler);
+        SportsBadge rebounder =  new SportsBadge("Gets Boards",
+                ONE_V_ONE_BASKETBALL, "Good at rebounding.",
+                R.drawable.boards);
+        SportsBadge shooter =  new SportsBadge("Sharp Shooter",
+                ONE_V_ONE_BASKETBALL, "Good at shooting.",
+                R.drawable.shooter);
+        SportsBadge defender =  new SportsBadge("Lock Down",
+                ONE_V_ONE_BASKETBALL, "Good defender.",
+                R.drawable.defender);
+        SportsBadge sportsman =  new SportsBadge("Good Sport",
+                ONE_V_ONE_BASKETBALL, "Plays fair.",
+                R.drawable.good_sport);
+        SportsBadge[] basketball;
+        basketball = new SportsBadge[] {ballHandler, rebounder, shooter, defender, sportsman};
+
         // TODO: Add badges for each sport below...
         switch (this) {
             case ONE_V_ONE_BASKETBALL:
-                return new ArrayList<>();
+                return Arrays.asList(basketball);
             case SQUASH:
                 return new ArrayList<>();
             case TENNIS:
