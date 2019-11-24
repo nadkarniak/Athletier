@@ -22,8 +22,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.Models.ChallengeStatus;
-import com.CS5520.athletier.Models.Sport;
-import com.CS5520.athletier.Models.State;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.Utilities.RequestCodes;
 import com.CS5520.athletier.ui.Map.CreateChallenge.CreateChallengeActivity;
@@ -45,12 +43,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.ArrayList;;
 import java.util.List;
-
-import static android.app.Activity.RESULT_OK;
 
 public class MapTabFragment extends Fragment implements OnMapReadyCallback, LocationUpdateListener {
 
@@ -104,38 +98,9 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         listenForChallenges();
     }
 
-    // TODO: Delete this method when Firebase query for challenges is implemented
-    private List<Challenge> createDummyChallenges() {
-        List<Challenge> newDummyChallenges = new ArrayList<>();
-        Challenge dummyChallengeOne = new Challenge(
-                "2",
-                "Dummy User 2",
-                Sport.TENNIS,
-                Calendar.getInstance().getTime(),
-                "1 Amphitheatre Pkway",
-                "Mountain View",
-                State.CA,
-                "94043",
-                37.423920,
-                -122.090010
-        );
-
-        Challenge dummyChallengeTwo = new Challenge(
-                "3",
-                "Dummy User 3",
-                Sport.SQUASH,
-                Calendar.getInstance().getTime(),
-                "1 Amphitheatre Pkway",
-                "Mountain View",
-                State.CA,
-                "94043",
-                37.423920,
-                -122.090010
-        );
-
-        newDummyChallenges.add(dummyChallengeOne);
-        newDummyChallenges.add(dummyChallengeTwo);
-        return newDummyChallenges;
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -164,7 +129,6 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         mapView.setMyLocationEnabled(hasPermissions);
         if (hasPermissions) {
             Location userLocation = mapTabViewModel.getUserLocation();
-            mapTabViewModel.setChallenges(createDummyChallenges());
             if (userLocation != null) {
                 LatLng position = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
                 mapView.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
@@ -211,15 +175,6 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RequestCodes.CREATE_MAP_CHALLENGE) {
-            if (resultCode == RESULT_OK) {
-                mapTabViewModel.addCreatedChallenge(data);
-            }
-        }
-    }
 
     private void setupFragments() {
         SupportMapFragment mapFragment =
@@ -297,19 +252,16 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
                 // Create new markers
                 for (Challenge challenge : challenges) {
                     LatLng latLng = new LatLng(challenge.getLatitude(), challenge.getLongitude());
-                    if (!locationAlreadyMarked(latLng)) {
-                        float color = getChallengeMarkerColor(
+                    float color = getChallengeMarkerColor(
                                 ChallengeStatus.valueOf(challenge.getChallengeStatus())
-                        );
-                        // Mark the location of the challenge and add to list of markers
-                        challengeMarkers.add(
-                                mapView.addMarker(
-                                        new MarkerOptions()
-                                                .position(latLng)
-                                                .icon(BitmapDescriptorFactory.defaultMarker(color))
-                                )
-                        );
-                    }
+                    );
+                    challengeMarkers.add(
+                            mapView.addMarker(
+                                    new MarkerOptions()
+                                            .position(latLng)
+                                            .icon(BitmapDescriptorFactory.defaultMarker(color))
+                            )
+                    );
                 }
             }
         });
@@ -324,18 +276,6 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
             default:
                 return BitmapDescriptorFactory.HUE_RED;
         }
-    }
-
-    private boolean locationAlreadyMarked(LatLng location) {
-        if (challengeMarkers == null || challengeMarkers.size() == 0) {
-            return false;
-        }
-        for (Marker marker : challengeMarkers) {
-            if (marker.getPosition().equals(location)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void clearMarkers() {
