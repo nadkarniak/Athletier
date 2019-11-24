@@ -3,6 +3,8 @@ package com.CS5520.athletier.Models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.Exclude;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,6 +12,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class Challenge implements Parcelable {
+    private String id;
     private String hostId;
     private String hostName;
     private String opponentId;
@@ -51,6 +54,7 @@ public class Challenge implements Parcelable {
                      String city,
                      State state,
                      String zip) {
+        this.id = hostId + System.currentTimeMillis() + sport.toString();
         this.hostId = hostId;
         this.hostName = hostName;
         this.opponentId = opponentId;
@@ -80,6 +84,7 @@ public class Challenge implements Parcelable {
                      String zip,
                      double latitude,
                      double longitude) {
+        this.id = hostId + System.currentTimeMillis() + sport.toString();
         this.hostId = hostId;
         this.hostName = hostName;
         this.sport = sport.toString();
@@ -96,6 +101,7 @@ public class Challenge implements Parcelable {
     }
 
     protected Challenge(Parcel in) {
+        id = in.readString();
         hostId = in.readString();
         hostName = in.readString();
         opponentId = in.readString();
@@ -115,6 +121,8 @@ public class Challenge implements Parcelable {
     }
 
     // Public Getters
+
+    public String getId() { return id; }
 
     public String getHostId() { return hostId; }
 
@@ -148,12 +156,14 @@ public class Challenge implements Parcelable {
 
     public String getZip() { return zip; }
 
+    @Exclude
     public String getFormattedDate() {
         DateFormat formatter = new SimpleDateFormat("MM-dd-YYYY", Locale.US);
         Date dateObj = new Date(this.date);
         return formatter.format(dateObj);
     }
 
+    @Exclude
     public String getFormattedAddress() {
         return streetName + "\n" + city + ", " + state + ", " + zip;
     }
@@ -176,6 +186,7 @@ public class Challenge implements Parcelable {
         this.hostIsWinner = hostIsWinner;
     }
 
+    @Exclude
     public void setDate(Date date) {
         this.date = date.getTime();
     }
@@ -199,42 +210,21 @@ public class Challenge implements Parcelable {
         if (other == this) { return true; }
         if (other instanceof Challenge) {
             Challenge otherChallenge = (Challenge) other;
-            return this.hostId.equals(otherChallenge.hostId)
-                    && this.opponentId.equals(otherChallenge.hostId)
-                    && this.sport.equals(otherChallenge.sport)
-                    && this.hostIsWinner == otherChallenge.hostIsWinner
-                    && this.challengeStatus.equals(otherChallenge.challengeStatus)
-                    && this.acceptanceStatus.equals(otherChallenge.acceptanceStatus)
-                    && this.resultStatus.equals(otherChallenge.resultStatus)
-                    && this.streetName.equals(otherChallenge.streetName)
-                    && this.city.equals(otherChallenge.city)
-                    && this.zip.equals(otherChallenge.zip)
-                    && this.state.equals(otherChallenge.state)
-                    && this.date == otherChallenge.date;
+            return this.id.equals(otherChallenge.id);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                this.hostId,
-                this.opponentId,
-                this.sport,
-                this.challengeStatus,
-                this.acceptanceStatus,
-                this.resultStatus,
-                this.date,
-                this.streetName,
-                this.city,
-                this.state,
-                this.zip);
+        return Objects.hash(id);
     }
 
 
     // Parcelable implementation so Challenges can be passed between Activities and Fragments
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
         dest.writeString(hostId);
         dest.writeString(hostName);
         dest.writeString(opponentId);

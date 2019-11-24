@@ -12,12 +12,14 @@ import com.CS5520.athletier.ui.Map.CreateChallenge.CreateChallengeKeys;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firestore.v1.FirestoreGrpc;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MapTabViewModel extends ViewModel {
-
     private Location userLocation;
     private MutableLiveData<List<Challenge>> challenges = new MutableLiveData<>();
 
@@ -27,21 +29,6 @@ public class MapTabViewModel extends ViewModel {
 
     void setUserLocation(Location location) {
         userLocation = location;
-    }
-
-    void addCreatedChallenge(Intent challengeData) {
-        // Extract new challenge from Intent
-        Challenge newChallenge = challengeData.getParcelableExtra(
-                CreateChallengeKeys.CREATED_CHALLENGE);
-
-        // If new challenge is not null, add it to existing challenges
-        if (newChallenge != null) {
-            List<Challenge> currentChallenges = challenges.getValue() != null ?
-                    challenges.getValue() : new ArrayList<Challenge>();
-
-            currentChallenges.add(newChallenge);
-            challenges.postValue(currentChallenges);
-        }
     }
 
     Location getUserLocation() {

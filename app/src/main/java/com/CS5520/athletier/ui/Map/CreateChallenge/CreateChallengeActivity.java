@@ -5,11 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Context;
-import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
@@ -30,6 +28,8 @@ import com.google.android.gms.maps.model.LatLng;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.List;
+
+import static java.security.AccessController.getContext;
 
 public class CreateChallengeActivity extends AppCompatActivity {
 
@@ -117,7 +117,7 @@ public class CreateChallengeActivity extends AppCompatActivity {
         FragmentManager manager = getSupportFragmentManager();
         createChallengeForm = (CreateChallengeFormFragment)
                 manager.findFragmentById(R.id.createChallengeForm);
-        createButton = (Button) findViewById(R.id.createButton);
+        createButton = findViewById(R.id.createButton);
         createButton.setEnabled(false);
         createButton.setFocusable(false);
     }
@@ -131,16 +131,20 @@ public class CreateChallengeActivity extends AppCompatActivity {
             }
         });
 
-        viewModel.getCreatedChallenge().observe(this, new Observer<Challenge>() {
+        viewModel.getChallengeCreationSucceeded().observe(this, new Observer<Boolean>() {
             @Override
-            public void onChanged(Challenge challenge) {
-                // Finish this Activity once challenge has been created and pass it back
-                Intent newChallengeIntent = new Intent();
-                newChallengeIntent.putExtra(CreateChallengeKeys.CREATED_CHALLENGE, challenge);
-                setResult(RESULT_OK, newChallengeIntent);
-                finish();
+            public void onChanged(Boolean creationSucceeded) {
+                showChallengeCreationToast(creationSucceeded);
+                if (creationSucceeded) {
+                    finish();
+                }
             }
         });
+    }
+
+    private void showChallengeCreationToast(boolean creationSucceeded) {
+        String msg = creationSucceeded ? "Challenge created!" : "Challenge creation failed...Try again";
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     private void setupCreateButtonListener() {

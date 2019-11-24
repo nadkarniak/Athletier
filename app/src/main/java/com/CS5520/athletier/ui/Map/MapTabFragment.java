@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -44,6 +45,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,6 +63,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
     //region - View Model
 
     private MapTabViewModel mapTabViewModel;
+    private DatabaseReference databaseRef;
 
     //endregion
 
@@ -101,41 +108,13 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mapTabViewModel = ViewModelProviders.of(this).get(MapTabViewModel.class);
+        databaseRef = FirebaseDatabase.getInstance().getReference();
         listenForChallenges();
     }
 
-    // TODO: Delete this method when Firebase query for challenges is implemented
-    private List<Challenge> createDummyChallenges() {
-        List<Challenge> newDummyChallenges = new ArrayList<>();
-        Challenge dummyChallengeOne = new Challenge(
-                "2",
-                "Dummy User 2",
-                Sport.TENNIS,
-                Calendar.getInstance().getTime(),
-                "1 Amphitheatre Pkway",
-                "Mountain View",
-                State.CA,
-                "94043",
-                37.423920,
-                -122.090010
-        );
-
-        Challenge dummyChallengeTwo = new Challenge(
-                "3",
-                "Dummy User 3",
-                Sport.SQUASH,
-                Calendar.getInstance().getTime(),
-                "1 Amphitheatre Pkway",
-                "Mountain View",
-                State.CA,
-                "94043",
-                37.423920,
-                -122.090010
-        );
-
-        newDummyChallenges.add(dummyChallengeOne);
-        newDummyChallenges.add(dummyChallengeTwo);
-        return newDummyChallenges;
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -164,7 +143,6 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         mapView.setMyLocationEnabled(hasPermissions);
         if (hasPermissions) {
             Location userLocation = mapTabViewModel.getUserLocation();
-            mapTabViewModel.setChallenges(createDummyChallenges());
             if (userLocation != null) {
                 LatLng position = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
                 mapView.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
@@ -211,15 +189,6 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RequestCodes.CREATE_MAP_CHALLENGE) {
-            if (resultCode == RESULT_OK) {
-                mapTabViewModel.addCreatedChallenge(data);
-            }
-        }
-    }
 
     private void setupFragments() {
         SupportMapFragment mapFragment =
@@ -284,6 +253,29 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
     }
 
     private void listenForChallenges() {
+        databaseRef.child("challenges").orderByChild("state").equalTo("MA")
+
+
+                .addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Challenge> savedChallenges = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Challenge challenge = snapshot.getValue(Challenge.class);
+                    savedChallenges.add(challenge);
+                }
+                System.out.println("Data Changed: " + savedChallenges.size());
+                mapTabViewModel.setChallenges(savedChallenges);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                if (getContext() == null) { return; }
+                Toast.makeText(getContext(), "Unable to retrieve data...", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
         mapTabViewModel.getMapChallenges().observe(getViewLifecycleOwner(), new Observer<List<Challenge>>() {
             @Override
             public void onChanged(List<Challenge> challenges) {

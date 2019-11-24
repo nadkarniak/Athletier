@@ -1,5 +1,10 @@
 package com.CS5520.athletier.ui.Map.CreateChallenge;
 
+import android.app.Application;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -8,14 +13,25 @@ import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.State;
 import com.CS5520.athletier.Models.User;
+import com.CS5520.athletier.Utilities.LogTags;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Date;
 
-public class CreateChallengeActivityViewModel extends ViewModel {
+public class CreateChallengeActivityViewModel extends AndroidViewModel {
     private User currentUser;
-    private MutableLiveData<Challenge> createdChallenge = new MutableLiveData<>();
+    private MutableLiveData<Boolean> challengeCreationSucceeded;
+    private DatabaseReference databaseReference;
 
+    public CreateChallengeActivityViewModel(@NonNull Application application) {
+        super(application);
+        this.challengeCreationSucceeded = new MutableLiveData<>();
+        this.databaseReference = FirebaseDatabase.getInstance().getReference();
+    }
 
     void setCurrentUser(String userId) {
         // TODO: Replace dummy user below with a user from Firebase with the  input userId
@@ -37,7 +53,7 @@ public class CreateChallengeActivityViewModel extends ViewModel {
         }
 
         // Create challenge and pass to createdChallenge LiveData
-        Challenge newChallenge = new Challenge(
+        final Challenge newChallenge = new Challenge(
                 currentUser.getId(),
                 currentUser.getUsername(),
                 sport,
@@ -50,13 +66,26 @@ public class CreateChallengeActivityViewModel extends ViewModel {
                 latLng.longitude
         );
 
-        createdChallenge.setValue(newChallenge);
-        // TODO: Save created challenge to Firebase
-
+        databaseReference.child("challenges").child(newChallenge.getId()).setValue(newChallenge)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        challengeCreationSucceeded.setValue(true);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        challengeCreationSucceeded.setValue(false);
+                        Log.i(LogTags.ERROR,
+                                "Challenge Creation Error: " + e.getLocalizedMessage());
+                    }
+                })
+        ;
     }
 
-    LiveData<Challenge> getCreatedChallenge() {
-        return createdChallenge;
+    LiveData<Boolean> getChallengeCreationSucceeded() {
+        return challengeCreationSucceeded;
     }
 
 
