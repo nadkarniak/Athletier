@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -23,8 +22,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.Models.ChallengeStatus;
-import com.CS5520.athletier.Models.Sport;
-import com.CS5520.athletier.Models.State;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.Utilities.RequestCodes;
 import com.CS5520.athletier.ui.Map.CreateChallenge.CreateChallengeActivity;
@@ -45,25 +42,15 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.ArrayList;;
 import java.util.List;
-
-import static android.app.Activity.RESULT_OK;
 
 public class MapTabFragment extends Fragment implements OnMapReadyCallback, LocationUpdateListener {
 
     //region - View Model
 
     private MapTabViewModel mapTabViewModel;
-    private DatabaseReference databaseRef;
 
     //endregion
 
@@ -108,7 +95,6 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mapTabViewModel = ViewModelProviders.of(this).get(MapTabViewModel.class);
-        databaseRef = FirebaseDatabase.getInstance().getReference();
         listenForChallenges();
     }
 
@@ -253,29 +239,6 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
     }
 
     private void listenForChallenges() {
-        databaseRef.child("challenges").orderByChild("state").equalTo("MA")
-
-
-                .addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<Challenge> savedChallenges = new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Challenge challenge = snapshot.getValue(Challenge.class);
-                    savedChallenges.add(challenge);
-                }
-                System.out.println("Data Changed: " + savedChallenges.size());
-                mapTabViewModel.setChallenges(savedChallenges);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                if (getContext() == null) { return; }
-                Toast.makeText(getContext(), "Unable to retrieve data...", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
         mapTabViewModel.getMapChallenges().observe(getViewLifecycleOwner(), new Observer<List<Challenge>>() {
             @Override
             public void onChanged(List<Challenge> challenges) {
@@ -289,19 +252,16 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
                 // Create new markers
                 for (Challenge challenge : challenges) {
                     LatLng latLng = new LatLng(challenge.getLatitude(), challenge.getLongitude());
-                    if (!locationAlreadyMarked(latLng)) {
-                        float color = getChallengeMarkerColor(
+                    float color = getChallengeMarkerColor(
                                 ChallengeStatus.valueOf(challenge.getChallengeStatus())
-                        );
-                        // Mark the location of the challenge and add to list of markers
-                        challengeMarkers.add(
-                                mapView.addMarker(
-                                        new MarkerOptions()
-                                                .position(latLng)
-                                                .icon(BitmapDescriptorFactory.defaultMarker(color))
-                                )
-                        );
-                    }
+                    );
+                    challengeMarkers.add(
+                            mapView.addMarker(
+                                    new MarkerOptions()
+                                            .position(latLng)
+                                            .icon(BitmapDescriptorFactory.defaultMarker(color))
+                            )
+                    );
                 }
             }
         });
@@ -316,18 +276,6 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
             default:
                 return BitmapDescriptorFactory.HUE_RED;
         }
-    }
-
-    private boolean locationAlreadyMarked(LatLng location) {
-        if (challengeMarkers == null || challengeMarkers.size() == 0) {
-            return false;
-        }
-        for (Marker marker : challengeMarkers) {
-            if (marker.getPosition().equals(location)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void clearMarkers() {
