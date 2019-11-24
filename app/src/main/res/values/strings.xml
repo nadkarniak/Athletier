@@ -17,4 +17,14 @@
     <string name="friends">Friends</string>
     <string name="add_friends">Add Friend</string>
     <string name="record">0-0</string>
+    <string name="_3v3_basketball">3v3 Basketball</string>
+    <string name="spikeball">Spikeball</string>
+    <string name="golf">Golf</string>
+    <string name="tennis">Tennis</string>
+    <string name="squash">Squash</string>
+    <string name="team_name">Team Name</string>
+    <string name="follow_me">Follow Me</string>
+    <string name="following">Following</string>
+    <string name="followers">Followers</string>
+    <string name="record_string">Record</string>
 </resources>

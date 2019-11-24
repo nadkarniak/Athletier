@@ -14,10 +14,13 @@ public class User {
 
     private List<Challenge> challenges = new ArrayList<>();
     private List<SportsAchievementSummary> sportsAchievementSummaries = new ArrayList<>();
+    private List<Team> userTeams = new ArrayList<>();
+
+    private List<User> following = new ArrayList<>();
+    private List<User> followers = new ArrayList<>();
 
     private int wins;
     private int losses;
-    private List<String> friends;
 
     // Empty public constructor required by Firebase
     public User() { }
@@ -27,7 +30,8 @@ public class User {
         if (challenges.size() == 0) {
             return 0;
         }
-        return totalSportmanshipRating / challenges.size();
+        return 5;
+        //return totalSportmanshipRating / challenges.size();
     }
 
     public String getId() {
@@ -47,8 +51,16 @@ public class User {
         return record;
     }
 
-    public List getFriends(){
-        return this.friends;
+    public List<User> getFollowing() {
+        return following;
+    }
+
+    public List<User> getFollowers() {
+        return followers;
+    }
+
+    public List<Team> getUserTeams() {
+        return userTeams;
     }
 
 }
