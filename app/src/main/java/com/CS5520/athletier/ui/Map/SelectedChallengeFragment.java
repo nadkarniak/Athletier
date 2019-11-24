@@ -79,6 +79,12 @@ public class SelectedChallengeFragment extends Fragment {
         dateDisplayFrag.setTitleText(getResources().getString(R.string.date_title));
         addressTextFrag.setTitleText(getResources().getString(R.string.address_title));
         statusTextFrag.setTitleText(getResources().getString(R.string.status_title));
+
+        hostUserTextFrag.setDetailsText("");
+        sportTextFrag.setDetailsText("");
+        dateDisplayFrag.setDetailsText("");
+        addressTextFrag.setDetailsText("");
+        statusTextFrag.setDetailsText("");
     }
 
     private void setupObservers() {
@@ -86,7 +92,6 @@ public class SelectedChallengeFragment extends Fragment {
             @Override
             public void onChanged(Challenge challenge) {
                 // Update the displayed challenge information once a challenge is selected
-                // TODO: May need to change this to show the username, not the Id;
                 hostUserTextFrag.setDetailsText(challenge.getHostName());
                 sportTextFrag.setDetailsText(challenge.getSport());
                 dateDisplayFrag.setDetailsText(challenge.getFormattedDate());

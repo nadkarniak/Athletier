@@ -16,10 +16,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.CS5520.athletier.Models.Challenge;
+import com.CS5520.athletier.Models.ChallengeStatus;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.Utilities.RequestCodes;
 import com.CS5520.athletier.ui.Map.CreateChallenge.CreateChallengeActivity;
@@ -33,6 +35,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -135,8 +138,21 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
                     List<Challenge> challenges = mapTabViewModel.getChallengesAtLatLng(marker.getPosition());
                     if (challenges != null) {
                         selectedChallengeFragment.setChallengesAtSelectedLocation(challenges);
+                        if (selectedChallengeFragment.isHidden()) {
+                            toggleSelectedChallengeFragmentVisibility(true, true);
+                        }
                     }
                     return false;
+                }
+            });
+
+            mapView.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng latLng) {
+                    if (!selectedChallengeFragment.isHidden()) {
+                        toggleSelectedChallengeFragmentVisibility(false,
+                                true);
+                    }
                 }
             });
         }
@@ -175,7 +191,27 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
 
         selectedChallengeFragment = (SelectedChallengeFragment)
                 getChildFragmentManager().findFragmentById(R.id.selectedChallengeFragment);
+
+        // Initially hide selected challenge fragment since no challenges are selected
+        toggleSelectedChallengeFragmentVisibility(false, false);
     }
+
+    private void toggleSelectedChallengeFragmentVisibility(boolean shouldShow, boolean withAnimation) {
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+
+        if (shouldShow) {
+            transaction = transaction.show(selectedChallengeFragment);
+        } else {
+            transaction = transaction.hide(selectedChallengeFragment);
+        }
+
+        if (withAnimation) {
+            transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down);
+        }
+
+        transaction.commit();
+    }
+
 
     private void setupCreateChallengeButton(View view) {
         Button createChallengeButton = view.findViewById(R.id.openChallengeButton);
@@ -223,17 +259,32 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
                 for (Challenge challenge : challenges) {
                     LatLng latLng = new LatLng(challenge.getLatitude(), challenge.getLongitude());
                     if (!locationAlreadyMarked(latLng)) {
+                        float color = getChallengeMarkerColor(
+                                ChallengeStatus.valueOf(challenge.getChallengeStatus())
+                        );
                         // Mark the location of the challenge and add to list of markers
                         challengeMarkers.add(
                                 mapView.addMarker(
-                                        new MarkerOptions().position(latLng)
+                                        new MarkerOptions()
+                                                .position(latLng)
+                                                .icon(BitmapDescriptorFactory.defaultMarker(color))
                                 )
                         );
                     }
                 }
             }
         });
+    }
 
+    private float getChallengeMarkerColor(ChallengeStatus status) {
+        switch (status) {
+            case IN_PROGRESS:
+                return BitmapDescriptorFactory.HUE_YELLOW;
+            case AWAITING_PLAYERS:
+                return BitmapDescriptorFactory.HUE_GREEN;
+            default:
+                return BitmapDescriptorFactory.HUE_RED;
+        }
     }
 
     private boolean locationAlreadyMarked(LatLng location) {
