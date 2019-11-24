@@ -119,6 +119,7 @@ public class CreateChallengeActivity extends AppCompatActivity {
                 manager.findFragmentById(R.id.createChallengeForm);
         createButton = (Button) findViewById(R.id.createButton);
         createButton.setEnabled(false);
+        createButton.setFocusable(false);
     }
 
     private void setupObservers() {
