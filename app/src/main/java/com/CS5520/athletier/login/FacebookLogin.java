@@ -1,37 +1,7 @@
 package com.CS5520.athletier.login;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.CS5520.athletier.MainActivity;
-import com.CS5520.athletier.R;
-import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FacebookAuthProvider;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import java.util.Arrays;
-
-public class FacebookLogin extends AppCompatActivity {
-
+//public class FacebookLogin extends AppCompatActivity {
+/*
     private CallbackManager mCallbackManager;
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
@@ -51,7 +21,7 @@ public class FacebookLogin extends AppCompatActivity {
                 mFacebookBtn = (LoginButton) findViewById(R.id.fblogin);
                 mCallbackManager = CallbackManager.Factory.create();
                 mFacebookBtn.setReadPermissions(Arrays.asList("email"));
-                mTextView = (TextView)findViewById(R.id.textView);
+            //    mTextView = (TextView)findViewById(R.id.textView);
             } else {
                 Intent accountIntent = new Intent(FacebookLogin.this, MainActivity.class);
                 startActivity(accountIntent);
@@ -136,4 +106,4 @@ public class FacebookLogin extends AppCompatActivity {
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-}
+}*/

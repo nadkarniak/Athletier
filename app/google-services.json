@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "917704218532",
-    "firebase_url": "https://athletier-403d7.firebaseio.com",
-    "project_id": "athletier-403d7",
-    "storage_bucket": "athletier-403d7.appspot.com"
+    "project_number": "1065172566022",
+    "firebase_url": "https://athletier-ab9e9.firebaseio.com",
+    "project_id": "athletier-ab9e9",
+    "storage_bucket": "athletier-ab9e9.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:917704218532:android:fa8882eb608b5300b6d331",
+        "mobilesdk_app_id": "1:1065172566022:android:6ba8da96c67bcd8a95c387",
         "android_client_info": {
           "package_name": "com.CS5520.athletier"
         }
       },
       "oauth_client": [
         {
-          "client_id": "917704218532-roclniqrt1qsb7k3385jtk68ig0rdsjf.apps.googleusercontent.com",
+          "client_id": "1065172566022-s47v1t0hoc4kl2rp73c4d2s410phgnmg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.CS5520.athletier",
@@ -23,20 +23,20 @@
           }
         },
         {
-          "client_id": "917704218532-iaki2rd8i9mhtpal7ov9vbn5e0q787kv.apps.googleusercontent.com",
+          "client_id": "1065172566022-h97h4c2ijv96lv84kj7u0u4qic32ss0n.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD5XFcctSZedWPFZcuNEtXhXFHfYOpTN3k"
+          "current_key": "AIzaSyCfhx5nL5m0zLBMuXznqK03dQWMlmjTN28"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "917704218532-iaki2rd8i9mhtpal7ov9vbn5e0q787kv.apps.googleusercontent.com",
+              "client_id": "1065172566022-h97h4c2ijv96lv84kj7u0u4qic32ss0n.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
