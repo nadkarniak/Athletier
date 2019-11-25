@@ -36,4 +36,10 @@
     <string name="view_profile_title">View Profile</string>
     <string name="left_chevron"><![CDATA[<]]></string>
     <string name="right_chevron"><![CDATA[>]]></string>
+    <string name="failed">Invalid Email</string>
+    <string name="image">Image</string>
+    <string name="email_id">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="create_a_new_account">Create a new account</string>
 </resources>
