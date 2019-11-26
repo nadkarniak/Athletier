@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1065172566022-lnfcfm7n5f5on28i7jpqi9g60ma61tnf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.CS5520.athletier",
+            "certificate_hash": "f193a761729056082bef7d747c68b40fa75751d5"
+          }
+        },
+        {
           "client_id": "1065172566022-vgf97mgal6gg80b3116gavdfo8m4i6f8.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
