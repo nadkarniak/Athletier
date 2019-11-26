@@ -29,8 +29,8 @@
         android:label="@string/title_leaderboards_tab"
         tools:layout="@layout/fragment_leaderboards_tab" />
     <fragment
-        android:id="@+id/navigation_teams"
-        android:name="com.CS5520.athletier.ui.Teams.TeamsTabFragment"
-        android:label="@string/title_teams_tab"
-        tools:layout="@layout/fragment_teams_tab" />
+        android:id="@+id/navigation_search"
+        android:name="com.CS5520.athletier.ui.Search.SearchTabFragment"
+        android:label="@string/title_search_tab"
+        tools:layout="@layout/fragment_search_tab" />
 </navigation>

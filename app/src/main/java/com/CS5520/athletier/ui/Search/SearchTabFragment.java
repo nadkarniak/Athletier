@@ -14,25 +14,28 @@ import android.view.ViewGroup;
 
 import com.CS5520.athletier.R;
 
-public class SearchFragment extends Fragment {
+public class SearchTabFragment extends Fragment {
 
-    private SearchViewModel mViewModel;
+    private SearchTabViewModel mViewModel;
 
-    public static SearchFragment newInstance() {
-        return new SearchFragment();
+    public static SearchTabFragment newInstance() {
+        return new SearchTabFragment();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.search_fragment, container, false);
+        return inflater.inflate(R.layout.fragment_search_tab, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(SearchTabViewModel.class);
         // TODO: Use the ViewModel
     }
 
+    public void searchUser(View view){
+
+    }
 }
