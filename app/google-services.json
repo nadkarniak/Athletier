@@ -8,12 +8,36 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1065172566022:android:58581330cfe6416995c387",
+        "mobilesdk_app_id": "1:1065172566022:android:6ba8da96c67bcd8a95c387",
         "android_client_info": {
           "package_name": "com.CS5520.athletier"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "1065172566022-lnfcfm7n5f5on28i7jpqi9g60ma61tnf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.CS5520.athletier",
+            "certificate_hash": "f193a761729056082bef7d747c68b40fa75751d5"
+          }
+        },
+        {
+          "client_id": "1065172566022-vgf97mgal6gg80b3116gavdfo8m4i6f8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.CS5520.athletier",
+            "certificate_hash": "5a32382a59fb82457a63bd2541a7ea8d1e8eec89"
+          }
+        },
+        {
+          "client_id": "1065172566022-s47v1t0hoc4kl2rp73c4d2s410phgnmg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.CS5520.athletier",
+            "certificate_hash": "0c83a0afe70b0100241582ae6cfb01e5b2ece3cb"
+          }
+        },
         {
           "client_id": "1065172566022-h97h4c2ijv96lv84kj7u0u4qic32ss0n.apps.googleusercontent.com",
           "client_type": 3
@@ -21,7 +45,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCj9HPYUFdhKZEmb4EiYqVDk1g3hxxWAxI"
+          "current_key": "AIzaSyCfhx5nL5m0zLBMuXznqK03dQWMlmjTN28"
         }
       ],
       "services": {
