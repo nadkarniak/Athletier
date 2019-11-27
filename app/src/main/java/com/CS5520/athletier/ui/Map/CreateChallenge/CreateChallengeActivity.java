@@ -49,8 +49,6 @@ public class CreateChallengeActivity extends AppCompatActivity {
         setupFragments();
         setupCreateButtonListener();
 
-        // TODO: Pass in actual user id from savedInstanceState
-        // viewModel.setCurrentUser("A");
     }
 
     @Override

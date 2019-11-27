@@ -14,9 +14,6 @@ public class ProfileTabViewModel extends ViewModel {
     private FirebaseUser currentUser;
 
     void findUserWithId(String userId) {
-        // TODO: Get the user from the Firebase database...
-
-        // TODO: Pass the User to the LiveData stream
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();

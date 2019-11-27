@@ -8,7 +8,7 @@
     <string name="title_teams_tab">Teams</string>
     <string name="title_search_tab">Search</string>
     <string name="user">User</string>
-    <string name="search">Enter username/email</string>
+    <string name="search">Enter User\'s Email</string>
     <string name="enter">Enter</string>
     <string name="create_challenge_title">Create New Challenge</string>
     <string name="done">Done</string>

@@ -1,11 +1,14 @@
-package com.CS5520.athletier.ui.Profile;
+package com.CS5520.athletier.ui.Search.FindUser;
+
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
@@ -13,7 +16,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -33,9 +35,16 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileTabFragment extends Fragment {
+import javax.annotation.Nullable;
 
-    private ProfileTabViewModel profileTabViewModel;
+public class FindUserFragment extends Fragment {
+
+    private FindUserViewModel viewModel;
+    private Button follow;
+    private String email;
+    private FirebaseAuth mAuth;
+    private FirebaseUser user;
+    private DatabaseReference mRef;
     private TextView usernameText;
     private TextView recordText;
     private TextView followersText;
@@ -48,43 +57,27 @@ public class ProfileTabFragment extends Fragment {
     private ImageView fourthBadge;
     private ImageView fifthBadge;
     private ImageView profilePicture;
-    private FirebaseAuth mAuth;
-    private FirebaseUser user;
-    private DatabaseReference mRef;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile_tab, container, false);
+
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        email = getArguments().getString("email");
+        View view = inflater.inflate(R.layout.fragment_find_user, container, false);
         setupViews(view);
+        Log.i("email", email);
         return view;
     }
 
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        viewModel = ViewModelProviders.of(this).get(FindUserViewModel.class);
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-        profileTabViewModel =
-                ViewModelProviders.of(this).get(ProfileTabViewModel.class);
-        profileTabViewModel.findUserWithId(user.getUid());
-        setupObservers();
+        viewModel.findUserWithEmail(email);
+        setupFollowButtonListener();
+        setObservers();
         setupSportsList(getContext());
         setupBadges(getContext());
-    }
-
-    private void setupViews(View view) {
-        // Find views using id's
-        usernameText = ((LinearLayout)view).findViewById(R.id.userName);
-        recordText = ((LinearLayout)view).findViewById(R.id.record);
-        followersText = ((LinearLayout)view).findViewById(R.id.followers);
-        followingText = ((LinearLayout)view).findViewById(R.id.following);
-        sportsmanshipBar = ((LinearLayout)view).findViewById(R.id.ratingBar);
-        sportsList = ((LinearLayout)view).findViewById(R.id.sportsSpinner);
-        firstBadge = ((LinearLayout)view).findViewById(R.id.first_badge);
-        secondBadge = ((LinearLayout)view).findViewById(R.id.second_badge);
-        thirdBadge = ((LinearLayout)view).findViewById(R.id.third_badge);
-        fourthBadge = ((LinearLayout)view).findViewById(R.id.fourth_badge);
-        fifthBadge = ((LinearLayout)view).findViewById(R.id.fifth_badge);
-        profilePicture = ((LinearLayout)view).findViewById(R.id.profilePic);
     }
 
     private void setupSportsList(Context context) {
@@ -116,11 +109,41 @@ public class ProfileTabFragment extends Fragment {
         fifthBadge.setImageResource(badges.get(4).getResId());
     }
 
-    private void setupObservers() {
-        profileTabViewModel.getCurrentUser().observe(getViewLifecycleOwner(), new Observer<FirebaseUser>() {
+    private void setupViews(View view) {
+        // Find views using id's
+        usernameText = ((LinearLayout)view).findViewById(R.id.userName);
+        recordText = ((LinearLayout)view).findViewById(R.id.record);
+        followersText = ((LinearLayout)view).findViewById(R.id.followers);
+        followingText = ((LinearLayout)view).findViewById(R.id.following);
+        sportsmanshipBar = ((LinearLayout)view).findViewById(R.id.ratingBar);
+        sportsList = ((LinearLayout)view).findViewById(R.id.sportsSpinner);
+        firstBadge = ((LinearLayout)view).findViewById(R.id.first_badge);
+        secondBadge = ((LinearLayout)view).findViewById(R.id.second_badge);
+        thirdBadge = ((LinearLayout)view).findViewById(R.id.third_badge);
+        fourthBadge = ((LinearLayout)view).findViewById(R.id.fourth_badge);
+        fifthBadge = ((LinearLayout)view).findViewById(R.id.fifth_badge);
+        profilePicture = ((LinearLayout)view).findViewById(R.id.profilePic);
+        follow = view.findViewById(R.id.follow);
+    }
+
+
+    private void setupFollowButtonListener() {
+        follow.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onChanged(FirebaseUser user) {
-                mRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
+            public void onClick(View v) {
+                follow.setText(R.string.following);
+                int x = Integer.parseInt(followersText.getText().toString()) + 1;
+                followersText.setText(String.valueOf(x));
+            }
+        });
+    }
+
+    private void setObservers() {
+        viewModel.getOtherUid().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                Log.d("uid", s);
+                mRef = FirebaseDatabase.getInstance().getReference().child("users").child(s);
                 mRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -146,5 +169,6 @@ public class ProfileTabFragment extends Fragment {
             }
         });
     }
+
 
 }
