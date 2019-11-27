@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.ui.Map.SpinnerInputFragment;
+import com.CS5520.athletier.ui.Map.SpinnerInputViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.List;
 public class ChallengesTabFragment extends Fragment {
 
     private ChallengesTabViewModel viewModel;
-    private SpinnerInputFragment hostChallengerSpinner;
+    private ColoredSpinnerFragment hostChallengerSpinner;
     private SegmentedSelectorFragment statusSelector;
     private ChallengeRecyclerFragment recyclerFragment;
 
@@ -53,7 +54,7 @@ public class ChallengesTabFragment extends Fragment {
 
     private void findFragments() {
         FragmentManager manager = getChildFragmentManager();
-        hostChallengerSpinner = (SpinnerInputFragment)
+        hostChallengerSpinner = (ColoredSpinnerFragment)
                 manager.findFragmentById(R.id.hostSpinnerFragment);
         statusSelector = (SegmentedSelectorFragment)
                 manager.findFragmentById(R.id.statusSelector);
@@ -62,12 +63,13 @@ public class ChallengesTabFragment extends Fragment {
     }
 
     private void setupSpinner() {
-        hostChallengerSpinner = (SpinnerInputFragment)
+        hostChallengerSpinner = (ColoredSpinnerFragment)
                 getChildFragmentManager().findFragmentById(R.id.hostSpinnerFragment);
+        if (hostChallengerSpinner == null) { System.out.println("null");}
+
         List<String> spinnerOptions =  new ArrayList<>();
         spinnerOptions.add(getString(R.string.as_host));
         spinnerOptions.add(getString(R.string.as_challenger));
-        hostChallengerSpinner.setShouldHideLabel(true);
         hostChallengerSpinner.setSpinnerOptions(getContext(), spinnerOptions);
     }
 

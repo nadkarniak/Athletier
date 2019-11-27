@@ -9,11 +9,11 @@ public class SpinnerInputViewModel extends ViewModel {
 
     public SpinnerInputViewModel() { }
 
-    LiveData<String> getSelectedItem() {
+    public LiveData<String> getSelectedItem() {
         return selectedItem;
     }
 
-    void setSelectedItem(String item) {
+    public void setSelectedItem(String item) {
         selectedItem.setValue(item);
     }
 }

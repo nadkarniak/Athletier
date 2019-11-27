@@ -15,10 +15,11 @@
 
     <fragment
         android:id="@+id/hostSpinnerFragment"
-        android:name="com.CS5520.athletier.ui.Map.SpinnerInputFragment"
+        android:name="com.CS5520.athletier.ui.Challenges.ColoredSpinnerFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"/>
 
     <fragment
         android:id="@+id/acceptedChallengeRecycler"

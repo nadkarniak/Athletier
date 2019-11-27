@@ -22,4 +22,8 @@
         <item name="android:textColor">@drawable/toggle_text_color</item>
     </style>
 
+    <style name="colored_spinner_item" parent="TextAppearance.AppCompat.Widget.TextView.SpinnerItem">
+
+    </style>
+
 </resources>
