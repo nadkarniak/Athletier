@@ -44,10 +44,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <fragment
-        android:id="@+id/dateInputFragment"
-        android:name="com.CS5520.athletier.ui.Map.DateInputFragment"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <fragment
+            android:id="@+id/dateInputFragment"
+            android:name="com.CS5520.athletier.ui.Map.DateInputFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <fragment
+            android:id="@+id/timeInputFragment"
+            android:name="com.CS5520.athletier.ui.Map.TimeInputFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -99,6 +99,4 @@ public class DateInputFragment extends Fragment {
         String monthString = month < 10 ? "0" + month : "" + month;
         return monthString + "-" + dayString + "-" + year;
     }
-
-
 }

@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class CreateChallengeActivityViewModel extends AndroidViewModel {
@@ -39,6 +40,7 @@ public class CreateChallengeActivityViewModel extends AndroidViewModel {
 
     void makeChallenge(Sport sport,
                        Date date,
+                       Date time,
                        String streetAddress,
                        String city, State state,
                        String zipCode,
@@ -53,7 +55,7 @@ public class CreateChallengeActivityViewModel extends AndroidViewModel {
                 user.getUid(),
                 user.getDisplayName(),
                 sport,
-                date,
+                combineDateAndTime(date, time),
                 streetAddress,
                 city,
                 state,
@@ -84,5 +86,20 @@ public class CreateChallengeActivityViewModel extends AndroidViewModel {
         return challengeCreationSucceeded;
     }
 
+    private Date combineDateAndTime(Date date, Date time) {
+        Calendar dateCalendar = Calendar.getInstance();
+        dateCalendar.setTime(date);
 
+        // Extract hour and min from time
+        Calendar timeCalendar = Calendar.getInstance();
+        timeCalendar.setTime(time);
+        int hours = timeCalendar.get(Calendar.HOUR_OF_DAY);
+        int min = timeCalendar.get(Calendar.MINUTE);
+
+        // Set hour and min of dateCalendar to extracted hours and min
+        dateCalendar.set(Calendar.HOUR_OF_DAY, hours);
+        dateCalendar.set(Calendar.MINUTE, min);
+
+        return dateCalendar.getTime();
+    }
 }

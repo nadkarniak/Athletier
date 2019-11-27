@@ -158,7 +158,7 @@ public class Challenge implements Parcelable {
 
     @Exclude
     public String getFormattedDate() {
-        DateFormat formatter = new SimpleDateFormat("MM-dd-YYYY", Locale.US);
+        DateFormat formatter = new SimpleDateFormat("MM-dd-YYYY hh:mm a", Locale.US);
         Date dateObj = new Date(this.date);
         return formatter.format(dateObj);
     }

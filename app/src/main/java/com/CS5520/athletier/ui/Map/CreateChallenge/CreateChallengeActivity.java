@@ -87,6 +87,7 @@ public class CreateChallengeActivity extends AppCompatActivity {
             viewModel.makeChallenge(
                     createChallengeForm.getSport(),
                     createChallengeForm.getDate(),
+                    createChallengeForm.getSelectedTime(),
                     result.getInputStreet(),
                     result.getInputCity(),
                     result.getInputState(),
