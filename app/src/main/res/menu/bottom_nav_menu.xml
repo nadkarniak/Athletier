@@ -13,7 +13,7 @@
 
     <item
         android:id="@+id/navigation_challenges"
-        android:icon="@drawable/ic_golf_course_black_24dp"
+        android:icon="@drawable/icons8_head_to_head_50"
         android:title="@string/title_challenges_tab" />
 
     <item
@@ -22,7 +22,7 @@
         android:title="@string/title_leaderboards_tab"/>
 
     <item
-        android:id="@+id/navigation_teams"
-        android:icon="@drawable/ic_group_black_24dp"
-        android:title="@string/title_teams_tab"/>
+        android:id="@+id/navigation_search"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="@string/title_search_tab"/>
 </menu>
