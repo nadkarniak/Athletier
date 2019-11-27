@@ -75,6 +75,7 @@ public class SelectedChallengeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 // Request to join challenge
+                
             }
         });
 
