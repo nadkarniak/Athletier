@@ -12,16 +12,23 @@ import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.SportsBadge;
-import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +47,10 @@ public class ProfileTabFragment extends Fragment {
     private ImageView thirdBadge;
     private ImageView fourthBadge;
     private ImageView fifthBadge;
+    private ImageView profilePicture;
+    private FirebaseAuth mAuth;
+    private FirebaseUser user;
+    private DatabaseReference mRef;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -50,13 +61,18 @@ public class ProfileTabFragment extends Fragment {
 
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
         profileTabViewModel =
                 ViewModelProviders.of(this).get(ProfileTabViewModel.class);
-        profileTabViewModel.findUserWithId("Id which should come from login");
+        profileTabViewModel.findUserWithId(user.getUid());
         setupObservers();
         setupSportsList(getContext());
         setupBadges(getContext());
+
     }
+
+
 
     private void setupViews(View view) {
         // Find views using id's
@@ -71,6 +87,7 @@ public class ProfileTabFragment extends Fragment {
         thirdBadge = ((LinearLayout)view).findViewById(R.id.third_badge);
         fourthBadge = ((LinearLayout)view).findViewById(R.id.fourth_badge);
         fifthBadge = ((LinearLayout)view).findViewById(R.id.fifth_badge);
+        profilePicture = ((LinearLayout)view).findViewById(R.id.profilePic);
     }
 
     private void setupSportsList(Context context) {
@@ -103,14 +120,32 @@ public class ProfileTabFragment extends Fragment {
     }
 
     private void setupObservers() {
-        profileTabViewModel.getCurrentUser().observe(getViewLifecycleOwner(), new Observer<User>() {
+        profileTabViewModel.getCurrentUser().observe(getViewLifecycleOwner(), new Observer<FirebaseUser>() {
             @Override
-            public void onChanged(User user) {
-                usernameText.setText(user.getUsername());
-                recordText.setText(user.getRecord());
-                followersText.setText(String.valueOf(user.getFollowers().size()));
-                followingText.setText(String.valueOf(user.getFollowing().size()));
-                sportsmanshipBar.setRating(user.getAvgSportsmanshipRating());
+            public void onChanged(FirebaseUser user) {
+                mRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
+                mRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String name = dataSnapshot.child("username").getValue().toString();
+                        String photo = dataSnapshot.child("photoUrl").getValue().toString();
+                        String uid = dataSnapshot.child("id").getValue().toString();
+                        // String email = dataSnapshot.child("email").getValue().toString();
+                        String record = dataSnapshot.child("record").getValue().toString();
+                        String sportsmanship = dataSnapshot.child("avgSportsmanshipRating").getValue().toString();
+                        usernameText.setText(name);
+                        recordText.setText(record);
+                        followersText.setText(String.valueOf(0));
+                        followingText.setText(String.valueOf(0));
+                        sportsmanshipBar.setRating(Integer.parseInt(sportsmanship));
+                        Picasso.get().load(photo).into(profilePicture);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
         });
     }
