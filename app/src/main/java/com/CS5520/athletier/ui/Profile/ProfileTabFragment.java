@@ -51,6 +51,7 @@ public class ProfileTabFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseUser user;
     private DatabaseReference mRef;
+    private static final String TAG = "";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -140,10 +141,9 @@ public class ProfileTabFragment extends Fragment {
                         sportsmanshipBar.setRating(Integer.parseInt(sportsmanship));
                         Picasso.get().load(photo).into(profilePicture);
                     }
-
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                        
                     }
                 });
             }
