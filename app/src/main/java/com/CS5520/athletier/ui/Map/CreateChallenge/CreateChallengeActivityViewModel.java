@@ -7,38 +7,34 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.State;
-import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.Utilities.LogTags;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Date;
 
 public class CreateChallengeActivityViewModel extends AndroidViewModel {
-    private User currentUser;
+
     private MutableLiveData<Boolean> challengeCreationSucceeded;
     private DatabaseReference databaseReference;
+    private FirebaseUser user;
+    private FirebaseAuth mAuth;
 
     public CreateChallengeActivityViewModel(@NonNull Application application) {
         super(application);
         this.challengeCreationSucceeded = new MutableLiveData<>();
         this.databaseReference = FirebaseDatabase.getInstance().getReference();
-    }
-
-    void setCurrentUser(String userId) {
-        // TODO: Replace dummy user below with a user from Firebase with the  input userId
-        this.currentUser = new User("1",
-                "Dummy User 1",
-                null, "dummy@gmail.com",
-                "1111111");
+        this.mAuth = FirebaseAuth.getInstance();
+        this.user = mAuth.getCurrentUser();
     }
 
     void makeChallenge(Sport sport,
@@ -48,14 +44,14 @@ public class CreateChallengeActivityViewModel extends AndroidViewModel {
                        String zipCode,
                        LatLng latLng) {
 
-        if (currentUser == null) {
+        if (user == null) {
             return;
         }
 
         // Create challenge and pass to createdChallenge LiveData
         final Challenge newChallenge = new Challenge(
-                currentUser.getId(),
-                currentUser.getUsername(),
+                user.getUid(),
+                user.getDisplayName(),
                 sport,
                 date,
                 streetAddress,

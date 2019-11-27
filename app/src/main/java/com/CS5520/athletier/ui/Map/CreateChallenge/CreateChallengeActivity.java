@@ -1,12 +1,5 @@
 package com.CS5520.athletier.ui.Map.CreateChallenge;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -18,7 +11,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.CS5520.athletier.Models.Challenge;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+
 import com.CS5520.athletier.Models.State;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.Utilities.GeocoderInput;
@@ -28,8 +27,6 @@ import com.google.android.gms.maps.model.LatLng;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.List;
-
-import static java.security.AccessController.getContext;
 
 public class CreateChallengeActivity extends AppCompatActivity {
 
@@ -53,7 +50,7 @@ public class CreateChallengeActivity extends AppCompatActivity {
         setupCreateButtonListener();
 
         // TODO: Pass in actual user id from savedInstanceState
-        viewModel.setCurrentUser("A");
+        // viewModel.setCurrentUser("A");
     }
 
     @Override

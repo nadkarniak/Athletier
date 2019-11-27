@@ -13,7 +13,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.MutableLiveData;
 
+import com.CS5520.athletier.Models.User;
+import com.CS5520.athletier.Utilities.LogTags;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -21,12 +24,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SigninActivity extends AppCompatActivity {
 
@@ -40,6 +47,10 @@ public class SigninActivity extends AppCompatActivity {
     GoogleSignInClient mGoogleSignInClient;
     FirebaseAuth.AuthStateListener mAuthListener;
 
+    private FirebaseUser mFirebaseUser;
+    private DatabaseReference databaseReference;
+    private MutableLiveData<Boolean> userCreatedSucceeded;
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -51,8 +62,9 @@ public class SigninActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         mAuth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
 
-        if(mAuth.getCurrentUser() != null) {
+        if (mAuth.getCurrentUser() != null) {
             startActivity(new Intent(SigninActivity.this, MainActivity.class));
             finish();
         }
@@ -73,7 +85,7 @@ public class SigninActivity extends AppCompatActivity {
             }
         });
 
-        btnSignIn.setOnClickListener(new View.OnClickListener(){
+        btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(SigninActivity.this, SignupActivity.class));
@@ -138,7 +150,7 @@ public class SigninActivity extends AppCompatActivity {
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(
                 GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(
-                        getString(R.string.default_web_client_id)).
+                getString(R.string.default_web_client_id)).
                 requestEmail().build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -172,20 +184,56 @@ public class SigninActivity extends AppCompatActivity {
                 account.getIdToken(), null);
         mAuth.signInWithCredential(credential).addOnCompleteListener(this,
                 new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()) {
-                    Log.d(TAG, "signInWithCredential:success");
-                    FirebaseUser user = mAuth.getCurrentUser();
-                } else {
-                    Log.w(TAG, "signInWithCredential:failure", task.getException());
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            addUserToDatabase(user);
+
+                        } else {
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            Toast.makeText(SigninActivity.this, "Aut Fail",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+
+
+
+
+    }
+
+    private void addUserToDatabase (FirebaseUser user) {
+
+        if (user != null) {
+            final User newUser = new User(
+                    user.getUid(),
+                    user.getDisplayName(),
+                    user.getPhotoUrl().toString(),
+                    user.getEmail()
+            );
+
+            databaseReference.child("users").child(newUser.getId())
+                    .setValue(newUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    userCreatedSucceeded.setValue(true);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    userCreatedSucceeded.setValue(false);
+                    Log.i(LogTags.ERROR,
+                            "User Creation Error: " + e.getLocalizedMessage());
                     Toast.makeText(SigninActivity.this, "Aut Fail",
                             Toast.LENGTH_SHORT).show();
                 }
-            }
-        });
-    }
+            });
+        }
 
+    }
 
 
 }

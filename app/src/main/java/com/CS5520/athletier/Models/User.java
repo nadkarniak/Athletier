@@ -1,7 +1,6 @@
 package com.CS5520.athletier.Models;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class User {
@@ -11,7 +10,6 @@ public class User {
     private String username;
     private String photoUrl;
     private String emailAddress;
-    private String phoneNumber;
     private int totalSportmanshipRating;
 
     private List<Challenge> challenges = new ArrayList<>();
@@ -30,13 +28,11 @@ public class User {
     public User(String id,
                 String username,
                 String photoUrl,
-                String emailAddress,
-                String phoneNumber) {
+                String emailAddress) {
         this.id = id;
         this.username = username;
         this.photoUrl = photoUrl;
         this.emailAddress = emailAddress;
-        this.phoneNumber = phoneNumber;
     }
 
     public float getAvgSportsmanshipRating() {
@@ -63,6 +59,10 @@ public class User {
     public String getRecord(){
         String record = wins + " - " + losses;
         return record;
+    }
+
+    public String getEmailAddress() {
+        return this.emailAddress;
     }
 
     public List<User> getFollowing() {
