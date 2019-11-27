@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.CS5520.athletier.Models.Challenge;
+import com.CS5520.athletier.Utilities.DataSnapShotParser;
 import com.CS5520.athletier.ui.Map.CreateChallenge.CreateChallengeKeys;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -39,14 +40,10 @@ public class MapTabViewModel extends AndroidViewModel {
     }
 
     private void listenForNewChallenges() {
-        databaseReference.child("challenges").addValueEventListener(new ValueEventListener() {
+        databaseReference.child(Challenge.challengeKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<Challenge> newChallenges = new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Challenge challenge = snapshot.getValue(Challenge.class);
-                    newChallenges.add(challenge);
-                }
+                List<Challenge> newChallenges = DataSnapShotParser.parseToChallengeList(dataSnapshot);
                 challenges.setValue(newChallenges);
             }
 

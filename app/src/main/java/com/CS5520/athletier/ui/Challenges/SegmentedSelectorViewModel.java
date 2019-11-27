@@ -1,11 +1,19 @@
 package com.CS5520.athletier.ui.Challenges;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-public class SegmentedSelectorViewModel extends ViewModel {
-    private MutableLiveData<Integer> selectedPosition = new MutableLiveData<>();
+public class SegmentedSelectorViewModel extends AndroidViewModel {
+    private MutableLiveData<Integer> selectedPosition;
+
+    public SegmentedSelectorViewModel(@NonNull Application application) {
+        super(application);
+        selectedPosition = new MutableLiveData<>();
+    }
 
     LiveData<Integer> getSelectedPosition() {
         return selectedPosition;

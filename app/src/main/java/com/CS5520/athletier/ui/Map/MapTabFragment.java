@@ -50,7 +50,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
 
     //region - View Model
 
-    private MapTabViewModel mapTabViewModel;
+    private MapTabViewModel viewModel;
 
     //endregion
 
@@ -94,7 +94,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mapTabViewModel = ViewModelProviders.of(this).get(MapTabViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(MapTabViewModel.class);
         listenForChallenges();
     }
 
@@ -128,7 +128,9 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         mapView = googleMap;
         mapView.setMyLocationEnabled(hasPermissions);
         if (hasPermissions) {
-            Location userLocation = mapTabViewModel.getUserLocation();
+            System.out.println("Set listeners");
+
+            Location userLocation = viewModel.getUserLocation();
             if (userLocation != null) {
                 LatLng position = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
                 mapView.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
@@ -138,7 +140,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
                 @Override
                 public boolean onMarkerClick(Marker marker) {
                     // Get all challenges at location of marker and pass to selectedChallengeFragment
-                    List<Challenge> challenges = mapTabViewModel.getChallengesAtLatLng(marker.getPosition());
+                    List<Challenge> challenges = viewModel.getChallengesAtLatLng(marker.getPosition());
                     if (challenges != null) {
                         selectedChallengeFragment.setChallengesAtSelectedLocation(challenges);
                         if (selectedChallengeFragment.isHidden()) {
@@ -239,7 +241,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
     }
 
     private void listenForChallenges() {
-        mapTabViewModel.getMapChallenges().observe(getViewLifecycleOwner(), new Observer<List<Challenge>>() {
+        viewModel.getMapChallenges().observe(getViewLifecycleOwner(), new Observer<List<Challenge>>() {
             @Override
             public void onChanged(List<Challenge> challenges) {
                 if (mapView == null) {
@@ -270,7 +272,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
     private float getChallengeMarkerColor(ChallengeStatus status) {
         switch (status) {
             case IN_PROGRESS:
-                return BitmapDescriptorFactory.HUE_YELLOW;
+                return BitmapDescriptorFactory.HUE_RED;
             case AWAITING_PLAYERS:
                 return BitmapDescriptorFactory.HUE_GREEN;
             default:
@@ -289,7 +291,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
 
     @Override
     public void updateWithLocation(Location location) {
-        mapTabViewModel.setUserLocation(location);
+        viewModel.setUserLocation(location);
         if (mapView != null && !didPreviouslyZoom) {
             mapView.moveCamera(
                     CameraUpdateFactory.newLatLngZoom(

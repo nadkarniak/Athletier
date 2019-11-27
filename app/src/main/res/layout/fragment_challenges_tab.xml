@@ -12,4 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"/>
+
+    <fragment
+        android:id="@+id/acceptedChallengeRecycler"
+        android:name="com.CS5520.athletier.ui.Challenges.ChallengeRecyclerFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </LinearLayout>

@@ -259,4 +259,13 @@ public class Challenge implements Parcelable {
             return new Challenge[size];
         }
     };
+
+
+    // Firebase Keys
+    public static final String challengeKey = "challenges";
+    public static final String hostIdKey = "hostId";
+    public static final String opponentIdKey = "opponentId";
+    public static final String stateKey = "state";
+    public static final String sportKey = "sport";
+    public static final String dateKey = "date";
 }

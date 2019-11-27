@@ -99,4 +99,21 @@ public enum Sport {
         return stringList;
     }
 
+    public int getIconId() {
+        switch (this) {
+            case ONE_V_ONE_BASKETBALL:
+                return R.drawable.basketball;
+            case SQUASH:
+                return R.drawable.squash_ball;
+            case TENNIS:
+                return R.drawable.tennis_ball;
+            case GOLF:
+                return R.drawable.golf_ball;
+            case SPIKEBALL:
+                return R.drawable.basketball;
+            default:
+                return R.drawable.basketball;
+        }
+    }
+
 }
