@@ -41,6 +41,10 @@ public class SpinnerInputFragment extends Fragment implements AdapterView.OnItem
         viewModel = ViewModelProviders.of(this).get(SpinnerInputViewModel.class);
     }
 
+    public void setShouldHideLabel(boolean shouldHide) {
+        labelTextView.setVisibility(shouldHide ? View.GONE :View.VISIBLE);
+    }
+
     public void setLabelText(String text) {
         labelTextView.setText(text);
     }

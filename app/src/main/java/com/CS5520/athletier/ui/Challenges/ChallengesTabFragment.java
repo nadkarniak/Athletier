@@ -2,8 +2,6 @@ package com.CS5520.athletier.ui.Challenges;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -14,10 +12,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.CS5520.athletier.Models.AcceptanceStatus;
 import com.CS5520.athletier.Models.Challenge;
-import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.R;
+import com.CS5520.athletier.ui.Map.SpinnerInputFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +22,15 @@ import java.util.List;
 public class ChallengesTabFragment extends Fragment {
 
     private ChallengesTabViewModel viewModel;
+    private SpinnerInputFragment hostChallengerSpinner;
     private SegmentedSelectorFragment statusSelector;
     private ChallengeRecyclerFragment recyclerFragment;
-    private List<String> selectorTitles;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_challenges_tab, container, false);
         findFragments();
+        setupSpinner();
         setupStatusSelector();
         setHasOptionsMenu(true);
         return view;
@@ -42,52 +40,61 @@ public class ChallengesTabFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         viewModel = ViewModelProviders.of(this).get(ChallengesTabViewModel.class);
-        // TODO: Delete after implementing Firebase database User
-        viewModel.setCurrentUser(
-                new User("1",
-                "Dummy User 1",
-                null, "dummy@gmail.com",
-                "1111111")
-        );
         setupStatusSelector();
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        observeSpinnerSelections();
         observeStatusSelector();
         observeChallenges();
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.challenge_top_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
     private void findFragments() {
         FragmentManager manager = getChildFragmentManager();
+        hostChallengerSpinner = (SpinnerInputFragment)
+                manager.findFragmentById(R.id.hostSpinnerFragment);
         statusSelector = (SegmentedSelectorFragment)
                 manager.findFragmentById(R.id.statusSelector);
         recyclerFragment = (ChallengeRecyclerFragment)
                 manager.findFragmentById(R.id.acceptedChallengeRecycler);
     }
 
-    private void setupStatusSelector() {
-        if (statusSelector == null) { return; }
+    private void setupSpinner() {
+        hostChallengerSpinner = (SpinnerInputFragment)
+                getChildFragmentManager().findFragmentById(R.id.hostSpinnerFragment);
+        List<String> spinnerOptions =  new ArrayList<>();
+        spinnerOptions.add(getString(R.string.as_host));
+        spinnerOptions.add(getString(R.string.as_challenger));
+        hostChallengerSpinner.setShouldHideLabel(true);
+        hostChallengerSpinner.setSpinnerOptions(getContext(), spinnerOptions);
+    }
 
-        // Set selector button titles
-        selectorTitles = new ArrayList<>();
-        selectorTitles.add(AcceptanceStatus.ACCEPTED.name());
-        selectorTitles.add(AcceptanceStatus.PENDING.name());
-        selectorTitles.add(AcceptanceStatus.COMPLETE.name());
+    private void setupStatusSelector() {
+        if (statusSelector == null || viewModel == null) { return; }
 
         statusSelector.setButtonTitles(
-                selectorTitles.get(0),
-                selectorTitles.get(1),
-                selectorTitles.get(2)
+                viewModel.getSelectorTitles().get(0),
+                viewModel.getSelectorTitles().get(1),
+                viewModel.getSelectorTitles().get(2)
         );
     }
+
+    private void observeSpinnerSelections() {
+        hostChallengerSpinner.getSelectedItem().observe(getViewLifecycleOwner(),
+                new Observer<String>() {
+            @Override
+            public void onChanged(String selection) {
+                boolean shouldDisplayHostedChallenges =
+                        selection.equals(getString(R.string.as_host));
+                viewModel.setShouldDisplayHostedChallenges(shouldDisplayHostedChallenges);
+                recyclerFragment.updateAsHost(shouldDisplayHostedChallenges);
+                refreshChallengeData();
+            }
+        });
+    }
+
 
     private void observeStatusSelector() {
         statusSelector.getSelectedPosition().observe(getViewLifecycleOwner(),
@@ -95,19 +102,22 @@ public class ChallengesTabFragment extends Fragment {
             @Override
             public void onChanged(Integer selectedPosition) {
                 viewModel.setSelectedStatusFilter(selectedPosition);
-
+                System.out.println(viewModel.getStatusFilter());
                 // Update the recyclerView adapter with the current challenge data stored in the
                 // view model
-                List<Challenge> challenges = viewModel.getShouldFilterAsHost() ?
-                        viewModel.getHostedChallenges().getValue() :
-                        viewModel.getChallengesAsOpponent().getValue();
-                if (challenges != null) {
-                    recyclerFragment.updateChallenges(getStatusFilteredChallenges(challenges));
-                }
+                refreshChallengeData();
             }
         });
     }
 
+    private void refreshChallengeData() {
+        List<Challenge> challenges = viewModel.getShouldDisplayHostedChallenges() ?
+                viewModel.getHostedChallenges().getValue() :
+                viewModel.getChallengesAsOpponent().getValue();
+        if (challenges != null) {
+            recyclerFragment.updateChallenges(getStatusFilteredChallenges(challenges));
+        }
+    }
 
     // Observe streams of challenges from view model
     private void observeChallenges() {
@@ -115,7 +125,7 @@ public class ChallengesTabFragment extends Fragment {
                 new Observer<List<Challenge>>() {
             @Override
             public void onChanged(List<Challenge> challenges) {
-                if (viewModel.getShouldFilterAsHost()) {
+                if (viewModel.getShouldDisplayHostedChallenges()) {
                     recyclerFragment.updateChallenges(getStatusFilteredChallenges(challenges));
                 }
             }
@@ -125,7 +135,7 @@ public class ChallengesTabFragment extends Fragment {
                 new Observer<List<Challenge>>() {
             @Override
             public void onChanged(List<Challenge> challenges) {
-                if (!viewModel.getShouldFilterAsHost()) {
+                if (!viewModel.getShouldDisplayHostedChallenges()) {
                     recyclerFragment.updateChallenges(getStatusFilteredChallenges(challenges));
                 }
             }

@@ -59,6 +59,13 @@ public class ChallengeRecyclerAdapter extends RecyclerView.Adapter<ChallengeRecy
         return challenges == null ? 0 : challenges.size();
     }
 
+    // Update the asHost property, which dictates whether the recycler view shows challenges where
+    // the current user is the host (true) or challenges where the current user is the opponent
+    // (false)
+    void updateAsHost(boolean newAsHost) {
+        this.asHost = newAsHost;
+        notifyDataSetChanged();
+    }
 
     void updateChallenges(List<Challenge> newChallenges) {
         this.challenges = newChallenges;

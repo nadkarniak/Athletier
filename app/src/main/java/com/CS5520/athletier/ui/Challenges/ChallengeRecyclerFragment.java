@@ -4,33 +4,30 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.CS5520.athletier.Models.Challenge;
-import com.CS5520.athletier.Models.Sport;
-import com.CS5520.athletier.Models.State;
 import com.CS5520.athletier.R;
+import com.CS5520.athletier.ui.Map.SpinnerInputFragment;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class ChallengeRecyclerFragment extends Fragment {
 
-    private TextView titleText;
+    private SpinnerInputFragment spinner;
     private ChallengeRecyclerAdapter adapter;
     private RecyclerView recyclerView;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_challenge_recycler, container, false);
-//        titleText = view.findViewById(R.id.recyclerTitleText);
         recyclerView = view.findViewById(R.id.challengeRecycler);
         return view;
     }
@@ -41,7 +38,11 @@ public class ChallengeRecyclerFragment extends Fragment {
         setupRecyclerView();
     }
 
-    public void updateChallenges(List<Challenge> challenges) {
+    void updateAsHost(boolean asHost) {
+        adapter.updateAsHost(asHost);
+    }
+
+    void updateChallenges(List<Challenge> challenges) {
         adapter.updateChallenges(challenges);
     }
 
@@ -54,9 +55,5 @@ public class ChallengeRecyclerFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
-
-
-
-
 
 }

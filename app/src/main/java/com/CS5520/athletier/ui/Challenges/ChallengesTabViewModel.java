@@ -10,38 +10,43 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.CS5520.athletier.Models.AcceptanceStatus;
 import com.CS5520.athletier.Models.Challenge;
-import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.Utilities.DataSnapShotParser;
 import com.CS5520.athletier.Utilities.LogTags;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 public class ChallengesTabViewModel extends AndroidViewModel {
-    private User user;
+    private FirebaseUser user;
     private DatabaseReference databaseReference;
     private MutableLiveData<List<Challenge>> challengesAsHost;
     private MutableLiveData<List<Challenge>> challengesAsOpponent;
     private String statusFilter;
-    private boolean shouldFilterAsHost;
+    private boolean shouldDisplayHostedChallenges;
+    private List<String> selectorTitles;
 
     public ChallengesTabViewModel(@NonNull Application application) {
         super(application);
+        this.user = FirebaseAuth.getInstance().getCurrentUser();
         this.databaseReference = FirebaseDatabase.getInstance().getReference();
         this.challengesAsHost = new MutableLiveData<>();
         this.challengesAsOpponent = new MutableLiveData<>();
         this.statusFilter = AcceptanceStatus.ACCEPTED.name();
-        this.shouldFilterAsHost = true;
-    }
+        this.shouldDisplayHostedChallenges = true;
+        this.selectorTitles = new ArrayList<>();
+        selectorTitles.add(AcceptanceStatus.ACCEPTED.name());
+        selectorTitles.add(AcceptanceStatus.PENDING.name());
+        selectorTitles.add(AcceptanceStatus.COMPLETE.name());
 
-    void setCurrentUser(User user) {
-        this.user = user;
         // Query challenges where user is host
         queryChallenges(true);
 
@@ -58,26 +63,23 @@ public class ChallengesTabViewModel extends AndroidViewModel {
     }
 
     void setSelectedStatusFilter(int id) {
-        System.out.println(id);
-        switch (id) {
-            case 0:
-                statusFilter = AcceptanceStatus.ACCEPTED.name();
-                break;
-            case 1:
-                statusFilter = AcceptanceStatus.PENDING.name();
-                break;
-            case 2:
-                statusFilter = AcceptanceStatus.COMPLETE.name();
-                break;
+        if (id >= 0 && id < selectorTitles.size()) {
+            statusFilter = selectorTitles.get(id);
         }
     }
+
+    void setShouldDisplayHostedChallenges(boolean shouldDisplayHostedChallenges) {
+        this.shouldDisplayHostedChallenges = shouldDisplayHostedChallenges;
+    }
+
+    List<String> getSelectorTitles() { return selectorTitles; }
 
     String getStatusFilter() {
         return statusFilter;
     }
 
-    boolean getShouldFilterAsHost() {
-        return shouldFilterAsHost;
+    boolean getShouldDisplayHostedChallenges() {
+        return shouldDisplayHostedChallenges;
     }
 
 
@@ -86,7 +88,7 @@ public class ChallengesTabViewModel extends AndroidViewModel {
                 // If userIsHost is true, look for challenges where userId matches hostId, otherwise
                 // look for challenges where userId matches opponentId
                 .orderByChild(userIsHost ? Challenge.hostIdKey : Challenge.opponentIdKey)
-                .equalTo(user.getId())
+                .equalTo(user.getUid())
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
