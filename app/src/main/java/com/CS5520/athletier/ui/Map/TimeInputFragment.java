@@ -55,6 +55,7 @@ public class TimeInputFragment extends Fragment {
 
         // Default edit text to display current time
         setTimeInputText(Calendar.getInstance().getTime());
+        viewModel.setSelectedTime(Calendar.getInstance().getTime());
 
         timeInputText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +80,8 @@ public class TimeInputFragment extends Fragment {
                 newCalender.set(Calendar.MINUTE, min);
                 Date selectedDate = newCalender.getTime();
                 setTimeInputText(selectedDate);
+
+                System.out.println(selectedDate);
                 viewModel.setSelectedTime(selectedDate);
             }
         }, currentHour, currentMin, false);

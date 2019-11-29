@@ -128,8 +128,6 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         mapView = googleMap;
         mapView.setMyLocationEnabled(hasPermissions);
         if (hasPermissions) {
-            System.out.println("Set listeners");
-
             Location userLocation = viewModel.getUserLocation();
             if (userLocation != null) {
                 LatLng position = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());

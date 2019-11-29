@@ -14,8 +14,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.R;
-import com.CS5520.athletier.ui.Map.SpinnerInputFragment;
-import com.CS5520.athletier.ui.Map.SpinnerInputViewModel;
 
 import java.util.ArrayList;
 import java.util.List;

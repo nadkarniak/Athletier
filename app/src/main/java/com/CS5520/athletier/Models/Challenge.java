@@ -186,6 +186,8 @@ public class Challenge implements Parcelable {
         this.hostIsWinner = hostIsWinner;
     }
 
+    public void setOpponentId(String opponentId) { this.opponentId = opponentId; }
+
     @Exclude
     public void setDate(Date date) {
         this.date = date.getTime();
@@ -263,6 +265,7 @@ public class Challenge implements Parcelable {
 
     // Firebase Keys
     public static final String challengeKey = "challenges";
+    public static final String idKey = "id";
     public static final String hostIdKey = "hostId";
     public static final String opponentIdKey = "opponentId";
     public static final String stateKey = "state";

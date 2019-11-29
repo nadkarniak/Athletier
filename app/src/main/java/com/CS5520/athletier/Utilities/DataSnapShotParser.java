@@ -3,6 +3,7 @@ package com.CS5520.athletier.Utilities;
 import androidx.annotation.NonNull;
 
 import com.CS5520.athletier.Models.Challenge;
+import com.CS5520.athletier.Models.User;
 import com.google.firebase.database.DataSnapshot;
 
 import java.util.ArrayList;
