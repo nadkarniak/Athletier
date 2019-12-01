@@ -269,7 +269,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
 
     private float getChallengeMarkerColor(ChallengeStatus status) {
         switch (status) {
-            case IN_PROGRESS:
+            case FULL:
                 return BitmapDescriptorFactory.HUE_RED;
             case AWAITING_PLAYERS:
                 return BitmapDescriptorFactory.HUE_GREEN;

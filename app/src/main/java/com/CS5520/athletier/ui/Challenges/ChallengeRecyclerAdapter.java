@@ -71,13 +71,13 @@ public class ChallengeRecyclerAdapter extends
                 holder.setSportChipText(sport, context);
             }
         }
-        holder.dateText.setText(challenge.getFormattedAddress());
+        holder.dateText.setText(challenge.getFormattedDate());
         holder.addressText.setText(challenge.getFormattedAddress());
 
         // Configure buttons based on acceptance status of the challenge
         switch (AcceptanceStatus.valueOf(challenge.getAcceptanceStatus())) {
             case ACCEPTED:
-                holder.leftButton.setText(R.string.report_result);
+                holder.leftButton.setText(R.string.finish);
                 holder.rightButton.setText(R.string.cancel);
                 setHolderButtonListener(
                         holder.leftButton,
@@ -101,7 +101,8 @@ public class ChallengeRecyclerAdapter extends
                             ChallengeButtonAction.ACCEPT
                     );
                 } else {
-                    holder.leftButton.setText("");
+                    holder.leftButton.setVisibility(View.INVISIBLE);
+                    holder.leftButton.setEnabled(false);
                     holder.rightButton.setText(R.string.cancel);
                 }
                 setHolderButtonListener(
@@ -109,6 +110,8 @@ public class ChallengeRecyclerAdapter extends
                         challenge,
                         ChallengeButtonAction.CANCEL
                 );
+                holder.statusText.setVisibility(View.GONE);
+                holder.statusTitleText.setVisibility(View.GONE);
                 break;
             case COMPLETE:
 
@@ -159,6 +162,8 @@ public class ChallengeRecyclerAdapter extends
         private Chip sportChip;
         private TextView dateText;
         private TextView addressText;
+        private TextView statusText;
+        private TextView statusTitleText;
         private Button leftButton;
         private Button rightButton;
 
@@ -170,6 +175,8 @@ public class ChallengeRecyclerAdapter extends
             this.sportChip = itemView.findViewById(R.id.sportChip);
             this.dateText = itemView.findViewById(R.id.dateText);
             this.addressText = itemView.findViewById(R.id.addressText);
+            this.statusText = itemView.findViewById(R.id.statusText);
+            this.statusTitleText = itemView.findViewById(R.id.statusTitleText);
             this.leftButton = itemView.findViewById(R.id.cellLeftButton);
             this.rightButton = itemView.findViewById(R.id.cellRightButton);
         }

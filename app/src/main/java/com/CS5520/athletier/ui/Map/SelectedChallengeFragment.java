@@ -23,11 +23,7 @@ public class SelectedChallengeFragment extends Fragment {
     private TextView titleTextView;
     private Button previousButton;
     private Button nextButton;
-    private TextDisplayFragment hostUserTextFrag;
-    private TextDisplayFragment sportTextFrag;
-    private TextDisplayFragment dateDisplayFrag;
-    private TextDisplayFragment addressTextFrag;
-    private TextDisplayFragment statusTextFrag;
+    private ChallengeCellFragment cellFragment;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -68,45 +64,11 @@ public class SelectedChallengeFragment extends Fragment {
                 titleTextView.setText(viewModel.getChallengeTitle());
             }
         });
-
-
-        Button joinButton = view.findViewById(R.id.joinRequestButton);
-        joinButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Request to join challenge
-                
-            }
-        });
-
-        Button viewProfileButton = view.findViewById(R.id.viewHostProfileButton);
-        viewProfileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // View host profile
-            }
-        });
     }
 
     private void setupFragments() {
-        FragmentManager manager = getChildFragmentManager();
-        hostUserTextFrag = (TextDisplayFragment) manager.findFragmentById(R.id.hostUserTextDisplay);
-        sportTextFrag = (TextDisplayFragment) manager.findFragmentById(R.id.sportTextDisplay);
-        dateDisplayFrag = (TextDisplayFragment) manager.findFragmentById(R.id.dateTextDisplay);
-        addressTextFrag = (TextDisplayFragment) manager.findFragmentById(R.id.addressTextDisplay);
-        statusTextFrag = (TextDisplayFragment) manager.findFragmentById(R.id.statusTextDisplay);
-
-        hostUserTextFrag.setTitleText(getResources().getString(R.string.host_title));
-        sportTextFrag.setTitleText(getResources().getString(R.string.sport_title));
-        dateDisplayFrag.setTitleText(getResources().getString(R.string.date_title));
-        addressTextFrag.setTitleText(getResources().getString(R.string.address_title));
-        statusTextFrag.setTitleText(getResources().getString(R.string.status_title));
-
-        hostUserTextFrag.setDetailsText("");
-        sportTextFrag.setDetailsText("");
-        dateDisplayFrag.setDetailsText("");
-        addressTextFrag.setDetailsText("");
-        statusTextFrag.setDetailsText("");
+        cellFragment = (ChallengeCellFragment)
+                getChildFragmentManager().findFragmentById(R.id.challengeCellFragment);
     }
 
     private void setupObservers() {
@@ -114,13 +76,7 @@ public class SelectedChallengeFragment extends Fragment {
             @Override
             public void onChanged(Challenge challenge) {
                 setPreviousAndNextButtonVisibility();
-
-                // Update the displayed challenge information once a challenge is selected
-                hostUserTextFrag.setDetailsText(challenge.getHostName());
-                sportTextFrag.setDetailsText(challenge.getSport());
-                dateDisplayFrag.setDetailsText(challenge.getFormattedDate());
-                addressTextFrag.setDetailsText(challenge.getFormattedAddress());
-                statusTextFrag.setDetailsText(challenge.getChallengeStatus());
+                cellFragment.setCurrentChallenge(challenge);
             }
         });
     }

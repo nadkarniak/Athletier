@@ -165,7 +165,7 @@ public class Challenge implements Parcelable {
 
     @Exclude
     public String getFormattedAddress() {
-        return streetName + "\n" + city + ", " + state + ", " + zip;
+        return streetName + "\n" + city + ", " + state + " " + zip;
     }
 
     // Public Setters

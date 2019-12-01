@@ -28,7 +28,6 @@ public class DateInputFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_text_input, container, false);
         titleTextView = view.findViewById(R.id.inputTextFragTitle);
         dateInputText = view.findViewById(R.id.inputEditText);
