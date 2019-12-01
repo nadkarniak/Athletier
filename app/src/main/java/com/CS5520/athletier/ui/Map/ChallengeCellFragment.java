@@ -84,8 +84,8 @@ public class ChallengeCellFragment extends Fragment {
 
                 // Disable join button if selected challenge is hosted by the current user or
                 // challenge is already full
-                joinButton.setEnabled(!challenge.getHostId().equals(viewModel.getCurrentUserId()) ||
-                        challenge.getAcceptanceStatus().equals(AcceptanceStatus.ACCEPTED.name())
+                joinButton.setEnabled(!challenge.getHostId().equals(viewModel.getCurrentUserId()) &&
+                        !challenge.getChallengeStatus().equals(ChallengeStatus.FULL.name())
                 );
                 joinButton.getBackground().setAlpha(joinButton.isEnabled() ? 255 : 128);
             }
