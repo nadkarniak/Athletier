@@ -309,6 +309,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
 
 
     private void checkLocationSettings(final Activity activity) {
+        if (activity == null) { return; }
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest);
         SettingsClient client = LocationServices.getSettingsClient(activity);

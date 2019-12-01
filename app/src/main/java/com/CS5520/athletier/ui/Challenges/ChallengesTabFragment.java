@@ -102,7 +102,6 @@ public class ChallengesTabFragment extends Fragment {
             @Override
             public void onChanged(Integer selectedPosition) {
                 viewModel.setSelectedStatusFilter(selectedPosition);
-                System.out.println(viewModel.getStatusFilter());
                 // Update the recyclerView adapter with the current challenge data stored in the
                 // view model
                 refreshChallengeData();

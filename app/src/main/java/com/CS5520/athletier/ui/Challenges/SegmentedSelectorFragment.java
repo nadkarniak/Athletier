@@ -43,7 +43,7 @@ public class SegmentedSelectorFragment extends Fragment {
         styleButtonText(leftButton, middleButton, rightButton);
     }
 
-    public void setButtonTitles(String left, String middle, String right) {
+    void setButtonTitles(String left, String middle, String right) {
         setOnOffTextForButton(leftButton, left);
         setOnOffTextForButton(middleButton, middle);
         setOnOffTextForButton(rightButton, right);

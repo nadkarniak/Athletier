@@ -63,6 +63,7 @@ public class SigninActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference();
+        userCreatedSucceeded = new MutableLiveData<>();
 
         if (mAuth.getCurrentUser() != null) {
             startActivity(new Intent(SigninActivity.this, MainActivity.class));
