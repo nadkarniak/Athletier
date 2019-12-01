@@ -124,6 +124,7 @@ public class CreateChallengeActivity extends AppCompatActivity {
             @Override
             public void onChanged(Boolean hasRequiredFields) {
                 createButton.setEnabled(hasRequiredFields);
+                createButton.getBackground().setAlpha(createButton.isEnabled() ? 255 : 128);
             }
         });
 

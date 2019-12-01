@@ -63,8 +63,7 @@ public class ChallengeRecyclerAdapter extends
     public void onBindViewHolder(@NonNull ChallengeViewHolder holder, int position) {
         Context context = contextRef.get();
         final Challenge challenge = challenges.get(position);
-        holder.setImageView(asHost ? challenge.getOpponentId() : challenge.getHostId());
-        holder.setUsernameText(asHost ? challenge.getOpponentName(): challenge.getHostName());
+        holder.displayUserInfo(asHost ? challenge.getOpponentId() : challenge.getHostId());
         if (context != null) {
             Sport sport = Sport.fromString(challenge.getSport());
             if (sport != null) {
@@ -90,6 +89,7 @@ public class ChallengeRecyclerAdapter extends
                         challenge,
                         ChallengeButtonAction.CANCEL
                 );
+                hideStatusText(holder);
                 break;
             case PENDING:
                 if (asHost && challenge.getOpponentId() != null) {
@@ -110,12 +110,17 @@ public class ChallengeRecyclerAdapter extends
                         challenge,
                         ChallengeButtonAction.CANCEL
                 );
-                holder.statusText.setVisibility(View.GONE);
-                holder.statusTitleText.setVisibility(View.GONE);
+                hideStatusText(holder);
                 break;
             case COMPLETE:
+                holder.leftButton.setText(asHost ? R.string.report_result : R.string.confirm_result);
 
         }
+    }
+
+    private void hideStatusText(ChallengeViewHolder holder) {
+        holder.statusText.setVisibility(View.GONE);
+        holder.statusTitleText.setVisibility(View.GONE);
     }
 
     private void setHolderButtonListener(Button button,
@@ -181,10 +186,15 @@ public class ChallengeRecyclerAdapter extends
             this.rightButton = itemView.findViewById(R.id.cellRightButton);
         }
 
-        // TODO: Query User for challenge and set ImageView resource to user's profile image
-        void setImageView(String userId) {
+        void displayUserInfo(String userId) {
+            if (userId == null) {
+                usernameText.setText(R.string.awaiting_challenger);
+                return;
+            }
+
             databaseReference
-                    .orderByChild(asHost ? Challenge.hostIdKey : Challenge.opponentIdKey)
+                    .child("users")
+                    .child(userId)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -196,8 +206,8 @@ public class ChallengeRecyclerAdapter extends
                         } else {
                             imageView.setImageResource(R.drawable.ic_person_black_24dp);
                         }
+                        usernameText.setText(user.getUsername());
                     }
-
                 }
 
                 @Override
@@ -205,30 +215,11 @@ public class ChallengeRecyclerAdapter extends
                     imageView.setImageResource(R.drawable.ic_person_black_24dp);
                 }
             });
-
-
-        }
-
-        void setUsernameText(String username) {
-            this.usernameText.setText(username != null ? username : "Awaiting Opponent");
         }
 
         void setSportChipText(Sport sport, Context context) {
             sportChip.setText(sport.toString());
             sportChip.setChipIcon(ContextCompat.getDrawable(context, sport.getIconId()));
-        }
-
-        void setDateText(String dateString) {
-            dateText.setText(dateString);
-        }
-
-        void setAddressText(String address) {
-            addressText.setText(address);
-        }
-
-        void setButtonTitles(String leftTitle, String rightTitle) {
-            leftButton.setText(leftTitle);
-            rightButton.setText(rightTitle);
         }
     }
 

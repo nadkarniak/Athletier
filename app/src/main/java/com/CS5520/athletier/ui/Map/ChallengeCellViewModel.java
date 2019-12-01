@@ -58,7 +58,7 @@ public class ChallengeCellViewModel extends AndroidViewModel {
     void joinChallenge() {
         Challenge challenge = currentChallenge.getValue();
         if (challenge != null) {
-            ChallengeUpdater.addOppponent(
+            ChallengeUpdater.addOpponent(
                     databaseReference,
                     challenge.getId(),
                     currentUser.getUid()
@@ -76,5 +76,14 @@ public class ChallengeCellViewModel extends AndroidViewModel {
 
     String getCurrentUserId() {
         return currentUser.getUid();
+    }
+
+    String getHostUserEmail() {
+        User hostUser = currentHostUser.getValue();
+        if (hostUser != null) {
+            return hostUser.getEmailAddress();
+        } else {
+            return null;
+        }
     }
 }

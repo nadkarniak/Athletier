@@ -1,6 +1,8 @@
 package com.CS5520.athletier.ui.Map;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,7 @@ import com.CS5520.athletier.Models.ChallengeStatus;
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.R;
+import com.CS5520.athletier.ui.Search.FindUser.FindUserActivity;
 import com.google.android.material.chip.Chip;
 import com.squareup.picasso.Picasso;
 
@@ -57,6 +60,7 @@ public class ChallengeCellFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         viewModel = ViewModelProviders.of(this).get(ChallengeCellViewModel.class);
         setupObservers();
+        setupButtons();
     }
 
     void setCurrentChallenge(Challenge challenge) {
@@ -80,10 +84,10 @@ public class ChallengeCellFragment extends Fragment {
 
                 // Disable join button if selected challenge is hosted by the current user or
                 // challenge is already full
-                joinButton.setEnabled(challenge.getHostId().equals(
-                        viewModel.getCurrentUserId()) ||
+                joinButton.setEnabled(!challenge.getHostId().equals(viewModel.getCurrentUserId()) ||
                         challenge.getAcceptanceStatus().equals(AcceptanceStatus.ACCEPTED.name())
                 );
+                joinButton.getBackground().setAlpha(joinButton.isEnabled() ? 255 : 128);
             }
         });
 
@@ -97,7 +101,6 @@ public class ChallengeCellFragment extends Fragment {
                     imageView.setImageResource(R.drawable.ic_person_black_24dp);
                 }
                 hostNameText.setText(user.getUsername());
-
             }
         });
     }
@@ -115,7 +118,15 @@ public class ChallengeCellFragment extends Fragment {
         viewProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Launch profile fragment
+                // Launch FindUserActivity for selected host user
+                Activity currentActivity = getActivity();
+                String hostEmail = viewModel.getHostUserEmail();
+                if (currentActivity != null && hostEmail != null) {
+                    Intent intent = new Intent(currentActivity, FindUserActivity.class);
+                    intent.putExtra("email", hostEmail);
+                    startActivity(intent);
+                    currentActivity.overridePendingTransition(R.anim.slide_up, R.anim.no_slide);
+                }
             }
         });
     }

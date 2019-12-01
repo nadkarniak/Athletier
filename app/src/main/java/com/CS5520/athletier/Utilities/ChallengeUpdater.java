@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.CS5520.athletier.Models.AcceptanceStatus;
 import com.CS5520.athletier.Models.Challenge;
+import com.CS5520.athletier.Models.ChallengeStatus;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -16,9 +17,9 @@ import com.google.firebase.database.Transaction;
 public class ChallengeUpdater {
 
 
-    public static void addOppponent(DatabaseReference databaseReference,
-                                    String id,
-                                    final String opponentId) {
+    public static void addOpponent(DatabaseReference databaseReference,
+                                   String id,
+                                   final String opponentId) {
         databaseReference
                 .child(Challenge.challengeKey)
                 .child(id).runTransaction(new Transaction.Handler() {
@@ -30,6 +31,8 @@ public class ChallengeUpdater {
                     return Transaction.success(mutableData);
                 }
                 challenge.setOpponentId(opponentId);
+                challenge.setAcceptanceStatus(AcceptanceStatus.ACCEPTED);
+                challenge.setChallengeStatus(ChallengeStatus.FULL);
                 mutableData.setValue(challenge);
                 return Transaction.success(mutableData);
             }

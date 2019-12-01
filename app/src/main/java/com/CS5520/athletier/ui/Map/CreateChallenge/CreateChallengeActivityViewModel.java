@@ -53,7 +53,6 @@ public class CreateChallengeActivityViewModel extends AndroidViewModel {
         // Create challenge and pass to createdChallenge LiveData
         final Challenge newChallenge = new Challenge(
                 user.getUid(),
-                user.getDisplayName(),
                 sport,
                 combineDateAndTime(date, time),
                 streetAddress,

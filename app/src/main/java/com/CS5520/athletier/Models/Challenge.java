@@ -14,9 +14,7 @@ import java.util.Objects;
 public class Challenge implements Parcelable {
     private String id;
     private String hostId;
-    private String hostName;
     private String opponentId;
-    private String opponentName;
 
     private String sport;
     private String challengeStatus;
@@ -39,9 +37,7 @@ public class Challenge implements Parcelable {
     public Challenge() { }
 
     public Challenge(String hostId,
-                     String hostName,
                      String opponentId,
-                     String opponentName,
                      Sport sport,
                      ChallengeStatus challengeStatus,
                      AcceptanceStatus acceptanceStatus,
@@ -56,9 +52,7 @@ public class Challenge implements Parcelable {
                      String zip) {
         this.id = hostId + System.currentTimeMillis() + sport.toString();
         this.hostId = hostId;
-        this.hostName = hostName;
         this.opponentId = opponentId;
-        this.opponentName = opponentName;
         this.sport = sport.toString();
         this.challengeStatus = challengeStatus.name();
         this.acceptanceStatus = acceptanceStatus.name();
@@ -75,7 +69,6 @@ public class Challenge implements Parcelable {
 
     // Constructor for newly created challenge from Map Screen
     public Challenge(String hostId,
-                     String hostName,
                      Sport sport,
                      Date date,
                      String streetName,
@@ -86,7 +79,6 @@ public class Challenge implements Parcelable {
                      double longitude) {
         this.id = hostId + System.currentTimeMillis() + sport.toString();
         this.hostId = hostId;
-        this.hostName = hostName;
         this.sport = sport.toString();
         this.challengeStatus = ChallengeStatus.AWAITING_PLAYERS.name();
         this.acceptanceStatus = AcceptanceStatus.PENDING.name();
@@ -103,9 +95,7 @@ public class Challenge implements Parcelable {
     protected Challenge(Parcel in) {
         id = in.readString();
         hostId = in.readString();
-        hostName = in.readString();
         opponentId = in.readString();
-        opponentName = in.readString();
         sport = in.readString();
         challengeStatus = in.readString();
         acceptanceStatus = in.readString();
@@ -126,11 +116,7 @@ public class Challenge implements Parcelable {
 
     public String getHostId() { return hostId; }
 
-    public String getHostName() { return hostName; }
-
     public String getOpponentId() { return opponentId; }
-
-    public String getOpponentName() { return opponentName; }
 
     public String getSport() { return sport; }
 
@@ -228,9 +214,7 @@ public class Challenge implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(id);
         dest.writeString(hostId);
-        dest.writeString(hostName);
         dest.writeString(opponentId);
-        dest.writeString(opponentName);
         dest.writeString(sport);
         dest.writeString(challengeStatus);
         dest.writeString(acceptanceStatus);
