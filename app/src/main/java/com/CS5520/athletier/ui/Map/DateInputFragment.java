@@ -28,7 +28,6 @@ public class DateInputFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_text_input, container, false);
         titleTextView = view.findViewById(R.id.inputTextFragTitle);
         dateInputText = view.findViewById(R.id.inputEditText);
@@ -99,6 +98,4 @@ public class DateInputFragment extends Fragment {
         String monthString = month < 10 ? "0" + month : "" + month;
         return monthString + "-" + dayString + "-" + year;
     }
-
-
 }

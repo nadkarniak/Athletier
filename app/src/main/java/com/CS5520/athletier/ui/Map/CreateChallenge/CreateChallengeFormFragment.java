@@ -21,6 +21,7 @@ import com.CS5520.athletier.R;
 import com.CS5520.athletier.ui.Map.DateInputFragment;
 import com.CS5520.athletier.ui.Map.SpinnerInputFragment;
 import com.CS5520.athletier.ui.Map.TextInputFragment;
+import com.CS5520.athletier.ui.Map.TimeInputFragment;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,6 +40,7 @@ public class CreateChallengeFormFragment extends Fragment {
     private SpinnerInputFragment stateSpinnerInput;
     private TextInputFragment zipCodeInput;
     private DateInputFragment dateInput;
+    private TimeInputFragment timeInput;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -60,7 +62,7 @@ public class CreateChallengeFormFragment extends Fragment {
         super.onStart();
         setupSpinnerObservers();
         setupTextInputObservers();
-        setupDateInputObserver();
+        setupDateAndTimeInputObservers();
     }
 
     LiveData<Boolean> getHasRequiredFields() {
@@ -91,6 +93,8 @@ public class CreateChallengeFormFragment extends Fragment {
         return viewModel.getDate();
     }
 
+    Date getSelectedTime() { return viewModel.getSelectedTime(); }
+
     private void findChildFragments() {
         FragmentManager manager = getChildFragmentManager();
         sportSpinnerInput = (SpinnerInputFragment) manager.findFragmentById(R.id.sportSpinnerFragment);
@@ -99,6 +103,7 @@ public class CreateChallengeFormFragment extends Fragment {
         stateSpinnerInput = (SpinnerInputFragment) manager.findFragmentById(R.id.stateSpinnerFragment);
         zipCodeInput = (TextInputFragment) manager.findFragmentById(R.id.zipCodeInputFragment);
         dateInput = (DateInputFragment) manager.findFragmentById(R.id.dateInputFragment);
+        timeInput = (TimeInputFragment) manager.findFragmentById(R.id.timeInputFragment);
     }
 
     private void setupSpinnerInputs(Context context) {
@@ -165,11 +170,18 @@ public class CreateChallengeFormFragment extends Fragment {
         });
     }
 
-    private void setupDateInputObserver() {
+    private void setupDateAndTimeInputObservers() {
         dateInput.getSelectedDate().observe(getViewLifecycleOwner(), new Observer<Date>() {
             @Override
             public void onChanged(Date date) {
                 viewModel.setSelectedDate(date);
+            }
+        });
+
+        timeInput.getSelectedTime().observe(getViewLifecycleOwner(), new Observer<Date>() {
+            @Override
+            public void onChanged(Date date) {
+                viewModel.setSelectedTime(date);
             }
         });
     }

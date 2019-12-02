@@ -17,6 +17,7 @@ public class CreateChallengeFormViewModel extends ViewModel {
     private Sport sport;
     private State state;
     private Date date;
+    private Date selectedTime;
 
 
     public CreateChallengeFormViewModel() { }
@@ -48,6 +49,8 @@ public class CreateChallengeFormViewModel extends ViewModel {
         this.date = date;
     }
 
+    void setSelectedTime(Date selectedTime) { this.selectedTime = selectedTime; }
+
     Sport getSport() {
         return this.sport;
     }
@@ -59,5 +62,7 @@ public class CreateChallengeFormViewModel extends ViewModel {
     Date getDate() {
         return this.date;
     }
+
+    Date getSelectedTime() { return this.selectedTime; }
 
 }

@@ -128,8 +128,6 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         mapView = googleMap;
         mapView.setMyLocationEnabled(hasPermissions);
         if (hasPermissions) {
-            System.out.println("Set listeners");
-
             Location userLocation = viewModel.getUserLocation();
             if (userLocation != null) {
                 LatLng position = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
@@ -271,7 +269,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
 
     private float getChallengeMarkerColor(ChallengeStatus status) {
         switch (status) {
-            case IN_PROGRESS:
+            case FULL:
                 return BitmapDescriptorFactory.HUE_RED;
             case AWAITING_PLAYERS:
                 return BitmapDescriptorFactory.HUE_GREEN;
@@ -311,6 +309,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
 
 
     private void checkLocationSettings(final Activity activity) {
+        if (activity == null) { return; }
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest);
         SettingsClient client = LocationServices.getSettingsClient(activity);

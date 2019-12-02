@@ -1,4 +1,4 @@
-package com.CS5520.athletier.ui.Map;
+package com.CS5520.athletier.ui.Challenges;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,21 +16,20 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.CS5520.athletier.R;
+import com.CS5520.athletier.ui.Map.SpinnerInputViewModel;
 
 import java.util.List;
 
-public class SpinnerInputFragment extends Fragment implements AdapterView.OnItemSelectedListener {
+public class ColoredSpinnerFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
     private SpinnerInputViewModel viewModel;
-    private TextView labelTextView;
     private Spinner dropdownSpinner;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_spinner_input,
+        View view = inflater.inflate(R.layout.fragment_colored_spinner,
                 container, false);
-        labelTextView = view.findViewById(R.id.spinnerInputTitleText);
-        dropdownSpinner = view.findViewById(R.id.spinner);
+        dropdownSpinner = view.findViewById(R.id.coloredSpinner);
         return view;
     }
 
@@ -41,22 +39,14 @@ public class SpinnerInputFragment extends Fragment implements AdapterView.OnItem
         viewModel = ViewModelProviders.of(this).get(SpinnerInputViewModel.class);
     }
 
-    public void setShouldHideLabel(boolean shouldHide) {
-        labelTextView.setVisibility(shouldHide ? View.GONE :View.VISIBLE);
-    }
-
-    public void setLabelText(String text) {
-        labelTextView.setText(text);
-    }
-
-    public void setSpinnerOptions(Context context, List<String> spinnerOptions) {
+    void setSpinnerOptions(Context context, List<String> spinnerOptions) {
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(context,
-                R.layout.custom_form_spinner_text, spinnerOptions);
+                R.layout.colored_spinner_text, spinnerOptions);
         dropdownSpinner.setAdapter(spinnerAdapter);
         dropdownSpinner.setOnItemSelectedListener(this);
     }
 
-    public LiveData<String> getSelectedItem() {
+    LiveData<String> getSelectedItem() {
         return viewModel.getSelectedItem();
     }
 
@@ -69,6 +59,7 @@ public class SpinnerInputFragment extends Fragment implements AdapterView.OnItem
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) { }
+
 
 
 }

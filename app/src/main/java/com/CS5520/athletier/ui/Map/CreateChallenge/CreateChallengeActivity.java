@@ -87,6 +87,7 @@ public class CreateChallengeActivity extends AppCompatActivity {
             viewModel.makeChallenge(
                     createChallengeForm.getSport(),
                     createChallengeForm.getDate(),
+                    createChallengeForm.getSelectedTime(),
                     result.getInputStreet(),
                     result.getInputCity(),
                     result.getInputState(),
@@ -123,6 +124,7 @@ public class CreateChallengeActivity extends AppCompatActivity {
             @Override
             public void onChanged(Boolean hasRequiredFields) {
                 createButton.setEnabled(hasRequiredFields);
+                createButton.getBackground().setAlpha(createButton.isEnabled() ? 255 : 128);
             }
         });
 
