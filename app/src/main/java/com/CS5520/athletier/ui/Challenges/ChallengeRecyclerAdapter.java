@@ -76,6 +76,8 @@ public class ChallengeRecyclerAdapter extends
         // Configure buttons based on acceptance status of the challenge
         switch (AcceptanceStatus.valueOf(challenge.getAcceptanceStatus())) {
             case ACCEPTED:
+                holder.leftButton.setVisibility(View.VISIBLE);
+                holder.leftButton.setEnabled(true);
                 holder.leftButton.setText(R.string.finish);
                 holder.rightButton.setText(R.string.cancel);
                 setHolderButtonListener(
@@ -189,6 +191,7 @@ public class ChallengeRecyclerAdapter extends
         void displayUserInfo(String userId) {
             if (userId == null) {
                 usernameText.setText(R.string.awaiting_challenger);
+                imageView.setImageResource(R.drawable.ic_person_black_24dp);
                 return;
             }
 
