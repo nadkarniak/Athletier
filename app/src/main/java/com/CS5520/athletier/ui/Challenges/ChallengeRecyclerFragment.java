@@ -1,5 +1,7 @@
 package com.CS5520.athletier.ui.Challenges;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import com.CS5520.athletier.R;
 import com.CS5520.athletier.Utilities.ChallengeButtonAction;
 import com.CS5520.athletier.Utilities.ChallengeUpdater;
 import com.CS5520.athletier.ui.Map.SpinnerInputFragment;
+import com.CS5520.athletier.ui.Search.FindUser.FindUserActivity;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -50,6 +53,7 @@ public class ChallengeRecyclerFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setupRecyclerView();
+        observeForProfileImageClicks();
     }
 
     void updateAsHost(boolean asHost) {
@@ -102,6 +106,20 @@ public class ChallengeRecyclerFragment extends Fragment {
         });
     }
 
+    private void observeForProfileImageClicks() {
+        adapter.getUserImageClickEventStream().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String userEmail) {
+                Activity currentActivity = getActivity();
+                if (currentActivity != null) {
+                    Intent intent = new Intent(currentActivity, FindUserActivity.class);
+                    intent.putExtra("email", userEmail);
+                    startActivity(intent);
+                    currentActivity.overridePendingTransition(R.anim.slide_up, R.anim.no_slide);
+                }
+            }
+        });
+    }
 
 
 

@@ -1,5 +1,6 @@
 package com.CS5520.athletier.ui.Challenges;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -40,6 +41,7 @@ public class ChallengeRecyclerAdapter extends
     private WeakReference<Context> contextRef;
     private DatabaseReference databaseReference;
     private MutableLiveData<Pair<Challenge, ChallengeButtonAction>> challengeAndAction;
+    private MutableLiveData<String> userImageClickEvent;
 
     ChallengeRecyclerAdapter(List<Challenge> challenges,
                              boolean asHost,
@@ -49,6 +51,7 @@ public class ChallengeRecyclerAdapter extends
         this.contextRef = new WeakReference<>(context);
         this.databaseReference = FirebaseDatabase.getInstance().getReference();
         this.challengeAndAction = new MutableLiveData<>();
+        this.userImageClickEvent = new MutableLiveData<>();
     }
 
     @NonNull
@@ -60,7 +63,7 @@ public class ChallengeRecyclerAdapter extends
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ChallengeViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ChallengeViewHolder holder, int position) {
         Context context = contextRef.get();
         final Challenge challenge = challenges.get(position);
         holder.displayUserInfo(asHost ? challenge.getOpponentId() : challenge.getHostId());
@@ -72,12 +75,27 @@ public class ChallengeRecyclerAdapter extends
         }
         holder.dateText.setText(challenge.getFormattedDate());
         holder.addressText.setText(challenge.getFormattedAddress());
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Object tag = view.getTag();
+                if (tag != null) {
+                    // Pass the tag of the imageView to the userImageClickEvent stream
+                    userImageClickEvent.postValue(tag.toString());
+                }
+            }
+        });
+
+        // Remove any previously existing on click listeners
+        holder.leftButton.setOnClickListener(null);
+        holder.rightButton.setOnClickListener(null);
+        holder.leftButton.setEnabled(true);
+        holder.rightButton.setEnabled(true);
 
         // Configure buttons based on acceptance status of the challenge
         switch (AcceptanceStatus.valueOf(challenge.getAcceptanceStatus())) {
             case ACCEPTED:
                 holder.leftButton.setVisibility(View.VISIBLE);
-                holder.leftButton.setEnabled(true);
                 holder.leftButton.setText(R.string.finish);
                 holder.rightButton.setText(R.string.cancel);
                 setHolderButtonListener(
@@ -115,8 +133,12 @@ public class ChallengeRecyclerAdapter extends
                 hideStatusText(holder);
                 break;
             case COMPLETE:
-                holder.leftButton.setText(asHost ? R.string.report_result : R.string.confirm_result);
-
+                holder.rightButton.setText(asHost ? R.string.report_winner : R.string.confirm_winner);
+                holder.leftButton.setVisibility(View.GONE);
+                holder.leftButton.setEnabled(false);
+                holder.statusTitleText.setVisibility(View.VISIBLE);
+                holder.statusText.setVisibility(View.VISIBLE);
+                holder.statusTitleText.setText(R.string.winner);
         }
     }
 
@@ -135,9 +157,6 @@ public class ChallengeRecyclerAdapter extends
             }
         });
     }
-
-
-
 
 
     @Override
@@ -160,6 +179,10 @@ public class ChallengeRecyclerAdapter extends
 
     LiveData<Pair<Challenge, ChallengeButtonAction>> getChallengeAndAction() {
         return challengeAndAction;
+    }
+
+    LiveData<String> getUserImageClickEventStream() {
+        return userImageClickEvent;
     }
 
     final class ChallengeViewHolder extends RecyclerView.ViewHolder {
@@ -210,6 +233,9 @@ public class ChallengeRecyclerAdapter extends
                             imageView.setImageResource(R.drawable.ic_person_black_24dp);
                         }
                         usernameText.setText(user.getUsername());
+
+                        // Associate user's email address with imageView
+                        imageView.setTag(user.getEmailAddress());
                     }
                 }
 

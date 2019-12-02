@@ -51,9 +51,10 @@
     <string name="time_title">Time:</string>
     <string name="finish">Finish</string>
     <string name="rate">Rate</string>
-    <string name="report_result">Report Result</string>
+    <string name="report_winner">Report Winner</string>
     <string name="accept">Accept</string>
     <string name="reject">Reject</string>
     <string name="awaiting_challenger">Awaiting Challenger…</string>
-    <string name="confirm_result">Confirm Result</string>
+    <string name="confirm_winner">Confirm Winner</string>
+    <string name="winner">Winner: </string>
 </resources>
