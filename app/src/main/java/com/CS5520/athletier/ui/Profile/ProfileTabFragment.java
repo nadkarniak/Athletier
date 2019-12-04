@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
@@ -50,6 +51,7 @@ public class ProfileTabFragment extends Fragment {
     private ImageView fourthBadge;
     private ImageView fifthBadge;
     private ImageView profilePicture;
+    private Button logOut;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -69,6 +71,14 @@ public class ProfileTabFragment extends Fragment {
 
     private void setupViews(View view) {
         // Find views using id's
+        logOut = view.findViewById(R.id.signout);
+
+        logOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+            }
+        });
         usernameText = view.findViewById(R.id.userName);
         recordText = view.findViewById(R.id.record);
         followersText = view.findViewById(R.id.followers);
