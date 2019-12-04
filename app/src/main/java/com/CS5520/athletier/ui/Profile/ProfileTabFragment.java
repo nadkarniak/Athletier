@@ -19,7 +19,9 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.CS5520.athletier.Models.Sport;
+import com.CS5520.athletier.Models.SportsAchievementSummary;
 import com.CS5520.athletier.Models.SportsBadge;
+import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -48,9 +50,7 @@ public class ProfileTabFragment extends Fragment {
     private ImageView fourthBadge;
     private ImageView fifthBadge;
     private ImageView profilePicture;
-    private FirebaseAuth mAuth;
-    private FirebaseUser user;
-    private DatabaseReference mRef;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -61,11 +61,7 @@ public class ProfileTabFragment extends Fragment {
 
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
-        profileTabViewModel =
-                ViewModelProviders.of(this).get(ProfileTabViewModel.class);
-        profileTabViewModel.findUserWithId(user.getUid());
+        profileTabViewModel = ViewModelProviders.of(this).get(ProfileTabViewModel.class);
         setupObservers();
         setupSportsList(getContext());
         setupBadges(getContext());
@@ -73,18 +69,18 @@ public class ProfileTabFragment extends Fragment {
 
     private void setupViews(View view) {
         // Find views using id's
-        usernameText = ((LinearLayout)view).findViewById(R.id.userName);
-        recordText = ((LinearLayout)view).findViewById(R.id.record);
-        followersText = ((LinearLayout)view).findViewById(R.id.followers);
-        followingText = ((LinearLayout)view).findViewById(R.id.following);
-        sportsmanshipBar = ((LinearLayout)view).findViewById(R.id.ratingBar);
-        sportsList = ((LinearLayout)view).findViewById(R.id.sportsSpinner);
-        firstBadge = ((LinearLayout)view).findViewById(R.id.first_badge);
-        secondBadge = ((LinearLayout)view).findViewById(R.id.second_badge);
-        thirdBadge = ((LinearLayout)view).findViewById(R.id.third_badge);
-        fourthBadge = ((LinearLayout)view).findViewById(R.id.fourth_badge);
-        fifthBadge = ((LinearLayout)view).findViewById(R.id.fifth_badge);
-        profilePicture = ((LinearLayout)view).findViewById(R.id.profilePic);
+        usernameText = view.findViewById(R.id.userName);
+        recordText = view.findViewById(R.id.record);
+        followersText = view.findViewById(R.id.followers);
+        followingText = view.findViewById(R.id.following);
+        sportsmanshipBar = view.findViewById(R.id.ratingBar);
+        sportsList = view.findViewById(R.id.sportsSpinner);
+        firstBadge = view.findViewById(R.id.first_badge);
+        secondBadge = view.findViewById(R.id.second_badge);
+        thirdBadge = view.findViewById(R.id.third_badge);
+        fourthBadge = view.findViewById(R.id.fourth_badge);
+        fifthBadge = view.findViewById(R.id.fifth_badge);
+        profilePicture = view.findViewById(R.id.profilePic);
     }
 
     private void setupSportsList(Context context) {
@@ -107,6 +103,7 @@ public class ProfileTabFragment extends Fragment {
         }
     }
 
+    // TODO: Change this so it comes from SportsAchievementSummary
     private void setupBadges(Context context) {
         List<SportsBadge> badges = getBadgeList(context);
         firstBadge.setImageResource(badges.get(0).getResId());
@@ -117,34 +114,24 @@ public class ProfileTabFragment extends Fragment {
     }
 
     private void setupObservers() {
-        profileTabViewModel.getCurrentUser().observe(getViewLifecycleOwner(), new Observer<FirebaseUser>() {
+        profileTabViewModel.getCurrentUser().observe(getViewLifecycleOwner(), new Observer<User>() {
             @Override
-            public void onChanged(FirebaseUser user) {
-                mRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
-                mRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String name = dataSnapshot.child("username").getValue().toString();
-                        String photo = dataSnapshot.child("photoUrl").getValue().toString();
-                        String uid = dataSnapshot.child("id").getValue().toString();
-                        String email = dataSnapshot.child("emailAddress").getValue().toString();
-                        String record = dataSnapshot.child("record").getValue().toString();
-                        String sportsmanship = dataSnapshot.child("avgSportsmanshipRating").getValue().toString();
-                        usernameText.setText(name);
-                        recordText.setText(record);
-                        followersText.setText(String.valueOf(0));
-                        followingText.setText(String.valueOf(0));
-                        sportsmanshipBar.setRating(Integer.parseInt(sportsmanship));
-                        Picasso.get().load(photo).into(profilePicture);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+            public void onChanged(User user) {
+                usernameText.setText(user.getUsername());
+                followersText.setText(String.valueOf(0));
+                followingText.setText(String.valueOf(0));
+                sportsmanshipBar.setRating(user.getAvgSportsmanshipRating());
+                Picasso.get().load(user.getPhotoUrl()).into(profilePicture);
             }
         });
+
+//        profileTabViewModel.getAchievements().observe(getViewLifecycleOwner(),
+//                new Observer<List<SportsAchievementSummary>>() {
+//            @Override
+//            public void onChanged(List<SportsAchievementSummary> sportsAchievementSummaries) {
+//                // Set badge resources
+//            }
+//        });
     }
 
 }

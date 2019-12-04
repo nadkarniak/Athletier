@@ -1,21 +1,35 @@
 package com.CS5520.athletier.Models;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.HashMap;
 import java.util.List;
 
 public class SportsAchievementSummary {
 
+    // The parent key for storing SportsAchievementSummaries in Firebase
+    @Exclude
+    public static final String sportsAchievementKey = "sports_achievements";
+    @Exclude
+    public static final String ownerIdKey = "ownerId";
+    @Exclude
+    public static final String expKey = "exp";
+
+    // The id of this SportsAchievementSummary's owning User
+    private String ownerId;
+
     // Name of the sport this achievement pertains to
     private String sportName;
 
-    // The id of the User who owns this SportsAchievementSummary.
-    private String ownerId;
-
-    // The rank of the owning user in the sport for this SportsAchievementSummary
+    // The rank of the owning User in the Sport of this SportsAchievementSummary
     private Integer rank;
 
-    // The experience points accrued by the owning user in the sport for this SportsAchievementSummary
-    private int exp;
+    // The tier of the owning User in the Sport of this SportsAchievementSummary
+    private Integer tier;
+
+    // The experience points accrued by the owning user in the sport of this
+    // SportsAchievementSummary
+    private Integer exp;
 
     // Keys are Strings representing the badge name, values are Integers representing number of
     // times badge has been awarded
@@ -30,6 +44,7 @@ public class SportsAchievementSummary {
         this.sportName = sport.name();
         this.ownerId = ownerId;
         this.rank = null; // Set once user has gained experience points
+        this.tier = 1; // User's start at Tier 1
         this.exp = 0;
         this.badgeMap = new HashMap<>();
 
@@ -41,6 +56,10 @@ public class SportsAchievementSummary {
         }
     }
 
+    public String getOwnerId() {
+        return ownerId;
+    }
+
     public String getSportName() {
         return this.sportName;
     }
@@ -48,6 +67,8 @@ public class SportsAchievementSummary {
     public Integer getRank() {
         return this.rank;
     }
+
+    public Integer getTier() { return this.tier; }
 
     public int getExp() {
         return this.exp;
@@ -61,10 +82,12 @@ public class SportsAchievementSummary {
         this.rank = newRank;
     }
 
+    @Exclude
     public void addExp(int expGained) {
         this.exp += expGained;
     }
 
+    @Exclude
     public void addBadge(String badgeName) {
        if (badgeMap != null && badgeMap.containsKey(badgeName)) {
            Integer currentCount = badgeMap.get(badgeName);
@@ -72,6 +95,20 @@ public class SportsAchievementSummary {
                badgeMap.put(badgeName, currentCount + 1);
            }
        }
+    }
+
+    @Exclude
+    public Sport getSport() {
+        return Sport.valueOf(sportName);
+    }
+
+    @Exclude
+    public Integer getBadgeCount(SportsBadge badge) {
+        if (badgeMap != null && badgeMap.containsKey(badge.getName())) {
+            return badgeMap.get(badge.getName());
+        } else {
+            return null;
+        }
     }
 
 }

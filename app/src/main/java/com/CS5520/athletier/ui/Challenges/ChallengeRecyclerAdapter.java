@@ -219,7 +219,7 @@ public class ChallengeRecyclerAdapter extends
             }
 
             databaseReference
-                    .child("users")
+                    .child(User.userKey)
                     .child(userId)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
