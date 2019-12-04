@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,16 +23,17 @@ import com.CS5520.athletier.Utilities.ChallengeButtonAction;
 import com.CS5520.athletier.Utilities.ChallengeUpdater;
 import com.CS5520.athletier.ui.Map.SpinnerInputFragment;
 import com.CS5520.athletier.ui.Search.FindUser.FindUserActivity;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChallengeRecyclerFragment extends Fragment {
+public class ChallengeRecyclerFragment extends Fragment implements
+        SelectWinnerDialogFragment.SelectedWinnerDialogListener {
 
     private DatabaseReference databaseReference;
-
     private SpinnerInputFragment spinner;
     private ChallengeRecyclerAdapter adapter;
     private RecyclerView recyclerView;
@@ -85,10 +87,11 @@ public class ChallengeRecyclerFragment extends Fragment {
 
                 switch (action) {
                     case HOST_REPORT:
-                        // Launch dialog for result reporting and rating opponent
+                        launchSelectWinnerDialog();
                         break;
                     case OPPONENT_REPORT:
                         // Launch dialog for result reporting and rating opponent
+
                         break;
                     case ACCEPT:
                         // Change status of challenge to accepted
@@ -121,9 +124,15 @@ public class ChallengeRecyclerFragment extends Fragment {
         });
     }
 
+    private void launchSelectWinnerDialog() {
+        DialogFragment dialogFragment = new SelectWinnerDialogFragment();
+        dialogFragment.show(getChildFragmentManager(), "SelectWinnerDialogFragment");
+    }
 
 
-
-
-
+    @Override
+    public void onDialogPositiveClick(String selectedWinner) {
+        // TODO: Update the result of the appropriate challenge
+        System.out.println(selectedWinner);
+    }
 }

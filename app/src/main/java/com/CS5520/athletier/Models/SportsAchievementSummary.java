@@ -12,6 +12,8 @@ public class SportsAchievementSummary {
     public static final String sportsAchievementKey = "sports_achievements";
     @Exclude
     public static final String ownerIdKey = "ownerId";
+    @Exclude
+    public static final String expKey = "exp";
 
     // The id of this SportsAchievementSummary's owning User
     private String ownerId;
@@ -93,6 +95,20 @@ public class SportsAchievementSummary {
                badgeMap.put(badgeName, currentCount + 1);
            }
        }
+    }
+
+    @Exclude
+    public Sport getSport() {
+        return Sport.valueOf(sportName);
+    }
+
+    @Exclude
+    public Integer getBadgeCount(SportsBadge badge) {
+        if (badgeMap != null && badgeMap.containsKey(badge.getName())) {
+            return badgeMap.get(badge.getName());
+        } else {
+            return null;
+        }
     }
 
 }

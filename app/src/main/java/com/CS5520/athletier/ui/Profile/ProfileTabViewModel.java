@@ -37,6 +37,7 @@ public class ProfileTabViewModel extends AndroidViewModel {
     public ProfileTabViewModel(@NonNull Application application) {
         super(application);
         this.currentUser = new MutableLiveData<>();
+        this.achievements = new MutableLiveData<>();
         this.databaseReference = FirebaseDatabase.getInstance().getReference();
         this.firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -70,6 +71,8 @@ public class ProfileTabViewModel extends AndroidViewModel {
     private void queryAchievements() {
         databaseReference
                 .child(SportsAchievementSummary.sportsAchievementKey)
+                // TODO: Come up with a better way of determining if a User has achievements...
+                .child(Sport.ONE_V_ONE_BASKETBALL.name())
                 .orderByChild(SportsAchievementSummary.ownerIdKey)
                 .equalTo(firebaseUser.getUid())
                 .addValueEventListener(new ValueEventListener() {

@@ -271,10 +271,8 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         switch (status) {
             case FULL:
                 return BitmapDescriptorFactory.HUE_RED;
-            case AWAITING_PLAYERS:
-                return BitmapDescriptorFactory.HUE_GREEN;
             default:
-                return BitmapDescriptorFactory.HUE_RED;
+                return BitmapDescriptorFactory.HUE_GREEN;
         }
     }
 
