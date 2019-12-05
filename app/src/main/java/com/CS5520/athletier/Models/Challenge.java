@@ -19,8 +19,16 @@ public class Challenge implements Parcelable {
     private String sport;
     private String challengeStatus;
     private String acceptanceStatus;
+
+    // Result related fields
     private String resultStatus;
     private boolean hostIsWinner;
+    private String hostReportedWinner;
+    private String opponentReportedWinner;
+    private boolean hostDidRate;
+    private boolean opponentDidRate;
+    private boolean didAwardExp = false;
+
 
     // Store as time in milliseconds
     private long date;
@@ -101,6 +109,11 @@ public class Challenge implements Parcelable {
         acceptanceStatus = in.readString();
         resultStatus = in.readString();
         hostIsWinner = in.readByte() != 0;
+        hostReportedWinner = in.readString();
+        opponentReportedWinner = in.readString();
+        hostDidRate = in.readByte() != 0;
+        opponentDidRate = in.readByte() != 0;
+        didAwardExp = in.readByte() != 0;
         date = in.readLong();
         longitude = in.readDouble();
         latitude = in.readDouble();
@@ -124,9 +137,19 @@ public class Challenge implements Parcelable {
 
     public String getAcceptanceStatus() { return acceptanceStatus; }
 
+    public String getHostReportedWinner() { return hostReportedWinner; }
+
+    public String getOpponentReportedWinner() { return opponentReportedWinner; }
+
     public String getResultStatus() { return resultStatus; }
 
     public boolean getHostIsWinner() { return hostIsWinner; }
+
+    public boolean getDidAwardExp() { return didAwardExp; }
+
+    public boolean getHostDidRate() { return hostDidRate; }
+
+    public boolean getOpponentDidRate() { return opponentDidRate; }
 
     public long getDate() { return date; }
 
@@ -175,6 +198,36 @@ public class Challenge implements Parcelable {
     public void setOpponentId(String opponentId) { this.opponentId = opponentId; }
 
     @Exclude
+    public void setHostReportedWinner(String winnerId) {
+        hostReportedWinner = winnerId;
+        updateResult();
+    }
+
+    @Exclude
+    public void setOpponentReportedWinner(String winnerId) {
+        opponentReportedWinner = winnerId;
+        updateResult();
+    }
+
+    // Helper method for updating the resultStatus, acceptanceStatus, and hostIsWinner when the host
+    // or opponent user reports a winner
+    @Exclude
+    private void updateResult() {
+        if (opponentReportedWinner == null && hostReportedWinner == null) {
+            this.resultStatus = ResultStatus.NONE.name();
+        } else if (opponentReportedWinner == null || hostReportedWinner == null) {
+            this.resultStatus = ResultStatus.AWAITING_CONFIRMATION.name();
+        } else if (!hostReportedWinner.equals(opponentReportedWinner)) {
+            this.resultStatus = ResultStatus.DISPUTED.name();
+            this.acceptanceStatus = AcceptanceStatus.COMPLETE.name();
+        } else {
+            this.resultStatus = ResultStatus.CONFIRMED.name();
+            this.acceptanceStatus = AcceptanceStatus.COMPLETE.name();
+            this.hostIsWinner = hostReportedWinner.equals(hostId);
+        }
+    }
+
+    @Exclude
     public void setDate(Date date) {
         this.date = date.getTime();
     }
@@ -220,6 +273,11 @@ public class Challenge implements Parcelable {
         dest.writeString(acceptanceStatus);
         dest.writeString(resultStatus);
         dest.writeByte((byte) (hostIsWinner ? 1 : 0));
+        dest.writeString(hostReportedWinner);
+        dest.writeString(opponentReportedWinner);
+        dest.writeByte((byte) (hostDidRate ? 1 : 0));
+        dest.writeByte((byte) (opponentDidRate ? 1 : 0));
+        dest.writeByte((byte) (didAwardExp ? 1 : 0));
         dest.writeLong(date);
         dest.writeDouble(longitude);
         dest.writeDouble(latitude);

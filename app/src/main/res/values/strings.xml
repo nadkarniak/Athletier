@@ -61,6 +61,11 @@
     <string name="rank">Rank</string>
     <string name="tier">Tier</string>
     <string name="select_winner_title">Select Winner</string>
+    <string name="i_won">I won</string>
+    <string name="i_lost">I lost</string>
     <string name="logout">Logout</string>
     <string name="exp">Exp</string>
+    <string name="waiting_for_confirmation">Waiting for opponent to confirm</string>
+    <string name="result_disputed">Opponent disputed winner…</string>
+    <string name="change_winner">Change Winner</string>
 </resources>

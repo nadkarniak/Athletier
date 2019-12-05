@@ -1,6 +1,5 @@
 package com.CS5520.athletier.ui.Challenges;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -18,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.CS5520.athletier.Models.AcceptanceStatus;
 import com.CS5520.athletier.Models.Challenge;
+import com.CS5520.athletier.Models.ResultStatus;
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.R;
@@ -92,59 +92,120 @@ public class ChallengeRecyclerAdapter extends
         holder.leftButton.setEnabled(true);
         holder.rightButton.setEnabled(true);
 
+        // Display or hide winner depending on resultStatus of challenge
+        setResultDisplay(holder, challenge);
+
         // Configure buttons based on acceptance status of the challenge
         switch (AcceptanceStatus.valueOf(challenge.getAcceptanceStatus())) {
             case ACCEPTED:
-                holder.leftButton.setVisibility(View.VISIBLE);
-                holder.leftButton.setText(R.string.finish);
-                holder.rightButton.setText(R.string.cancel);
-                setHolderButtonListener(
-                        holder.leftButton,
-                        challenge,
-                        asHost ? ChallengeButtonAction.HOST_REPORT
-                                : ChallengeButtonAction.OPPONENT_REPORT
-                );
-                setHolderButtonListener(
-                        holder.rightButton,
-                        challenge,
-                        ChallengeButtonAction.CANCEL
-                );
-                hideStatusText(holder);
+                configureAcceptedChallengeHolder(holder, challenge);
                 break;
             case PENDING:
-                if (asHost && challenge.getOpponentId() != null) {
-                    holder.leftButton.setText(R.string.accept);
-                    holder.rightButton.setText(R.string.reject);
-                    setHolderButtonListener(
-                            holder.leftButton,
-                            challenge,
-                            ChallengeButtonAction.ACCEPT
-                    );
-                } else {
-                    holder.leftButton.setVisibility(View.INVISIBLE);
-                    holder.leftButton.setEnabled(false);
-                    holder.rightButton.setText(R.string.cancel);
-                }
-                setHolderButtonListener(
-                        holder.rightButton,
-                        challenge,
-                        ChallengeButtonAction.CANCEL
-                );
-                hideStatusText(holder);
+                configurePendingChallengeHolder(holder, challenge);
                 break;
             case COMPLETE:
-                holder.rightButton.setText(asHost ? R.string.report_winner : R.string.confirm_winner);
-                holder.leftButton.setVisibility(View.GONE);
-                holder.leftButton.setEnabled(false);
-                holder.statusTitleText.setVisibility(View.VISIBLE);
-                holder.statusText.setVisibility(View.VISIBLE);
-                holder.statusTitleText.setText(R.string.winner);
+               configureCompletedChallengeHolder(holder, challenge);
         }
     }
 
-    private void hideStatusText(ChallengeViewHolder holder) {
-        holder.statusText.setVisibility(View.GONE);
-        holder.statusTitleText.setVisibility(View.GONE);
+    private void configureAcceptedChallengeHolder(ChallengeViewHolder holder, Challenge challenge) {
+        holder.leftButton.setVisibility(View.VISIBLE);
+        holder.leftButton.setText(R.string.report_winner);
+        holder.rightButton.setText(R.string.cancel);
+        setHolderButtonListener(
+                holder.leftButton,
+                challenge,
+                asHost ? ChallengeButtonAction.HOST_REPORT
+                        : ChallengeButtonAction.OPPONENT_REPORT
+        );
+        setHolderButtonListener(
+                holder.rightButton,
+                challenge,
+                ChallengeButtonAction.CANCEL
+        );
+    }
+
+    private void configurePendingChallengeHolder(ChallengeViewHolder holder, Challenge challenge) {
+        if (asHost && challenge.getOpponentId() != null) {
+            holder.leftButton.setText(R.string.accept);
+            holder.rightButton.setText(R.string.reject);
+            setHolderButtonListener(
+                    holder.leftButton,
+                    challenge,
+                    ChallengeButtonAction.ACCEPT
+            );
+        } else {
+            holder.leftButton.setVisibility(View.INVISIBLE);
+            holder.leftButton.setEnabled(false);
+            holder.rightButton.setText(R.string.cancel);
+        }
+        setHolderButtonListener(
+                holder.rightButton,
+                challenge,
+                ChallengeButtonAction.CANCEL
+        );
+    }
+
+    private void configureCompletedChallengeHolder(ChallengeViewHolder holder, Challenge challenge) {
+        // If the result is confirmed, hide and disable left button
+        if (challenge.getResultStatus().equals(ResultStatus.CONFIRMED.name())) {
+            holder.leftButton.setVisibility(View.INVISIBLE);
+            holder.leftButton.setEnabled(false);
+        // Otherwise, the result is disputed and the left button should be enabled to allow User's
+        // to revise the winner they reported
+        } else {
+            holder.leftButton.setVisibility(View.VISIBLE);
+            holder.leftButton.setEnabled(true);
+            holder.leftButton.setText(R.string.change_winner);
+            setHolderButtonListener(holder.leftButton,
+                    challenge,
+                    asHost ? ChallengeButtonAction.HOST_REPORT
+                            : ChallengeButtonAction.OPPONENT_REPORT
+            );
+        }
+
+        // Show right button for rating the other User
+        holder.rightButton.setText(R.string.rate);
+        setHolderButtonListener(holder.rightButton,
+                challenge,
+                asHost ? ChallengeButtonAction.HOST_RATE :
+                        ChallengeButtonAction.OPPONENT_RATE
+        );
+
+
+//        holder.rightButton.setText(asHost ? R.string.report_winner : R.string.confirm_winner);
+//        holder.leftButton.setVisibility(View.GONE);
+//        holder.leftButton.setEnabled(false);
+//        holder.statusTitleText.setVisibility(View.VISIBLE);
+//        holder.resultStatusText.setVisibility(View.VISIBLE);
+//        holder.statusTitleText.setText(R.string.winner);
+    }
+
+    private void setResultDisplay(ChallengeViewHolder holder, Challenge challenge) {
+        ResultStatus resultStatus = ResultStatus.valueOf(challenge.getResultStatus());
+        switch (resultStatus) {
+            case NONE:
+                toggleResultStatusVisibility(holder, true);
+                break;
+            case AWAITING_CONFIRMATION:
+                toggleResultStatusVisibility(holder, false);
+                break;
+            case DISPUTED:
+                toggleResultStatusVisibility(holder, false);
+                holder.statusTitleText.setText(R.string.winner);
+                break;
+            case CONFIRMED:
+                holder.statusTitleText.setText(R.string.winner);
+                holder.displayWinnerName(challenge.getHostIsWinner() ? challenge.getHostId()
+                        : challenge.getOpponentId());
+
+        }
+    }
+
+
+    private void toggleResultStatusVisibility(ChallengeViewHolder holder, boolean shouldHide) {
+        holder.resultStatusText.setVisibility(shouldHide ? View.GONE : View.VISIBLE);
+        holder.statusTitleText.setVisibility(shouldHide ? View.GONE : View.VISIBLE);
     }
 
     private void setHolderButtonListener(Button button,
@@ -192,7 +253,7 @@ public class ChallengeRecyclerAdapter extends
         private Chip sportChip;
         private TextView dateText;
         private TextView addressText;
-        private TextView statusText;
+        private TextView resultStatusText;
         private TextView statusTitleText;
         private Button leftButton;
         private Button rightButton;
@@ -205,7 +266,7 @@ public class ChallengeRecyclerAdapter extends
             this.sportChip = itemView.findViewById(R.id.sportChip);
             this.dateText = itemView.findViewById(R.id.dateText);
             this.addressText = itemView.findViewById(R.id.addressText);
-            this.statusText = itemView.findViewById(R.id.statusText);
+            this.resultStatusText = itemView.findViewById(R.id.statusText);
             this.statusTitleText = itemView.findViewById(R.id.statusTitleText);
             this.leftButton = itemView.findViewById(R.id.cellLeftButton);
             this.rightButton = itemView.findViewById(R.id.cellRightButton);
@@ -249,6 +310,26 @@ public class ChallengeRecyclerAdapter extends
         void setSportChipText(Sport sport, Context context) {
             sportChip.setText(sport.toString());
             sportChip.setChipIcon(ContextCompat.getDrawable(context, sport.getIconId()));
+        }
+
+        void displayWinnerName(String winnerId) {
+            databaseReference
+                    .child(User.userKey)
+                    .child(winnerId)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            User winner = dataSnapshot.getValue(User.class);
+                            if (winner != null) {
+                                resultStatusText.setText(winner.getUsername());
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
         }
     }
 
