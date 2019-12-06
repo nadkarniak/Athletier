@@ -29,8 +29,8 @@ public class User {
 
     private List<Team> userTeams = new ArrayList<>();
 
-    private List<User> following = new ArrayList<>();
-    private List<User> followers = new ArrayList<>();
+    private List<Integer> following = new ArrayList<>();
+    private List<Integer> followers = new ArrayList<>();
 
     // TODO: Remove
     private int wins;
@@ -89,11 +89,11 @@ public class User {
         return this.numberOfRatings;
     }
 
-    public List<User> getFollowing() {
+    public List<Integer> getFollowing() {
         return following;
     }
 
-    public List<User> getFollowers() {
+    public List<Integer> getFollowers() {
         return followers;
     }
 
