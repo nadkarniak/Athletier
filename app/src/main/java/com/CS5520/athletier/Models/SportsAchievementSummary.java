@@ -83,8 +83,11 @@ public class SportsAchievementSummary {
     }
 
     @Exclude
-    public void addExp(int expGained) {
-        this.exp += expGained;
+    public void awardExp(int opponentTier) {
+        // Award exp based on the opponents Tier
+        exp += ExpCalculator.calculateExpEarned(tier, opponentTier);
+        // Update tier
+        tier = Tier.fromExp(exp).toInt();
     }
 
     @Exclude

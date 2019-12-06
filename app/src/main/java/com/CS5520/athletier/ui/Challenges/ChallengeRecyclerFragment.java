@@ -12,13 +12,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.CS5520.athletier.Models.AcceptanceStatus;
 import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.Models.ResultStatus;
+import com.CS5520.athletier.Models.Sport;
+import com.CS5520.athletier.Models.SportsAchievementSummary;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.Utilities.ChallengeButtonAction;
 import com.CS5520.athletier.Utilities.ChallengeUpdater;
@@ -38,8 +42,8 @@ import java.util.List;
 public class ChallengeRecyclerFragment extends Fragment implements
         SelectWinnerDialogFragment.SelectedWinnerDialogListener {
 
+    private ChallengeRecyclerViewModel viewModel;
     private DatabaseReference databaseReference;
-    private SpinnerInputFragment spinner;
     private ChallengeRecyclerAdapter adapter;
     private RecyclerView recyclerView;
 
@@ -59,6 +63,7 @@ public class ChallengeRecyclerFragment extends Fragment implements
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        viewModel = ViewModelProviders.of(this).get(ChallengeRecyclerViewModel.class);
         setupRecyclerView();
         observeForProfileImageClicks();
     }
@@ -89,31 +94,48 @@ public class ChallengeRecyclerFragment extends Fragment implements
             public void onChanged(Pair<Challenge, ChallengeButtonAction> challengeActionPair) {
                 Challenge challenge = challengeActionPair.first;
                 ChallengeButtonAction action = challengeActionPair.second;
+                if (action != ChallengeButtonAction.CANCEL) {
+                    viewModel.setSelectedChallenge(challenge);
+                }
 
                 switch (action) {
+                    // The user is reporting the winner as the host
                     case HOST_REPORT:
                         launchSelectWinnerDialog(challenge.getId(), true);
                         break;
+                    // The user is reporting the winner as the opponent
                     case OPPONENT_REPORT:
                         launchSelectWinnerDialog(challenge.getId(), false);
                         break;
+                    // The user is accepting a challenge
                     case ACCEPT:
                         // Change status of challenge to accepted
-                        ChallengeUpdater.updateAcceptanceStatus(
-                                databaseReference,
-                                challenge.getId(),
-                                AcceptanceStatus.ACCEPTED
-                        );
+                        viewModel.updateChallengeAcceptanceStatus(challenge.getId(),
+                                AcceptanceStatus.ACCEPTED);
                         break;
+                    // The user hit the cancel button on the challenge
                     case CANCEL:
                         // Delete challenge
-                        ChallengeUpdater.deleteChallenge(databaseReference, challenge.getId());
+                        viewModel.deleteChallenge(challenge.getId());
                         break;
+                    // The user is the host and is rating the opponent
                     case HOST_RATE:
+                        // TODO: Trigger dialog for rating opponent and awarding badges
                         break;
+                    // The user is the opponent and rating the host
                     case OPPONENT_RATE:
+                        // TODO: Trigger dialog for rating host and awarding badges
                         break;
                 }
+            }
+        });
+    }
+
+    private void setupUpdateObservers() {
+        viewModel.getUserAwardedExp().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer expGained) {
+                System.out.println(expGained);
             }
         });
     }
@@ -146,44 +168,12 @@ public class ChallengeRecyclerFragment extends Fragment implements
 
 
     @Override
-    public void onDialogPositiveClick(final String challengeId,
-                                      final boolean reportingAsHost,
+    public void onDialogPositiveClick(final boolean reportingAsHost,
                                       final boolean hostSelectedAsWinner) {
         // Update the result of the challenge with the input Id
-        databaseReference
-                .child(Challenge.challengeKey)
-                .child(challengeId)
-                .runTransaction(new Transaction.Handler() {
-                    @NonNull
-                    @Override
-                    public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                        Challenge challenge = mutableData.getValue(Challenge.class);
-                        if (challenge == null) {
-                            return Transaction.success(mutableData);
-                        }
-
-                        // Determine the id of the reported winner
-                        String winnerId = hostSelectedAsWinner ? challenge.getHostId()
-                                : challenge.getOpponentId();
-
-                        // If the reporter was the host, set the hostReportedWinner, otherwise set
-                        // the opponentReportedWinner
-                        if (reportingAsHost) {
-                            challenge.setHostReportedWinner(winnerId);
-                        } else {
-                            challenge.setOpponentReportedWinner(winnerId);
-                        }
-
-                        mutableData.setValue(challenge);
-                        return Transaction.success(mutableData);
-                    }
-
-                    @Override
-                    public void onComplete(@Nullable DatabaseError databaseError,
-                                           boolean b,
-                                           @Nullable DataSnapshot dataSnapshot) {
-                        // TODO: Launch activity for rating opposing player
-                    }
-                });
+        viewModel.updateChallengeWinner(reportingAsHost, hostSelectedAsWinner );
     }
+
 }
+
+

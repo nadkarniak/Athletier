@@ -166,19 +166,17 @@ public class ChallengeRecyclerAdapter extends
 
         // Show right button for rating the other User
         holder.rightButton.setText(R.string.rate);
+
+        // Only enable right button if the User has not rated previously
+        holder.rightButton.setEnabled(
+                (asHost && !challenge.getHostDidRate()) ||
+                        (!asHost && !challenge.getOpponentDidRate())
+        );
         setHolderButtonListener(holder.rightButton,
                 challenge,
                 asHost ? ChallengeButtonAction.HOST_RATE :
                         ChallengeButtonAction.OPPONENT_RATE
         );
-
-
-//        holder.rightButton.setText(asHost ? R.string.report_winner : R.string.confirm_winner);
-//        holder.leftButton.setVisibility(View.GONE);
-//        holder.leftButton.setEnabled(false);
-//        holder.statusTitleText.setVisibility(View.VISIBLE);
-//        holder.resultStatusText.setVisibility(View.VISIBLE);
-//        holder.statusTitleText.setText(R.string.winner);
     }
 
     private void setResultDisplay(ChallengeViewHolder holder, Challenge challenge) {
@@ -189,16 +187,20 @@ public class ChallengeRecyclerAdapter extends
                 break;
             case AWAITING_CONFIRMATION:
                 toggleResultStatusVisibility(holder, false);
+                holder.resultStatusText.setText(R.string.waiting_for_confirmation);
                 break;
             case DISPUTED:
                 toggleResultStatusVisibility(holder, false);
-                holder.statusTitleText.setText(R.string.winner);
+                holder.resultStatusText.setText(R.string.result_disputed);
                 break;
             case CONFIRMED:
-                holder.statusTitleText.setText(R.string.winner);
+                toggleResultStatusVisibility(holder, false);
                 holder.displayWinnerName(challenge.getHostIsWinner() ? challenge.getHostId()
                         : challenge.getOpponentId());
 
+        }
+        if (holder.statusTitleText.getVisibility() == View.VISIBLE) {
+            holder.statusTitleText.setText(R.string.winner);
         }
     }
 

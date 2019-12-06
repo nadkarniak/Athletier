@@ -66,6 +66,7 @@
     <string name="logout">Logout</string>
     <string name="exp">Exp</string>
     <string name="waiting_for_confirmation">Waiting for opponent to confirm</string>
+    <string name="waiting_for_confirmation">Waiting for confirmation</string>
     <string name="result_disputed">Opponent disputed winner…</string>
     <string name="change_winner">Change Winner</string>
 </resources>
