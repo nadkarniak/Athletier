@@ -112,7 +112,7 @@ public class FindUserFragment extends Fragment {
     private void setupViews(View view) {
         // Find views using id's
         usernameText = ((LinearLayout)view).findViewById(R.id.userName);
-        recordText = ((LinearLayout)view).findViewById(R.id.record);
+        recordText = ((LinearLayout)view).findViewById(R.id.exp);
         followersText = ((LinearLayout)view).findViewById(R.id.followers);
         followingText = ((LinearLayout)view).findViewById(R.id.following);
         sportsmanshipBar = ((LinearLayout)view).findViewById(R.id.ratingBar);

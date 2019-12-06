@@ -5,14 +5,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,19 +19,11 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.CS5520.athletier.Models.Sport;
-import com.CS5520.athletier.Models.SportsAchievementSummary;
 import com.CS5520.athletier.Models.SportsBadge;
 import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.ui.Challenges.ColoredSpinnerFragment;
-import com.CS5520.athletier.ui.Map.SpinnerInputViewModel;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -46,7 +34,7 @@ public class ProfileTabFragment extends Fragment {
     private ProfileTabViewModel profileTabViewModel;
     private ColoredSpinnerFragment sportsSpinner;
     private TextView usernameText;
-    private TextView recordText;
+    private TextView expText;
     private TextView followersText;
     private TextView followingText;
     private RatingBar sportsmanshipBar;
@@ -72,8 +60,6 @@ public class ProfileTabFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         profileTabViewModel = ViewModelProviders.of(this).get(ProfileTabViewModel.class);
-//        setupSportsList(getContext());
-
     }
 
     @Override
@@ -82,6 +68,8 @@ public class ProfileTabFragment extends Fragment {
         setupObservers();
         observeSpinnerSelection();
         setupBadges(getContext(), "1v1 Basketball");
+        setUpExp(Sport.fromString("1v1 Basketball"));
+
 
     }
 
@@ -101,7 +89,7 @@ public class ProfileTabFragment extends Fragment {
         });
         backgroundPicture = view.findViewById(R.id.profile_background);
         usernameText = view.findViewById(R.id.userName);
-        recordText = view.findViewById(R.id.record);
+        expText = view.findViewById(R.id.exp);
         followersText = view.findViewById(R.id.followers);
         followingText = view.findViewById(R.id.following);
         sportsmanshipBar = view.findViewById(R.id.ratingBar);
@@ -133,20 +121,11 @@ public class ProfileTabFragment extends Fragment {
                     @Override
                     public void onChanged(String s) {
                         setupBadges(getContext(), s);
+                        setUpExp(Sport.fromString(s));
                     }
                 });
     }
 
-//    private void setupSportsList(Context context) {
-//        List<String> sports = Sport.getAllSportsNames();
-//        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-//                context,
-//                android.R.layout.simple_spinner_dropdown_item,
-//                sports
-//        );
-//        sportsList.setAdapter(adapter);
-//        sportsList.setSelection(0);
-//    }
 
     private List<SportsBadge> getBadgeList(Context context, String s) {
         switch(s) {
@@ -196,6 +175,15 @@ public class ProfileTabFragment extends Fragment {
 //                // Set badge resources
 //            }
 //        });
+    }
+
+    private void setUpExp(Sport s) {
+        profileTabViewModel.getExp(s).observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                expText.setText(s);
+            }
+        });
     }
 
 
