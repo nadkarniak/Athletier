@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,17 +13,31 @@
         android:gravity="center"
         android:orientation="vertical"
         android:padding="24dp"
-        tools:context=".SigninActivity" >
+        android:paddingTop="70dp"
+        tools:context=".SigninActivity">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:fontFamily="casual"
+            android:shadowDx="1"
+            android:shadowDy="2"
+            android:text="@string/athletier"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
         <ImageView
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="328dp"
+            android:layout_height="207dp"
             android:layout_gravity="center"
             android:contentDescription="@string/image"
-            android:minHeight="0dp"
             android:minWidth="0dp"
-            android:scaleType="fitCenter"
-            android:src="@android:drawable/ic_menu_agenda" />
+            android:minHeight="0dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/logo" />
 
         <EditText
             android:id="@+id/email"
@@ -65,10 +80,10 @@
             android:textSize="15sp" />
 
         <com.google.android.gms.common.SignInButton
-            android:paddingTop="10dp"
             android:id="@+id/sign_in_google"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp" />
 
     </LinearLayout>
 
