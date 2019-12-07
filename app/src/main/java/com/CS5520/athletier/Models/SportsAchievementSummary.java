@@ -117,10 +117,15 @@ public class SportsAchievementSummary {
     public void awardExp(String challengeId, int opponentTier) {
         int ptsEarned = ExpCalculator.calculateExpEarned(tier, opponentTier);
         // Award exp based on the opponents Tier
+        System.out.println("Points awarded");
         exp += ptsEarned;
         // Update tier
         tier = Tier.fromExp(exp).toInt();
+
         // Add challengeId and ptsEarned to challengeIdsAndPts map
+        if (challengeIdAndPtsMap == null) {
+            challengeIdAndPtsMap = new HashMap<>();
+        }
         if (!challengeIdAndPtsMap.containsKey(challengeId)) {
             challengeIdAndPtsMap.put(challengeId, ptsEarned);
         }

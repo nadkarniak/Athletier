@@ -158,7 +158,7 @@ public class ChallengeRecyclerViewModel extends AndroidViewModel {
                                 dataSnapshot.getValue(SportsAchievementSummary.class);
                         if (achievement != null) {
                             int loserTier = achievement.getTier();
-
+                            System.out.println("Calling awardWinnerExp...");
                             // Award the winning User points
                             awardWinnerExp(winnerId, sport, loserTier, challengeId);
                         }
@@ -176,6 +176,7 @@ public class ChallengeRecyclerViewModel extends AndroidViewModel {
                                 Sport sport,
                                 final int loserTier,
                                 final String challengeId) {
+        System.out.println("Awarding user exp...");
         databaseReference
                 .child(SportsAchievementSummary.sportsAchievementKey)
                 .child(sport.name())
