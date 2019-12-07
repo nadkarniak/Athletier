@@ -72,12 +72,15 @@ public class SigninActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_signin_activity);
 
+        /**
         inputEmail = (EditText) findViewById(R.id.email);
         inputPassword = (EditText) findViewById(R.id.password);
         Button ahlogin = (Button) findViewById(R.id.ah_login);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         TextView btnSignIn = (TextView) findViewById(R.id.sign_in_button);
+         */
         button = (SignInButton) findViewById(R.id.sign_in_google);
+
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,15 +89,18 @@ public class SigninActivity extends AppCompatActivity {
             }
         });
 
+        /**
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(SigninActivity.this, SignupActivity.class));
             }
         });
+         */
 
         mAuth = FirebaseAuth.getInstance();
 
+        /**
         ahlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,6 +144,7 @@ public class SigninActivity extends AppCompatActivity {
 
             }
         });
+         */
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override

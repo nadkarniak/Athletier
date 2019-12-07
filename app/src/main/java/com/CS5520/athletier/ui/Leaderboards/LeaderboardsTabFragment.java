@@ -9,6 +9,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,13 +22,17 @@ import android.widget.Spinner;
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.R;
+import com.CS5520.athletier.ui.Challenges.ColoredSpinnerFragment;
 
 import java.util.List;
 
 public class LeaderboardsTabFragment extends Fragment {
 
     private LeaderboardsTabViewModel leaderboardsTabViewModel;
-    private Spinner sportsList;
+//    private Spinner sportsList;
+    private ColoredSpinnerFragment sportSpinnerFrag;
+    private RecyclerView leaderboardRecycler;
+    private LeaderboardRecyclerAdapter adapter;
 
     public static LeaderboardsTabFragment newInstance() {
         return new LeaderboardsTabFragment();
@@ -45,22 +51,55 @@ public class LeaderboardsTabFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         leaderboardsTabViewModel =
                 ViewModelProviders.of(this).get(LeaderboardsTabViewModel.class);
-        setupSportsList(getContext());
+        setupFragments();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        setupObservers();
     }
 
     private void setupViews(View view) {
         // Find views using id's
-        sportsList = ((LinearLayout)view).findViewById(R.id.sportsSpinner);
+        leaderboardRecycler = view.findViewById(R.id.leaderboardRecyclerView);
+//        sportsList = view.findViewById(R.id.sportsSpinner);
     }
 
-    private void setupSportsList(Context context) {
-        List<String> sports = Sport.getAllSportsNames();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                context,
-                android.R.layout.simple_spinner_dropdown_item,
-                sports
-        );
-        sportsList.setAdapter(adapter);
+    private void setupFragments() {
+        Context context = getContext();
+        sportSpinnerFrag = (ColoredSpinnerFragment)
+                getChildFragmentManager().findFragmentById(R.id.leaderboardSportsSpinner);
+        if (sportSpinnerFrag != null && context != null ) {
+            sportSpinnerFrag.setSpinnerOptions(context, Sport.getAllSportsNames());
+            adapter = new LeaderboardRecyclerAdapter(Sport.fromString(Sport.getAllSportsNames().get(0)));
+            leaderboardRecycler.setAdapter(adapter);
+            leaderboardRecycler.setLayoutManager(new LinearLayoutManager(context));
+        }
     }
+
+    private void setupObservers() {
+        sportSpinnerFrag.getSelectedItem().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String sportName) {
+                Sport sport = Sport.fromString(sportName);
+                if (adapter != null && sport != null) {
+                    adapter.setSelectedSport(sport);
+                } else  if (sport != null) {
+                    adapter = new LeaderboardRecyclerAdapter(sport);
+                }
+            }
+        });
+    }
+
+//    private void setupSportsList(Context context) {
+//        List<String> sports = Sport.getAllSportsNames();
+//        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+//                context,
+//                android.R.layout.simple_spinner_dropdown_item,
+//                sports
+//        );
+//        sportsList.setAdapter(adapter);
+//    }
 
 }

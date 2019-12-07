@@ -20,7 +20,6 @@
     <string name="log_out">Sign Out</string>
     <string name="friends">Friends</string>
     <string name="add_friends">Add Friend</string>
-    <string name="record">0-0</string>
     <string name="_3v3_basketball">3v3 Basketball</string>
     <string name="spikeball">Spikeball</string>
     <string name="golf">Golf</string>
@@ -57,8 +56,6 @@
     <string name="awaiting_challenger">Awaiting Challenger…</string>
     <string name="confirm_winner">Confirm Winner</string>
     <string name="winner">Winner: </string>
-<<<<<<< Updated upstream
-=======
     <string name="pts">pts</string>
     <string name="rank">Rank</string>
     <string name="tier">Tier</string>
@@ -70,7 +67,5 @@
     <string name="waiting_for_confirmation">Waiting for confirmation</string>
     <string name="result_disputed">Opponent disputed winner…</string>
     <string name="change_winner">Change Winner</string>
-    <string name="textview">TextView</string>
     <string name="athletier">Athletier</string>
->>>>>>> Stashed changes
 </resources>

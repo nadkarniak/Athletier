@@ -7,32 +7,44 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.CS5520.athletier.Models.AcceptanceStatus;
 import com.CS5520.athletier.Models.Challenge;
+import com.CS5520.athletier.Models.ResultStatus;
+import com.CS5520.athletier.Models.Sport;
+import com.CS5520.athletier.Models.SportsAchievementSummary;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.Utilities.ChallengeButtonAction;
 import com.CS5520.athletier.Utilities.ChallengeUpdater;
 import com.CS5520.athletier.ui.Map.SpinnerInputFragment;
 import com.CS5520.athletier.ui.Search.FindUser.FindUserActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChallengeRecyclerFragment extends Fragment {
+public class ChallengeRecyclerFragment extends Fragment implements
+        SelectWinnerDialogFragment.SelectedWinnerDialogListener {
 
+    private ChallengeRecyclerViewModel viewModel;
     private DatabaseReference databaseReference;
-
-    private SpinnerInputFragment spinner;
     private ChallengeRecyclerAdapter adapter;
     private RecyclerView recyclerView;
 
@@ -52,8 +64,10 @@ public class ChallengeRecyclerFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        viewModel = ViewModelProviders.of(this).get(ChallengeRecyclerViewModel.class);
         setupRecyclerView();
         observeForProfileImageClicks();
+        setupUpdateObservers();
     }
 
     void updateAsHost(boolean asHost) {
@@ -82,28 +96,54 @@ public class ChallengeRecyclerFragment extends Fragment {
             public void onChanged(Pair<Challenge, ChallengeButtonAction> challengeActionPair) {
                 Challenge challenge = challengeActionPair.first;
                 ChallengeButtonAction action = challengeActionPair.second;
+                if (action != ChallengeButtonAction.CANCEL) {
+                    viewModel.setSelectedChallenge(challenge);
+                }
 
                 switch (action) {
+                    // The user is reporting the winner as the host
                     case HOST_REPORT:
-                        // Launch dialog for result reporting and rating opponent
+                        launchSelectWinnerDialog(challenge.getId(), true);
                         break;
+                    // The user is reporting the winner as the opponent
                     case OPPONENT_REPORT:
-                        // Launch dialog for result reporting and rating opponent
+                        launchSelectWinnerDialog(challenge.getId(), false);
                         break;
+                    // The user is accepting a challenge
                     case ACCEPT:
                         // Change status of challenge to accepted
-                        ChallengeUpdater.updateAcceptanceStatus(
-                                databaseReference,
-                                challenge.getId(),
-                                AcceptanceStatus.ACCEPTED
-                        );
+                        viewModel.updateChallengeAcceptanceStatus(challenge.getId(),
+                                AcceptanceStatus.ACCEPTED);
                         break;
+                    // The user hit the cancel button on the challenge
                     case CANCEL:
                         // Delete challenge
-                        ChallengeUpdater.deleteChallenge(databaseReference, challenge.getId());
+                        viewModel.deleteChallenge(challenge.getId());
+                        break;
+                    // The user is the host and is rating the opponent
+                    case HOST_RATE:
+                        // TODO: Trigger dialog for rating opponent and awarding badges
+                        break;
+                    // The user is the opponent and rating the host
+                    case OPPONENT_RATE:
+                        // TODO: Trigger dialog for rating host and awarding badges
+                        break;
                 }
             }
         });
+    }
+
+    private void setupUpdateObservers() {
+        viewModel.getUserAwardedExp().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer expGained) {
+                showToastMessage("Congratulations! You gained " + expGained + "pts!");
+            }
+        });
+    }
+
+    private void showToastMessage(String msg) {
+        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
     private void observeForProfileImageClicks() {
@@ -121,9 +161,25 @@ public class ChallengeRecyclerFragment extends Fragment {
         });
     }
 
+    private void launchSelectWinnerDialog(String challengeId, boolean reportingAsHost) {
+        DialogFragment dialogFragment = new SelectWinnerDialogFragment();
+        // Pass challengeId to dialog fragment
+        Bundle bundle = new Bundle();
+        bundle.putString(Challenge.challengeKey, challengeId);
+        bundle.putBoolean(Challenge.hostIdKey, reportingAsHost);
+        dialogFragment.setArguments(bundle);
+        // Show dialog
+        dialogFragment.show(getChildFragmentManager(), "SelectWinnerDialogFragment");
+    }
 
 
-
-
+    @Override
+    public void onDialogPositiveClick(final boolean reportingAsHost,
+                                      final boolean hostSelectedAsWinner) {
+        // Update the result of the challenge with the input Id
+        viewModel.updateChallengeWinner(reportingAsHost, hostSelectedAsWinner );
+    }
 
 }
+
+

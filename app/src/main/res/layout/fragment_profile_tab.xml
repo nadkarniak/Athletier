@@ -22,17 +22,18 @@
                 android:layout_height="405dp">
 
                 <LinearLayout
+                    android:id="@+id/profile_background"
                     android:layout_width="match_parent"
                     android:layout_height="350dp"
-                    android:background="@drawable/ic_launcher_background"
+                    android:background="@drawable/basketball_background"
                     android:orientation="vertical">
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/profilePicCardView"
                         android:layout_width="150dp"
                         android:layout_height="150dp"
-                        android:layout_marginTop="45dp"
                         android:layout_gravity="center"
+                        android:layout_marginTop="45dp"
                         app:cardCornerRadius="75dp">
 
                         <ImageView
@@ -54,12 +55,13 @@
                         android:textStyle="bold" />
 
                     <Button
+                        android:id="@+id/signout"
                         android:layout_width="wrap_content"
                         android:layout_height="35dp"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/follow_button"
-                        android:text="@string/follow_me"
+                        android:text="@string/logout"
                         android:textColor="#fff" />
 
                 </LinearLayout>
@@ -131,11 +133,11 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/record_string"
+                                android:text="@string/exp"
                                 android:textSize="20sp" />
 
                             <TextView
-                                android:id="@+id/record"
+                                android:id="@+id/exp_search"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textSize="20sp" />
@@ -152,12 +154,13 @@
                 android:layout_gravity="center"
                 android:orientation="vertical">
 
-                <Spinner
-                    android:id="@+id/sportsSpinner"
+                <fragment
+                    android:id="@+id/sportsSpinnerFragment"
+                    android:name="com.CS5520.athletier.ui.Challenges.ColoredSpinnerFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown"
-                    android:spinnerMode="dropdown" />
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"/>
 
                 <RatingBar
                     android:id="@+id/ratingBar"

@@ -39,15 +39,19 @@ public class ColoredSpinnerFragment extends Fragment implements AdapterView.OnIt
         viewModel = ViewModelProviders.of(this).get(SpinnerInputViewModel.class);
     }
 
-    void setSpinnerOptions(Context context, List<String> spinnerOptions) {
+    public void setSpinnerOptions(Context context, List<String> spinnerOptions) {
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(context,
                 R.layout.colored_spinner_text, spinnerOptions);
         dropdownSpinner.setAdapter(spinnerAdapter);
         dropdownSpinner.setOnItemSelectedListener(this);
     }
 
-    LiveData<String> getSelectedItem() {
-        return viewModel.getSelectedItem();
+    public LiveData<String> getSelectedItem() {
+        if (viewModel != null) {
+            return viewModel.getSelectedItem();
+        } else {
+            return null;
+        }
     }
 
     @Override

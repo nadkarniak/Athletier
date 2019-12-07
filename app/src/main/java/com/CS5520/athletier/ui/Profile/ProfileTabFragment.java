@@ -5,29 +5,25 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.SportsBadge;
+import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.R;
+import com.CS5520.athletier.ui.Challenges.ColoredSpinnerFragment;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -36,115 +32,157 @@ import java.util.List;
 public class ProfileTabFragment extends Fragment {
 
     private ProfileTabViewModel profileTabViewModel;
+    private ColoredSpinnerFragment sportsSpinner;
     private TextView usernameText;
-    private TextView recordText;
+    private TextView expText;
     private TextView followersText;
     private TextView followingText;
     private RatingBar sportsmanshipBar;
-    private Spinner sportsList;
     private ImageView firstBadge;
     private ImageView secondBadge;
     private ImageView thirdBadge;
     private ImageView fourthBadge;
     private ImageView fifthBadge;
     private ImageView profilePicture;
-    private FirebaseAuth mAuth;
-    private FirebaseUser user;
-    private DatabaseReference mRef;
+    private Button logOut;
+    private LinearLayout backgroundPicture;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile_tab, container, false);
         setupViews(view);
+        setupSportsSpinner();
         return view;
     }
 
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
-        profileTabViewModel =
-                ViewModelProviders.of(this).get(ProfileTabViewModel.class);
-        profileTabViewModel.findUserWithId(user.getUid());
+        profileTabViewModel = ViewModelProviders.of(this).get(ProfileTabViewModel.class);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         setupObservers();
-        setupSportsList(getContext());
-        setupBadges(getContext());
+        observeSpinnerSelection();
+        setupBadges(getContext(), "1v1 Basketball");
+        setUpExp(Sport.fromString("1v1 Basketball"));
     }
 
     private void setupViews(View view) {
         // Find views using id's
-        usernameText = ((LinearLayout)view).findViewById(R.id.userName);
-        recordText = ((LinearLayout)view).findViewById(R.id.record);
-        followersText = ((LinearLayout)view).findViewById(R.id.followers);
-        followingText = ((LinearLayout)view).findViewById(R.id.following);
-        sportsmanshipBar = ((LinearLayout)view).findViewById(R.id.ratingBar);
-        sportsList = ((LinearLayout)view).findViewById(R.id.sportsSpinner);
-        firstBadge = ((LinearLayout)view).findViewById(R.id.first_badge);
-        secondBadge = ((LinearLayout)view).findViewById(R.id.second_badge);
-        thirdBadge = ((LinearLayout)view).findViewById(R.id.third_badge);
-        fourthBadge = ((LinearLayout)view).findViewById(R.id.fourth_badge);
-        fifthBadge = ((LinearLayout)view).findViewById(R.id.fifth_badge);
-        profilePicture = ((LinearLayout)view).findViewById(R.id.profilePic);
+        FragmentManager manager = getChildFragmentManager();
+        sportsSpinner = (ColoredSpinnerFragment)
+                manager.findFragmentById(R.id.sportsSpinnerFragment);
+
+        logOut = view.findViewById(R.id.signout);
+
+        logOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+            }
+        });
+        backgroundPicture = view.findViewById(R.id.profile_background);
+        usernameText = view.findViewById(R.id.userName);
+        expText = view.findViewById(R.id.exp_search);
+        followersText = view.findViewById(R.id.followers);
+        followingText = view.findViewById(R.id.following);
+        sportsmanshipBar = view.findViewById(R.id.ratingBar);
+        firstBadge = view.findViewById(R.id.first_badge);
+        secondBadge = view.findViewById(R.id.second_badge);
+        thirdBadge = view.findViewById(R.id.third_badge);
+        fourthBadge = view.findViewById(R.id.fourth_badge);
+        fifthBadge = view.findViewById(R.id.fifth_badge);
+        profilePicture = view.findViewById(R.id.profilePic);
     }
 
-    private void setupSportsList(Context context) {
+    private void setupSportsSpinner() {
+        sportsSpinner = (ColoredSpinnerFragment)
+                getChildFragmentManager().findFragmentById(R.id.sportsSpinnerFragment);
+        if (sportsSpinner == null) {
+            System.out.println("null");
+        }
+
         List<String> sports = Sport.getAllSportsNames();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                context,
-                android.R.layout.simple_spinner_dropdown_item,
-                sports
-        );
-        sportsList.setAdapter(adapter);
-        sportsList.setSelection(0);
+        sportsSpinner.setSpinnerOptions(getContext(), sports);
     }
 
-    private List<SportsBadge> getBadgeList(Context context) {
-        switch(sportsList.getSelectedItem().toString()) {
+    private void observeSpinnerSelection() {
+        if(sportsSpinner == null) {
+            System.out.println("null");
+        }
+        sportsSpinner.getSelectedItem().observe(getViewLifecycleOwner(),
+                new Observer<String>() {
+                    @Override
+                    public void onChanged(String s) {
+                        setupBadges(getContext(), s);
+                        setUpExp(Sport.fromString(s));
+                    }
+                });
+    }
+
+
+    private List<SportsBadge> getBadgeList(Context context, String s) {
+        switch(s) {
             case("1v1 Basketball"):
+                backgroundPicture.setBackgroundResource(R.drawable.basketball_background);
                 return Sport.ONE_V_ONE_BASKETBALL.getBadgeOptions();
+            case("Golf"):
+                backgroundPicture.setBackgroundResource(R.drawable.golf_background);
+                return Sport.GOLF.getBadgeOptions();
+            case("Tennis"):
+                backgroundPicture.setBackgroundResource(R.drawable.tennis_background);
+                return Sport.TENNIS.getBadgeOptions();
             default:
                 return new ArrayList<>();
         }
     }
 
-    private void setupBadges(Context context) {
-        List<SportsBadge> badges = getBadgeList(context);
-        firstBadge.setImageResource(badges.get(0).getResId());
-        secondBadge.setImageResource(badges.get(1).getResId());
-        thirdBadge.setImageResource(badges.get(2).getResId());
-        fourthBadge.setImageResource(badges.get(3).getResId());
-        fifthBadge.setImageResource(badges.get(4).getResId());
+    // TODO: Change this so it comes from SportsAchievementSummary
+    private void setupBadges(Context context, String s) {
+        List<SportsBadge> badges = getBadgeList(context, s);
+        if(badges.size() > 0) {
+            firstBadge.setImageResource(badges.get(0).getResId());
+            secondBadge.setImageResource(badges.get(1).getResId());
+            thirdBadge.setImageResource(badges.get(2).getResId());
+            fourthBadge.setImageResource(badges.get(3).getResId());
+            fifthBadge.setImageResource(badges.get(4).getResId());
+        }
     }
 
+
     private void setupObservers() {
-        profileTabViewModel.getCurrentUser().observe(getViewLifecycleOwner(), new Observer<FirebaseUser>() {
+        profileTabViewModel.getCurrentUser().observe(getViewLifecycleOwner(), new Observer<User>() {
             @Override
-            public void onChanged(FirebaseUser user) {
-                mRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
-                mRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String name = dataSnapshot.child("username").getValue().toString();
-                        String photo = dataSnapshot.child("photoUrl").getValue().toString();
-                        String uid = dataSnapshot.child("id").getValue().toString();
-                        String email = dataSnapshot.child("emailAddress").getValue().toString();
-                        String record = dataSnapshot.child("record").getValue().toString();
-                        String sportsmanship = dataSnapshot.child("avgSportsmanshipRating").getValue().toString();
-                        usernameText.setText(name);
-                        recordText.setText(record);
-                        followersText.setText(String.valueOf(0));
-                        followingText.setText(String.valueOf(0));
-                        sportsmanshipBar.setRating(Integer.parseInt(sportsmanship));
-                        Picasso.get().load(photo).into(profilePicture);
-                    }
+            public void onChanged(User user) {
+                usernameText.setText(user.getUsername());
+                followersText.setText(String.valueOf(0));
+                followingText.setText(String.valueOf(0));
+                sportsmanshipBar.setRating(user.getAvgSportsmanshipRating());
+                Picasso.get().load(user.getPhotoUrl()).into(profilePicture);
+            }
+        });
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//        profileTabViewModel.getAchievements().observe(getViewLifecycleOwner(),
+//                new Observer<List<SportsAchievementSummary>>() {
+//            @Override
+//            public void onChanged(List<SportsAchievementSummary> sportsAchievementSummaries) {
+//                // Set badge resources
+//            }
+//        });
+    }
 
-                    }
-                });
+    private void setUpExp(Sport s) {
+        profileTabViewModel.getExp(s).observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                expText.setText(s);
             }
         });
     }
+
 
 }

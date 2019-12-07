@@ -10,14 +10,13 @@ import java.util.List;
 
 public enum Sport {
     ONE_V_ONE_BASKETBALL,
-    SQUASH,
     TENNIS,
-    GOLF,
-    SPIKEBALL;
+    GOLF;
 
 
     // Returns a list of possible badges for the input sport
     public List<SportsBadge> getBadgeOptions() {
+        // Basketball badges.
         SportsBadge ballHandler =  new SportsBadge("Ball Handler",
                 ONE_V_ONE_BASKETBALL, "Good at dribbling.",
                 R.drawable.ball_handler);
@@ -36,18 +35,52 @@ public enum Sport {
         SportsBadge[] basketball;
         basketball = new SportsBadge[] {ballHandler, rebounder, shooter, defender, sportsman};
 
-        // TODO: Add badges for each sport below...
+        // Tennis badges.
+        SportsBadge backhand_specialist =  new SportsBadge("Backhand Specialist",
+                TENNIS, "Has a good backhand.",
+                R.drawable.backhand);
+        SportsBadge agile =  new SportsBadge("Agility",
+                TENNIS, "Gets to everything.",
+                R.drawable.gets_to_everything);
+        SportsBadge serve =  new SportsBadge("Nice Serve",
+                TENNIS, "Nice serve.",
+                R.drawable.shooter);
+        SportsBadge net_player =  new SportsBadge("Net Player",
+                TENNIS, "Good at the net.",
+                R.drawable.net_player);
+        SportsBadge slice =  new SportsBadge("Slicer",
+                TENNIS, "Slices a lot.",
+                R.drawable.slice);
+        SportsBadge[] tennis;
+        tennis = new SportsBadge[] {backhand_specialist, agile, serve, net_player, slice};
+
+        // Golf badges.
+        SportsBadge sand_specialist =  new SportsBadge("Sand Specialist",
+                GOLF, "Good out of the sand.",
+                R.drawable.good_sand);
+        SportsBadge long_ball =  new SportsBadge("Long Ball",
+                GOLF, "Drives the ball far.",
+                R.drawable.long_ball);
+        SportsBadge putter =  new SportsBadge("Putting Master",
+                GOLF, "Good at putting.",
+                R.drawable.putter);
+        SportsBadge quick_round =  new SportsBadge("Quick Round",
+                GOLF, "Plays fast.",
+                R.drawable.quick_round);
+        SportsBadge straight_drives =  new SportsBadge("Straight Drives",
+                GOLF, "Drives the ball straight.",
+                R.drawable.straight_drives);
+        SportsBadge[] golf;
+        golf = new SportsBadge[] {sand_specialist, long_ball, putter, quick_round, straight_drives};
+
+
         switch (this) {
             case ONE_V_ONE_BASKETBALL:
                 return Arrays.asList(basketball);
-            case SQUASH:
-                return new ArrayList<>();
             case TENNIS:
-                return new ArrayList<>();
+                return Arrays.asList(tennis);
             case GOLF:
-                return new ArrayList<>();
-            case SPIKEBALL:
-                return new ArrayList<>();
+                return Arrays.asList(golf);
             default:
                 return new ArrayList<>();
         }
@@ -60,14 +93,10 @@ public enum Sport {
         switch (this) {
             case ONE_V_ONE_BASKETBALL:
                 return "1v1 Basketball";
-            case SQUASH:
-                return "Squash";
             case TENNIS:
                 return "Tennis";
             case GOLF:
                 return "Golf";
-            case SPIKEBALL:
-                return "Spikeball";
             default:
                 return "Unknown";
         }
@@ -76,14 +105,10 @@ public enum Sport {
     public static Sport fromString(String sportString) {
         if (sportString.equals(ONE_V_ONE_BASKETBALL.toString())) {
             return ONE_V_ONE_BASKETBALL;
-        } else if (sportString.equals(SQUASH.toString())) {
-            return SQUASH;
         } else if (sportString.equals(TENNIS.toString())) {
             return TENNIS;
         } else if (sportString.equals(GOLF.toString())) {
             return GOLF;
-        } else if (sportString.equals(SPIKEBALL.toString())) {
-            return SPIKEBALL;
         } else {
             return null;
         }
@@ -103,14 +128,10 @@ public enum Sport {
         switch (this) {
             case ONE_V_ONE_BASKETBALL:
                 return R.drawable.basketball;
-            case SQUASH:
-                return R.drawable.squash_ball;
             case TENNIS:
                 return R.drawable.tennis_ball;
             case GOLF:
                 return R.drawable.golf_ball;
-            case SPIKEBALL:
-                return R.drawable.basketball;
             default:
                 return R.drawable.basketball;
         }
