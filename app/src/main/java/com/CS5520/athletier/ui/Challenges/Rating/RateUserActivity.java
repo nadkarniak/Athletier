@@ -1,4 +1,4 @@
-package com.CS5520.athletier.ui.Challenges;
+package com.CS5520.athletier.ui.Challenges.Rating;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,18 +7,14 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Adapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.Models.Sport;
@@ -28,11 +24,14 @@ import com.CS5520.athletier.Utilities.LogTags;
 import com.squareup.picasso.Picasso;
 
 public class RateUserActivity extends AppCompatActivity {
+
     private RateUserActivityViewModel viewModel;
     private ImageView opponentImageView;
     private TextView opponentNameText;
     private RatingBar sportsmanshipBar;
     private RecyclerView addBadgeRecyclerView;
+    private AddBadgeRecyclerAdapter adapter;
+    private Button doneButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +46,12 @@ public class RateUserActivity extends AppCompatActivity {
             setupUserObserver();
             setupActionBar();
             findViews();
+            setupRatingBar();
             setupAddBadgeRecyclerView(challenge.getSport());
+            setupDoneButton();
         } else {
-            Log.i(LogTags.ERROR, "Passed challenge in RateUserActivity is null...");
+            Log.i(LogTags.USER_RATING_ERROR,
+                    "Passed challenge in RateUserActivity is null...");
             finish();
         }
     }
@@ -67,6 +69,7 @@ public class RateUserActivity extends AppCompatActivity {
 
     private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();
+
         if (actionBar != null) {
             actionBar.setTitle(R.string.rate_opponent);
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -80,15 +83,34 @@ public class RateUserActivity extends AppCompatActivity {
         opponentNameText = findViewById(R.id.opponentNameTextView);
         sportsmanshipBar = findViewById(R.id.rateOpponentSportsmanshipBar);
         addBadgeRecyclerView = findViewById(R.id.addBadgeRecycler);
+        doneButton = findViewById(R.id.rateUserDoneButton);
     }
 
     private void setupAddBadgeRecyclerView(String sportString) {
         Sport sport = Sport.fromString(sportString);
         if (sport != null) {
-            AddBadgeRecyclerAdapter adapter = new AddBadgeRecyclerAdapter(sport);
+            adapter = new AddBadgeRecyclerAdapter(sport);
             addBadgeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             addBadgeRecyclerView.setAdapter(adapter);
         }
+    }
+
+    private void setupRatingBar() {
+        sportsmanshipBar.setStepSize(1);
+        sportsmanshipBar.setRating(5);
+    }
+
+    private void setupDoneButton() {
+        doneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewModel.addRatingAndBadges(
+                        sportsmanshipBar.getRating(),
+                        adapter.getAwardedBadges()
+                );
+                finish();
+            }
+        });
     }
 
     private void setupUserObserver() {
@@ -106,4 +128,6 @@ public class RateUserActivity extends AppCompatActivity {
             Picasso.get().load(photoUrl).into(opponentImageView);
         }
     }
+
+
 }

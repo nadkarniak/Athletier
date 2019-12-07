@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,21 +20,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.CS5520.athletier.Models.AcceptanceStatus;
 import com.CS5520.athletier.Models.Challenge;
-import com.CS5520.athletier.Models.ResultStatus;
-import com.CS5520.athletier.Models.Sport;
-import com.CS5520.athletier.Models.SportsAchievementSummary;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.Utilities.ChallengeButtonAction;
-import com.CS5520.athletier.Utilities.ChallengeUpdater;
-import com.CS5520.athletier.ui.Map.SpinnerInputFragment;
+import com.CS5520.athletier.ui.Challenges.Rating.RateUserActivity;
 import com.CS5520.athletier.ui.Search.FindUser.FindUserActivity;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,15 +34,9 @@ public class ChallengeRecyclerFragment extends Fragment implements
         SelectWinnerDialogFragment.SelectedWinnerDialogListener {
 
     private ChallengeRecyclerViewModel viewModel;
-    private DatabaseReference databaseReference;
     private ChallengeRecyclerAdapter adapter;
     private RecyclerView recyclerView;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -120,14 +104,8 @@ public class ChallengeRecyclerFragment extends Fragment implements
                         // Delete challenge
                         viewModel.deleteChallenge(challenge.getId());
                         break;
-                    // The user is the host and is rating the opponent
-                    case HOST_RATE:
-                        // TODO: Trigger dialog for rating opponent and awarding badges
-                        launchRateUserActivity(challenge);
-                        break;
-                    // The user is the opponent and rating the host
-                    case OPPONENT_RATE:
-                        // TODO: Trigger dialog for rating host and awarding badges
+                    // The user hit the Rate button on the challenge
+                    case RATE:
                         launchRateUserActivity(challenge);
                         break;
                 }

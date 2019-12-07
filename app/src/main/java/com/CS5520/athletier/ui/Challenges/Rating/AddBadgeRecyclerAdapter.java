@@ -1,7 +1,5 @@
-package com.CS5520.athletier.ui.Challenges;
+package com.CS5520.athletier.ui.Challenges.Rating;
 
-import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,10 +7,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.CS5520.athletier.Models.Sport;
@@ -25,8 +21,11 @@ import java.util.List;
 public class AddBadgeRecyclerAdapter extends
         RecyclerView.Adapter<AddBadgeRecyclerAdapter.BadgeDetailsViewHolder> {
 
+    // The Sport the User is rating in
     private Sport sport;
+    // The SportsBadges of the selected Sport
     private List<SportsBadge> badges;
+    // The names of the SportsBadges the User is awarding to the selected Opponent
     private List<String> awardedBadges;
 
     public AddBadgeRecyclerAdapter(Sport sport) {
@@ -35,6 +34,9 @@ public class AddBadgeRecyclerAdapter extends
         this.awardedBadges = new ArrayList<>();
     }
 
+    List<String> getAwardedBadges() {
+        return this.awardedBadges;
+    }
 
     @NonNull
     @Override

@@ -99,7 +99,7 @@
         android:roundIcon="@drawable/icons8_strategy_48"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.Challenges.RateUserActivity"></activity>
+        <activity android:name=".ui.Challenges.Rating.RateUserActivity"></activity>
         <activity android:name=".ui.Map.CreateChallenge.CreateChallengeActivity" />
         <activity
             android:name=".SigninActivity"

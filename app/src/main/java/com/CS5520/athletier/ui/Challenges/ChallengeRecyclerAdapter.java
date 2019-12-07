@@ -172,10 +172,10 @@ public class ChallengeRecyclerAdapter extends
                 (asHost && !challenge.getHostDidRate()) ||
                         (!asHost && !challenge.getOpponentDidRate())
         );
+        holder.rightButton.getBackground().setAlpha(holder.rightButton.isEnabled() ? 255 : 128);
         setHolderButtonListener(holder.rightButton,
                 challenge,
-                asHost ? ChallengeButtonAction.HOST_RATE :
-                        ChallengeButtonAction.OPPONENT_RATE
+                ChallengeButtonAction.RATE
         );
     }
 

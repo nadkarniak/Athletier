@@ -201,16 +201,22 @@ public class Challenge implements Parcelable {
         this.challengeStatus = ChallengeStatus.FULL.name();
     }
 
-    @Exclude
     public void setHostReportedWinner(String winnerId) {
         hostReportedWinner = winnerId;
         updateResult();
     }
 
-    @Exclude
     public void setOpponentReportedWinner(String winnerId) {
         opponentReportedWinner = winnerId;
         updateResult();
+    }
+
+    public void setHostDidRate(boolean hostDidRate) {
+        this.hostDidRate = hostDidRate;
+    }
+
+    public void setOpponentDidRate(boolean opponentDidRate) {
+        this.opponentDidRate = opponentDidRate;
     }
 
     // Helper method for updating the resultStatus, acceptanceStatus, and hostIsWinner when the host
