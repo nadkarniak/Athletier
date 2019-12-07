@@ -67,4 +67,9 @@
     <string name="waiting_for_confirmation">Waiting for confirmation</string>
     <string name="result_disputed">Opponent disputed winner…</string>
     <string name="change_winner">Change Winner</string>
+    <string name="rate_sportsmanship">Rate Sportsmanship</string>
+    <string name="award_badges">Award Badges</string>
+    <string name="plus">+</string>
+    <string name="minus">-</string>
+    <string name="rate_opponent">Rate Your Opponent</string>
 </resources>

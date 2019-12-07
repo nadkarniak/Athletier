@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/opponentImageView"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="8dp"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/opponentNameTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/rateSportsmanshipText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/rate_sportsmanship"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textStyle="bold" />
+
+    <RatingBar
+        android:id="@+id/rateOpponentSportsmanshipBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:max="5" />
+
+    <TextView
+        android:id="@+id/awardBadgesText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/award_badges"
+        android:textStyle="bold"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/addBadgeRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"/>
+</LinearLayout>

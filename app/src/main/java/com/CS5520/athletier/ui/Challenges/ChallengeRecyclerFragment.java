@@ -123,14 +123,27 @@ public class ChallengeRecyclerFragment extends Fragment implements
                     // The user is the host and is rating the opponent
                     case HOST_RATE:
                         // TODO: Trigger dialog for rating opponent and awarding badges
+                        launchRateUserActivity(challenge);
                         break;
                     // The user is the opponent and rating the host
                     case OPPONENT_RATE:
                         // TODO: Trigger dialog for rating host and awarding badges
+                        launchRateUserActivity(challenge);
                         break;
                 }
             }
         });
+    }
+
+    private void launchRateUserActivity(Challenge challenge) {
+        Activity currentActivity = getActivity();
+        if (currentActivity != null) {
+            Intent intent = new Intent(currentActivity, RateUserActivity.class);
+            intent.putExtra(Challenge.challengeKey, challenge);
+            startActivity(intent);
+            currentActivity.overridePendingTransition(R.anim.slide_up, R.anim.no_slide);
+        }
+
     }
 
     private void setupUpdateObservers() {
