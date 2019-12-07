@@ -7,8 +7,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/addBadgeIcon"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
@@ -53,18 +53,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ToggleButton
-            android:id="@+id/addBadgeButton"
-            style="@style/Widget.Design.FloatingActionButton"
+        <CheckBox
+            android:id="@+id/addBadgeCheckBox"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:layout_margin="8dp"
-            android:text="@string/plus"
-            android:textOff="@string/plus"
-            android:textOn="@string/minus"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:layout_gravity="center"/>
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
