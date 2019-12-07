@@ -7,6 +7,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -66,6 +67,7 @@ public class ChallengeRecyclerFragment extends Fragment implements
         viewModel = ViewModelProviders.of(this).get(ChallengeRecyclerViewModel.class);
         setupRecyclerView();
         observeForProfileImageClicks();
+        setupUpdateObservers();
     }
 
     void updateAsHost(boolean asHost) {
@@ -135,9 +137,13 @@ public class ChallengeRecyclerFragment extends Fragment implements
         viewModel.getUserAwardedExp().observe(getViewLifecycleOwner(), new Observer<Integer>() {
             @Override
             public void onChanged(Integer expGained) {
-                System.out.println(expGained);
+                showToastMessage("Congratulations! You gained " + expGained + "pts!");
             }
         });
+    }
+
+    private void showToastMessage(String msg) {
+        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
     private void observeForProfileImageClicks() {

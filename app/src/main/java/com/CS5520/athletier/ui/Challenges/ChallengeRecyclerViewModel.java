@@ -16,6 +16,8 @@ import com.CS5520.athletier.Models.ResultStatus;
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.SportsAchievementSummary;
 import com.CS5520.athletier.Utilities.LogTags;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,35 +26,25 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Map;
+
 public class ChallengeRecyclerViewModel extends AndroidViewModel {
 
+    private FirebaseUser currentUser;
     private DatabaseReference databaseReference;
     private Challenge selectedChallenge;
-    private MutableLiveData<SportsAchievementSummary> hostAchievement;
-    private MutableLiveData<SportsAchievementSummary> opponentAchievement;
-    private MutableLiveData<Boolean> reportWinnerSucceeded;
     private MutableLiveData<Integer> userAwardedExp;
-
 
     public ChallengeRecyclerViewModel(@NonNull Application application) {
         super(application);
+        this.currentUser = FirebaseAuth.getInstance().getCurrentUser();
         this.databaseReference = FirebaseDatabase.getInstance().getReference();
         this.selectedChallenge = null;
-        this.hostAchievement = new MutableLiveData<>();
-        this.opponentAchievement = new MutableLiveData<>();
-        this.reportWinnerSucceeded = new MutableLiveData<>();
         this.userAwardedExp = new MutableLiveData<>();
     }
 
     void setSelectedChallenge(Challenge selectedChallenge) {
         this.selectedChallenge = selectedChallenge;
-        Sport sport = Sport.fromString(selectedChallenge.getSport());
-
-        // Get the SportsAchievementSummarys of the Users in the selected challenge
-        if (sport != null) {
-            querySportsAchievementSummary(sport, selectedChallenge.getHostId(), true);
-            querySportsAchievementSummary(sport, selectedChallenge.getOpponentId(), false);
-        }
     }
 
     void updateChallengeAcceptanceStatus(String challengeId, final AcceptanceStatus status) {
@@ -89,41 +81,11 @@ public class ChallengeRecyclerViewModel extends AndroidViewModel {
                 .removeValue();
     }
 
-    LiveData<Boolean> getReportWinnerSucceeded() {
-        return reportWinnerSucceeded;
-    }
-
     LiveData<Integer> getUserAwardedExp() {
         return userAwardedExp;
     }
 
-
-    private void querySportsAchievementSummary(Sport sport, String ownerId, final boolean isHost) {
-        databaseReference
-                .child(SportsAchievementSummary.sportsAchievementKey)
-                .child(sport.name())
-                .child(ownerId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        SportsAchievementSummary achievement =
-                                dataSnapshot.getValue(SportsAchievementSummary.class);
-                        if (isHost) {
-                            hostAchievement.postValue(achievement);
-                        } else {
-                            opponentAchievement.postValue(achievement);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.i(LogTags.ERROR, "Error fetching achievement: " + databaseError);
-                    }
-                });
-    }
-
-    void updateChallengeWinner(final boolean asHost,
-                               final boolean reportedHostWon) {
+    void updateChallengeWinner(final boolean asHost, final boolean reportedHostWon) {
         if (selectedChallenge == null) { return; }
 
         databaseReference
@@ -155,7 +117,8 @@ public class ChallengeRecyclerViewModel extends AndroidViewModel {
                                            boolean b,
                                            @Nullable DataSnapshot dataSnapshot) {
                         if (dataSnapshot == null || databaseError != null) {
-                            reportWinnerSucceeded.setValue(false);
+                            Log.i(LogTags.RESULT_REPORT_ERROR,
+                                    "Unable to update challenge winner: " + databaseError);
                             return;
                         }
 
@@ -163,32 +126,56 @@ public class ChallengeRecyclerViewModel extends AndroidViewModel {
                         if (challenge != null) {
                             String status = challenge.getResultStatus();
                             Sport sport = Sport.fromString(challenge.getSport());
-                            SportsAchievementSummary hostSAS = hostAchievement.getValue();
-                            SportsAchievementSummary opponentSAS = opponentAchievement.getValue();
-
 
                             // If the Challenge result was just confirmed, award the winner points
                             // and complete challenge
-                            if (status.equals(ResultStatus.CONFIRMED.name())
-                                    && hostSAS != null
-                                    && opponentSAS != null
-                                    && sport != null) {
-
+                            if (status.equals(ResultStatus.CONFIRMED.name()) && sport != null) {
                                 String winnerId = challenge.getHostReportedWinner();
-                                int loserTier = challenge.getHostIsWinner() ? opponentSAS.getTier()
-                                        : hostSAS.getTier();
-                                awardWinnerExp(winnerId, sport, loserTier);
+                                String loserId = challenge.getHostIsWinner() ?
+                                        challenge.getHostId() :
+                                        challenge.getOpponentId();
 
+                                // Get the tier of the loser
+                                queryLoserTier(loserId, winnerId, sport, challenge.getId());
                             }
-                            reportWinnerSucceeded.setValue(true);
-                        } else {
-                            reportWinnerSucceeded.setValue(false);
                         }
                     }
                 });
     }
 
-    private void awardWinnerExp(String winnerId, Sport sport, final int loserTier) {
+    private void queryLoserTier(String loserId,
+                                final String winnerId,
+                                final Sport sport,
+                                final String challengeId) {
+        databaseReference
+                .child(SportsAchievementSummary.sportsAchievementKey)
+                .child(sport.name())
+                .child(loserId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        SportsAchievementSummary achievement =
+                                dataSnapshot.getValue(SportsAchievementSummary.class);
+                        if (achievement != null) {
+                            int loserTier = achievement.getTier();
+
+                            // Award the winning User points
+                            awardWinnerExp(winnerId, sport, loserTier, challengeId);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.i(LogTags.RESULT_REPORT_ERROR,
+                                "Failed to fetch loser Tier: " + databaseError);
+                    }
+                });
+    }
+
+    private void awardWinnerExp(final String winnerId,
+                                Sport sport,
+                                final int loserTier,
+                                final String challengeId) {
         databaseReference
                 .child(SportsAchievementSummary.sportsAchievementKey)
                 .child(sport.name())
@@ -202,11 +189,8 @@ public class ChallengeRecyclerViewModel extends AndroidViewModel {
                         if (sas == null) {
                             return Transaction.success(mutableData);
                         }
-
-                        userAwardedExp.postValue(
-                                ExpCalculator.calculateExpEarned(sas.getTier(), loserTier)
-                        );
-                        sas.awardExp(loserTier);
+                        // Add exp to winner's SportsAchievementSummary
+                        sas.awardExp(challengeId, loserTier);
                         mutableData.setValue(sas);
                         return Transaction.success(mutableData);
                     }
@@ -215,8 +199,21 @@ public class ChallengeRecyclerViewModel extends AndroidViewModel {
                     public void onComplete(@Nullable DatabaseError databaseError,
                                            boolean b,
                                            @Nullable DataSnapshot dataSnapshot) {
-                        if (databaseError != null) {
+                        if (databaseError != null || dataSnapshot == null) {
                             Log.i(LogTags.ERROR, "Failed to award exp:" + databaseError);
+                            return;
+                        }
+
+                        // If current User won the challenge, pass pts gained to userAwardedExp
+                        if (currentUser != null && currentUser.getUid().equals(winnerId)) {
+                            SportsAchievementSummary updatedSAS =
+                                    dataSnapshot.getValue(SportsAchievementSummary.class);
+                            if (updatedSAS != null) {
+                                Map<String, Integer> ptsMap = updatedSAS.getChallengeIdAndPtsMap();
+                                if (ptsMap.containsKey(challengeId)) {
+                                    userAwardedExp.setValue(ptsMap.get(challengeId));
+                                }
+                            }
                         }
                     }
                 });
