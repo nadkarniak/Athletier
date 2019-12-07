@@ -22,6 +22,7 @@
                 android:layout_height="405dp">
 
                 <LinearLayout
+                    android:id="@+id/searchBackground"
                     android:layout_width="match_parent"
                     android:layout_height="350dp"
                     android:background="@drawable/ic_launcher_background"
@@ -31,8 +32,8 @@
                         android:id="@+id/profilePicCardView"
                         android:layout_width="150dp"
                         android:layout_height="150dp"
-                        android:layout_marginTop="45dp"
                         android:layout_gravity="center"
+                        android:layout_marginTop="45dp"
                         app:cardCornerRadius="75dp">
 
                         <ImageView
@@ -132,11 +133,11 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/record_string"
+                                android:text="@string/exp"
                                 android:textSize="20sp" />
 
                             <TextView
-                                android:id="@+id/exp"
+                                android:id="@+id/exp_search"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textSize="20sp" />
@@ -153,12 +154,13 @@
                 android:layout_gravity="center"
                 android:orientation="vertical">
 
-                <Spinner
-                    android:id="@+id/sportsSpinner"
+                <fragment
+                    android:id="@+id/sportsSpinnerFragment"
+                    android:name="com.CS5520.athletier.ui.Challenges.ColoredSpinnerFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown"
-                    android:spinnerMode="dropdown" />
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"/>
 
                 <RatingBar
                     android:id="@+id/ratingBar"

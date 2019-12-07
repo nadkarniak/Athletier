@@ -69,8 +69,6 @@ public class ProfileTabFragment extends Fragment {
         observeSpinnerSelection();
         setupBadges(getContext(), "1v1 Basketball");
         setUpExp(Sport.fromString("1v1 Basketball"));
-
-
     }
 
     private void setupViews(View view) {
@@ -89,7 +87,7 @@ public class ProfileTabFragment extends Fragment {
         });
         backgroundPicture = view.findViewById(R.id.profile_background);
         usernameText = view.findViewById(R.id.userName);
-        expText = view.findViewById(R.id.exp);
+        expText = view.findViewById(R.id.exp_search);
         followersText = view.findViewById(R.id.followers);
         followingText = view.findViewById(R.id.following);
         sportsmanshipBar = view.findViewById(R.id.ratingBar);
