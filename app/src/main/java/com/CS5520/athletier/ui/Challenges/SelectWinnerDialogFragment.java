@@ -10,16 +10,18 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
+import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.R;
 
 
 public class SelectWinnerDialogFragment extends DialogFragment {
 
     public interface SelectedWinnerDialogListener {
-        public void onDialogPositiveClick(String selectedWinner);
+        void onDialogPositiveClick(boolean reportingAsHost,
+                                   boolean hostSelectedAsWinner);
     }
 
-    SelectedWinnerDialogListener listener;
+    private SelectedWinnerDialogListener listener;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -27,7 +29,7 @@ public class SelectWinnerDialogFragment extends DialogFragment {
         try {
             listener = (SelectedWinnerDialogListener) getParentFragment();
         } catch (ClassCastException e) {
-            throw new ClassCastException("Context does not imlement SelectedWinnerDialogListener");
+            throw new ClassCastException("Parent does not implement SelectedWinnerDialogListener");
         }
     }
 
@@ -35,10 +37,22 @@ public class SelectWinnerDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final String[] options = { "I won", "I lost" };
-        final String[] selectedWinner = new String[]{options[0]};
-
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        Bundle arguments = getArguments();
+        if (arguments == null) {
+            return builder.create();
+        }
+
+        final boolean reportingAsHost = arguments.getBoolean(Challenge.hostIdKey);
+
+
+
+        // Radio button titles to show in the dialogue
+        final String[] options = {getString(R.string.i_won), getString(R.string.i_lost)};
+
+        // Array of one String for the selected winner. This needs to be an array so
+        // it can be modified in the OnClick method of the .setSingleChoiceItems below
+        final String[] selectedWinner = { options[0] };
 
         // Set dialog title
         builder.setTitle(R.string.select_winner_title)
@@ -51,7 +65,17 @@ public class SelectWinnerDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.done, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        listener.onDialogPositiveClick(selectedWinner[0]);
+                        if (reportingAsHost) {
+                            listener.onDialogPositiveClick(
+                                    true,
+                                    selectedWinner[0].equals(options[0])
+                            );
+                        } else {
+                            listener.onDialogPositiveClick(
+                                    false,
+                                    selectedWinner[0].equals(options[1])
+                            );
+                        }
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

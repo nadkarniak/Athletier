@@ -184,7 +184,6 @@ public class FindUserFragment extends Fragment {
                         String photo = dataSnapshot.child("photoUrl").getValue().toString();
                         UID = dataSnapshot.child("id").getValue().toString();
                         String email = dataSnapshot.child("emailAddress").getValue().toString();
-                        String record = dataSnapshot.child("record").getValue().toString();
                         String sportsmanship = dataSnapshot.child("avgSportsmanshipRating").getValue().toString();
                         usernameText.setText(name);
                         followersText.setText(String.valueOf(0));

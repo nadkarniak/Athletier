@@ -71,12 +71,6 @@ public class User {
         return photoUrl;
     }
 
-    // TODO: Remove
-    public String getRecord(){
-        String record = wins + " - " + losses;
-        return record;
-    }
-
     public String getEmailAddress() {
         return this.emailAddress;
     }

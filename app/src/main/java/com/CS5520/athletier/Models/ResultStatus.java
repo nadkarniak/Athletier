@@ -4,5 +4,5 @@ public enum ResultStatus {
     NONE,
     AWAITING_CONFIRMATION,
     DISPUTED,
-    CONFIRMED
+    CONFIRMED;
 }

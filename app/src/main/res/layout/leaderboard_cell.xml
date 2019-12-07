@@ -64,7 +64,6 @@
                     android:layout_gravity="center_vertical"
                     android:layout_margin="6dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_person_black_24dp"
                     android:clickable="true" />
 
                 <LinearLayout

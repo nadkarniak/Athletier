@@ -2,8 +2,10 @@ package com.CS5520.athletier.Models;
 
 import com.google.firebase.database.Exclude;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SportsAchievementSummary {
 
@@ -18,7 +20,7 @@ public class SportsAchievementSummary {
     // The id of this SportsAchievementSummary's owning User
     private String ownerId;
 
-    // Name of the sport this achievement pertains to
+    // Name of the sport this SportsAchievementSummary pertains to
     private String sportName;
 
     // The rank of the owning User in the Sport of this SportsAchievementSummary
@@ -33,8 +35,13 @@ public class SportsAchievementSummary {
 
     // Keys are Strings representing the badge name, values are Integers representing number of
     // times badge has been awarded
-    private HashMap<String, Integer> badgeMap;
+    private Map<String, Integer> badgeMap;
 
+    // A Map of ids of completed Challenges (keys) and the experience points awarded (values)
+    private Map<String, Integer> challengeIdAndPtsMap;
+
+
+    //region - Initialization
 
     // Constructor for Firebase
     public SportsAchievementSummary() {}
@@ -47,6 +54,7 @@ public class SportsAchievementSummary {
         this.tier = 1; // User's start at Tier 1
         this.exp = 0;
         this.badgeMap = new HashMap<>();
+        this.challengeIdAndPtsMap = new HashMap<>();
 
         // Fill badge map with every possible badge name for the input sport as the keys and 0
         // for the initial value
@@ -55,6 +63,10 @@ public class SportsAchievementSummary {
             badgeMap.put(badge.getName(), 0);
         }
     }
+    //endregion
+
+
+    //region - Public Getters
 
     public String getOwnerId() {
         return ownerId;
@@ -74,27 +86,14 @@ public class SportsAchievementSummary {
         return this.exp;
     }
 
-    public HashMap<String, Integer> getBadgeMap() {
+    public Map<String, Integer> getBadgeMap() {
         return this.badgeMap;
     }
 
+    public Map<String, Integer> getChallengeIdAndPtsMap() { return this.challengeIdAndPtsMap; }
+
     public void setRank(int newRank) {
         this.rank = newRank;
-    }
-
-    @Exclude
-    public void addExp(int expGained) {
-        this.exp += expGained;
-    }
-
-    @Exclude
-    public void addBadge(String badgeName) {
-       if (badgeMap != null && badgeMap.containsKey(badgeName)) {
-           Integer currentCount = badgeMap.get(badgeName);
-           if (currentCount != null) {
-               badgeMap.put(badgeName, currentCount + 1);
-           }
-       }
     }
 
     @Exclude
@@ -110,5 +109,40 @@ public class SportsAchievementSummary {
             return null;
         }
     }
+
+    //endregion
+
+    //region - Public Setters
+    @Exclude
+    public void awardExp(String challengeId, int opponentTier) {
+        int ptsEarned = ExpCalculator.calculateExpEarned(tier, opponentTier);
+        // Award exp based on the opponents Tier
+        System.out.println("Points awarded");
+        exp += ptsEarned;
+        // Update tier
+        tier = Tier.fromExp(exp).toInt();
+
+        // Add challengeId and ptsEarned to challengeIdsAndPts map
+        if (challengeIdAndPtsMap == null) {
+            challengeIdAndPtsMap = new HashMap<>();
+        }
+        if (!challengeIdAndPtsMap.containsKey(challengeId)) {
+            challengeIdAndPtsMap.put(challengeId, ptsEarned);
+        }
+
+
+    }
+
+    @Exclude
+    public void addBadge(String badgeName) {
+       if (badgeMap != null && badgeMap.containsKey(badgeName)) {
+           Integer currentCount = badgeMap.get(badgeName);
+           if (currentCount != null) {
+               badgeMap.put(badgeName, currentCount + 1);
+           }
+       }
+    }
+
+    //endregion
 
 }
