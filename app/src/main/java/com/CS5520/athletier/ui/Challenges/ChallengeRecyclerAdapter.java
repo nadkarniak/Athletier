@@ -187,7 +187,19 @@ public class ChallengeRecyclerAdapter extends
                 break;
             case AWAITING_CONFIRMATION:
                 toggleResultStatusVisibility(holder, false);
-                holder.resultStatusText.setText(R.string.waiting_for_confirmation);
+                // Set result status message such that it indicates if the challenge is waiting for
+                // the opponent to report a winner or the current user to report a winner
+                int statusMsgId;
+                if (asHost) {
+                    statusMsgId = challenge.getHostReportedWinner() != null ?
+                            R.string.waiting_for_confirmation :
+                            R.string.waiting_on_user;
+                } else {
+                    statusMsgId = challenge.getOpponentReportedWinner() != null ?
+                            R.string.waiting_for_confirmation :
+                            R.string.waiting_on_user;
+                }
+                holder.resultStatusText.setText(statusMsgId);
                 break;
             case DISPUTED:
                 toggleResultStatusVisibility(holder, false);
