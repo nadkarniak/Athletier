@@ -195,7 +195,11 @@ public class Challenge implements Parcelable {
         this.hostIsWinner = hostIsWinner;
     }
 
-    public void setOpponentId(String opponentId) { this.opponentId = opponentId; }
+    public void setOpponentId(String opponentId) {
+        this.opponentId = opponentId;
+        this.acceptanceStatus = AcceptanceStatus.ACCEPTED.name();
+        this.challengeStatus = ChallengeStatus.FULL.name();
+    }
 
     @Exclude
     public void setHostReportedWinner(String winnerId) {

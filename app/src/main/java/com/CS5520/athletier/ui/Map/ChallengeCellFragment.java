@@ -103,6 +103,13 @@ public class ChallengeCellFragment extends Fragment {
                 hostNameText.setText(user.getUsername());
             }
         });
+
+        viewModel.getCurrentStatusDisplay().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String newStatusDisplayString) {
+                statusText.setText(newStatusDisplayString);
+            }
+        });
     }
 
     private void setupButtons() {
