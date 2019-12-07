@@ -62,4 +62,5 @@
     <string name="tier">Tier</string>
     <string name="select_winner_title">Select Winner</string>
     <string name="logout">Logout</string>
+    <string name="exp">Exp</string>
 </resources>

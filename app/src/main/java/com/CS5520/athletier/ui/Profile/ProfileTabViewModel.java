@@ -30,6 +30,7 @@ import java.util.List;
 public class ProfileTabViewModel extends AndroidViewModel {
 
     private MutableLiveData<User> currentUser;
+    private MutableLiveData<String> expPts;
     private MutableLiveData<List<SportsAchievementSummary>> achievements;
     private FirebaseUser firebaseUser;
     private DatabaseReference databaseReference;
@@ -38,6 +39,7 @@ public class ProfileTabViewModel extends AndroidViewModel {
         super(application);
         this.currentUser = new MutableLiveData<>();
         this.achievements = new MutableLiveData<>();
+        this.expPts = new MutableLiveData<>();
         this.databaseReference = FirebaseDatabase.getInstance().getReference();
         this.firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -66,6 +68,25 @@ public class ProfileTabViewModel extends AndroidViewModel {
                         Log.i(LogTags.ERROR, "Error querying User: " + databaseError);
                     }
                 });
+    }
+
+    private void queryExp(Sport sport) {
+        databaseReference.child(SportsAchievementSummary.sportsAchievementKey)
+                .child(sport.name()).orderByChild(SportsAchievementSummary.ownerIdKey)
+                .equalTo(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot data : dataSnapshot.getChildren()) {
+                    String exp = data.child("exp").getValue().toString();
+                    expPts.setValue(exp);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void queryAchievements() {
@@ -136,6 +157,11 @@ public class ProfileTabViewModel extends AndroidViewModel {
 
     LiveData<List<SportsAchievementSummary>> getAchievements() {
         return achievements;
+    }
+
+    LiveData<String> getExp(Sport sport) {
+        queryExp(sport);
+        return expPts;
     }
 
 
