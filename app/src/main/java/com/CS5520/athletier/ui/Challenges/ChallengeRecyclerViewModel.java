@@ -15,6 +15,7 @@ import com.CS5520.athletier.Models.ExpCalculator;
 import com.CS5520.athletier.Models.ResultStatus;
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.SportsAchievementSummary;
+import com.CS5520.athletier.Utilities.ExpEarnedInfo;
 import com.CS5520.athletier.Utilities.LogTags;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,7 +34,7 @@ public class ChallengeRecyclerViewModel extends AndroidViewModel {
     private FirebaseUser currentUser;
     private DatabaseReference databaseReference;
     private Challenge selectedChallenge;
-    private MutableLiveData<Integer> userAwardedExp;
+    private MutableLiveData<ExpEarnedInfo> userAwardedExp;
 
     public ChallengeRecyclerViewModel(@NonNull Application application) {
         super(application);
@@ -81,7 +82,7 @@ public class ChallengeRecyclerViewModel extends AndroidViewModel {
                 .removeValue();
     }
 
-    LiveData<Integer> getUserAwardedExp() {
+    LiveData<ExpEarnedInfo> getUserAwardedExp() {
         return userAwardedExp;
     }
 
@@ -176,7 +177,6 @@ public class ChallengeRecyclerViewModel extends AndroidViewModel {
                                 Sport sport,
                                 final int loserTier,
                                 final String challengeId) {
-        System.out.println("Awarding user exp...");
         databaseReference
                 .child(SportsAchievementSummary.sportsAchievementKey)
                 .child(sport.name())
@@ -211,8 +211,15 @@ public class ChallengeRecyclerViewModel extends AndroidViewModel {
                                     dataSnapshot.getValue(SportsAchievementSummary.class);
                             if (updatedSAS != null) {
                                 Map<String, Integer> ptsMap = updatedSAS.getChallengeIdAndPtsMap();
-                                if (ptsMap.containsKey(challengeId)) {
-                                    userAwardedExp.setValue(ptsMap.get(challengeId));
+                                if (ptsMap != null && ptsMap.containsKey(challengeId)) {
+                                    Integer expEarned = ptsMap.get(challengeId);
+                                    if (expEarned != null) {
+                                        Sport sport = Sport.valueOf(updatedSAS.getSportName());
+                                        userAwardedExp.setValue(new ExpEarnedInfo(sport.toString(),
+                                                expEarned,
+                                                updatedSAS.getTier())
+                                        );
+                                    }
                                 }
                             }
                         }

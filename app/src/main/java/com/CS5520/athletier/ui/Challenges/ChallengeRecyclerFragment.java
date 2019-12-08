@@ -20,8 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.CS5520.athletier.Models.AcceptanceStatus;
 import com.CS5520.athletier.Models.Challenge;
+import com.CS5520.athletier.Models.SportsAchievementSummary;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.Utilities.ChallengeButtonAction;
+import com.CS5520.athletier.Utilities.ExpEarnedInfo;
 import com.CS5520.athletier.ui.Challenges.Rating.RateUserActivity;
 import com.CS5520.athletier.ui.Search.FindUser.FindUserActivity;
 
@@ -123,10 +125,11 @@ public class ChallengeRecyclerFragment extends Fragment implements
     }
 
     private void setupUpdateObservers() {
-        viewModel.getUserAwardedExp().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+        viewModel.getUserAwardedExp().observe(getViewLifecycleOwner(),
+                new Observer<ExpEarnedInfo>() {
             @Override
-            public void onChanged(Integer expGained) {
-                showToastMessage("Congratulations! You gained " + expGained + "pts!");
+            public void onChanged(ExpEarnedInfo info) {
+                launchExpEarnedDialog(info);
             }
         });
     }
@@ -159,6 +162,14 @@ public class ChallengeRecyclerFragment extends Fragment implements
         dialogFragment.setArguments(bundle);
         // Show dialog
         dialogFragment.show(getChildFragmentManager(), "SelectWinnerDialogFragment");
+    }
+
+    private void launchExpEarnedDialog(ExpEarnedInfo expEarnedInfo) {
+        DialogFragment dialogFragment = new EarnedExpDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(EarnedExpDialogFragment.EXP_KEY, expEarnedInfo);
+        dialogFragment.setArguments(bundle);
+        dialogFragment.show(getChildFragmentManager(), "EarnedExpDialogFragment");
     }
 
 
