@@ -2,7 +2,6 @@ package com.CS5520.athletier.ui.Search.FindUser;
 
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -25,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.SportsAchievementSummary;
-import com.CS5520.athletier.Models.SportsBadge;
 import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.ui.Challenges.ColoredSpinnerFragment;
@@ -33,14 +31,9 @@ import com.CS5520.athletier.ui.Leaderboards.BadgeRecyclerAdapter;
 import com.CS5520.athletier.ui.Map.CreateChallenge.CreateChallengeActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -57,17 +50,11 @@ public class FindUserFragment extends Fragment {
     private TextView usernameText;
     private TextView expText;
     private TextView followersText;
-    private TextView followingText;
+    private TextView tierText;
     private RatingBar sportsmanshipBar;
     private ColoredSpinnerFragment sportsSpinner;
-//    private ImageView firstBadge;
-//    private ImageView secondBadge;
-//    private ImageView thirdBadge;
-//    private ImageView fourthBadge;
-//    private ImageView fifthBadge;
     private ImageView profilePicture;
     private LinearLayout backgroundPicture;
-//    private String UID;
     private BadgeRecyclerAdapter adapter;
     private RecyclerView badgeRecycler;
 
@@ -100,7 +87,6 @@ public class FindUserFragment extends Fragment {
         setupFollowButtonListener();
         setObservers();
         observeSpinnerSelection();
-//        setupBadges(getContext(), "1v1 Basketball");
     }
 
 
@@ -159,7 +145,7 @@ public class FindUserFragment extends Fragment {
         backgroundPicture = view.findViewById(R.id.searchBackground);
         expText = ((LinearLayout)view).findViewById(R.id.exp_search);
         followersText = ((LinearLayout)view).findViewById(R.id.followers);
-        followingText = ((LinearLayout)view).findViewById(R.id.following);
+        tierText = ((LinearLayout)view).findViewById(R.id.following);
         sportsmanshipBar = ((LinearLayout)view).findViewById(R.id.ratingBar);
         profilePicture = ((LinearLayout)view).findViewById(R.id.profilePic);
         follow = view.findViewById(R.id.follow);
@@ -175,6 +161,9 @@ public class FindUserFragment extends Fragment {
                 follow.setText(R.string.following);
                 int x = Integer.parseInt(followersText.getText().toString()) + 1;
                 followersText.setText(String.valueOf(x));
+                // Only allow the user to follow someone once
+                follow.setEnabled(false);
+                follow.getBackground().setAlpha(follow.isEnabled() ? 255 : 128);
             }
         });
     }
@@ -206,8 +195,6 @@ public class FindUserFragment extends Fragment {
                 usernameText.setText(user.getUsername());
                 followersText.setText(user.getFollowers() != null ?
                         "" + user.getFollowers().size() : "" + 0);
-                followingText.setText(user.getFollowing() != null ?
-                        "" + user.getFollowing().size() : "" + 0);
                 sportsmanshipBar.setRating(user.getAvgSportsmanshipRating());
                 Picasso.get().load(user.getPhotoUrl()).into(profilePicture);
                 viewModel.queryExp(user.getId());
@@ -225,6 +212,7 @@ public class FindUserFragment extends Fragment {
             @Override
             public void onChanged(SportsAchievementSummary sas) {
                 expText.setText(String.valueOf(sas.getExp()));
+                tierText.setText(String.valueOf(sas.getTier()));
                 adapter = new BadgeRecyclerAdapter(sas);
                 badgeRecycler.setAdapter(adapter);
                 badgeRecycler.setLayoutManager(new LinearLayoutManager(getContext(),
