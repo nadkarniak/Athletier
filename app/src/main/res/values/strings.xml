@@ -74,4 +74,5 @@
     <string name="minus">-</string>
     <string name="rate_opponent">Rate Your Opponent</string>
     <string name="challenge_me">Challenge Me</string>
+    <string name="max_badge_count">99+</string>
 </resources>

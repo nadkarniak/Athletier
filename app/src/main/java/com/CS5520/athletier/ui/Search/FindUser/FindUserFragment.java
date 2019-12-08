@@ -213,7 +213,6 @@ public class FindUserFragment extends Fragment {
         viewModel.getUserResult().observe(getViewLifecycleOwner(), new Observer<User>() {
             @Override
             public void onChanged(User user) {
-                System.out.println("Got a user");
                 usernameText.setText(user.getUsername());
                 followersText.setText(user.getFollowers() != null ?
                         "" + user.getFollowers().size() : "" + 0);
@@ -222,6 +221,12 @@ public class FindUserFragment extends Fragment {
                 sportsmanshipBar.setRating(user.getAvgSportsmanshipRating());
                 Picasso.get().load(user.getPhotoUrl()).into(profilePicture);
                 viewModel.queryExp(user.getId());
+
+                // Disable follow me buttons if current User is the User displayed in Activity
+                follow.setEnabled(!user.getId().equals(viewModel.getCurrentUserId()));
+                challengeButton.setEnabled(!user.getId().equals(viewModel.getCurrentUserId()));
+                follow.getBackground().setAlpha(follow.isEnabled() ? 255 : 128);
+                challengeButton.getBackground().setAlpha(challengeButton.isEnabled() ? 255 : 128);
             }
         });
 

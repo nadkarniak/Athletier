@@ -26,12 +26,14 @@ public class FindUserViewModel extends AndroidViewModel {
     private MutableLiveData<SportsAchievementSummary> achievement;
     private Sport selectedSport;
     private DatabaseReference mRef;
+    private FirebaseUser currentUser;
 
     public FindUserViewModel(@NonNull Application application) {
         super(application);
         this.userResult = new MutableLiveData<>();
         this.achievement = new MutableLiveData<>();
         this.mRef = FirebaseDatabase.getInstance().getReference();
+        this.currentUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     void setSelectedSport(Sport sport) {
@@ -96,4 +98,7 @@ public class FindUserViewModel extends AndroidViewModel {
         return achievement;
     }
 
+    String getCurrentUserId() {
+        return currentUser.getUid();
+    }
 }
