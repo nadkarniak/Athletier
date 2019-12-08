@@ -134,31 +134,35 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
                 mapView.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
             }
 
-            mapView.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(Marker marker) {
-                    // Get all challenges at location of marker and pass to selectedChallengeFragment
-                    List<Challenge> challenges = viewModel.getChallengesAtLatLng(marker.getPosition());
-                    if (challenges != null) {
-                        selectedChallengeFragment.setChallengesAtSelectedLocation(challenges);
-                        if (selectedChallengeFragment.isHidden()) {
-                            toggleSelectedChallengeFragmentVisibility(true, true);
-                        }
-                    }
-                    return false;
-                }
-            });
-
-            mapView.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                @Override
-                public void onMapClick(LatLng latLng) {
-                    if (!selectedChallengeFragment.isHidden()) {
-                        toggleSelectedChallengeFragmentVisibility(false,
-                                true);
-                    }
-                }
-            });
+            setMapMarkerOnClickListeners();
         }
+    }
+
+    private void setMapMarkerOnClickListeners() {
+        mapView.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                // Get all challenges at location of marker and pass to selectedChallengeFragment
+                List<Challenge> challenges = viewModel.getChallengesAtLatLng(marker.getPosition());
+                if (challenges != null) {
+                    selectedChallengeFragment.setChallengesAtSelectedLocation(challenges);
+                    if (selectedChallengeFragment.isHidden()) {
+                        toggleSelectedChallengeFragmentVisibility(true, true);
+                    }
+                }
+                return false;
+            }
+        });
+
+        mapView.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if (!selectedChallengeFragment.isHidden()) {
+                    toggleSelectedChallengeFragmentVisibility(false,
+                            true);
+                }
+            }
+        });
     }
 
     @Override
@@ -169,6 +173,9 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 hasPermissions = true;
                 locationRequester.startUpdatingLocation(locationRequest);
+                if (mapView != null) {
+                    setMapMarkerOnClickListeners();
+                }
             } else {
                 hasPermissions = false;
             }
@@ -204,6 +211,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
         }
 
         transaction.commit();
+        System.out.println("should show fragment" + shouldShow);
     }
 
 
@@ -318,7 +326,10 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback, Loca
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 setupLocationRequester(activity);
                 if (hasPermissions) {
-                    if (mapView != null) { mapView.setMyLocationEnabled(true); }
+                    if (mapView != null) {
+                        mapView.setMyLocationEnabled(true);
+
+                    }
                     locationRequester.startUpdatingLocation(locationRequest);
                 } else {
                     requestPermissions(new String[] { LocationRequester.requiredPermission },
