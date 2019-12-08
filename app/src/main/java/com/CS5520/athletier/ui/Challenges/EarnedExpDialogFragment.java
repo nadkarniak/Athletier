@@ -28,8 +28,8 @@ public class EarnedExpDialogFragment extends DialogFragment {
             int userTier = info.getTier();
             String sportName = info.getSportName();
 
-            String msg = "You earned " + expGained + "pts in" + sportName + "!\n" + "Your are now "
-                    + userTier + "!";
+            String msg = "You earned " + expGained + "pts in " + sportName + "!\n" +
+                    "Your are now tier " + userTier + "!";
             builder.setTitle(R.string.congratulations)
                     .setMessage(msg)
                     .setPositiveButton(R.string.done, new DialogInterface.OnClickListener() {
