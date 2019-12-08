@@ -1,6 +1,5 @@
 package com.CS5520.athletier.ui.Profile;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.SportsAchievementSummary;
-import com.CS5520.athletier.Models.SportsBadge;
 import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.ui.Challenges.ColoredSpinnerFragment;
@@ -30,7 +28,6 @@ import com.CS5520.athletier.ui.Leaderboards.BadgeRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileTabFragment extends Fragment {
@@ -40,7 +37,7 @@ public class ProfileTabFragment extends Fragment {
     private TextView usernameText;
     private TextView expText;
     private TextView followersText;
-    private TextView followingText;
+    private TextView tierText;
     private RatingBar sportsmanshipBar;
     private ImageView profilePicture;
     private Button logOut;
@@ -89,7 +86,7 @@ public class ProfileTabFragment extends Fragment {
         usernameText = view.findViewById(R.id.userName);
         expText = view.findViewById(R.id.exp_search);
         followersText = view.findViewById(R.id.followers);
-        followingText = view.findViewById(R.id.following);
+        tierText = view.findViewById(R.id.following);
         sportsmanshipBar = view.findViewById(R.id.ratingBar);
         profilePicture = view.findViewById(R.id.profilePic);
         badgeRecycler = view.findViewById(R.id.profileBadgeRecycler);
@@ -144,7 +141,6 @@ public class ProfileTabFragment extends Fragment {
             public void onChanged(User user) {
                 usernameText.setText(user.getUsername());
                 followersText.setText(String.valueOf(0));
-                followingText.setText(String.valueOf(0));
                 sportsmanshipBar.setRating(user.getAvgSportsmanshipRating());
                 Picasso.get().load(user.getPhotoUrl()).into(profilePicture);
             }
@@ -157,6 +153,7 @@ public class ProfileTabFragment extends Fragment {
             @Override
             public void onChanged(SportsAchievementSummary sportsAchievementSummary) {
                 expText.setText(String.valueOf(sportsAchievementSummary.getExp()));
+                tierText.setText(String.valueOf(sportsAchievementSummary.getTier()));
                 adapter = new BadgeRecyclerAdapter(sportsAchievementSummary);
                 badgeRecycler.setAdapter(adapter);
                 badgeRecycler.setLayoutManager(new LinearLayoutManager(

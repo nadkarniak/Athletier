@@ -9,6 +9,7 @@ android {
         targetSdkVersion 29
         versionCode 8
         versionName "8.0"
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
