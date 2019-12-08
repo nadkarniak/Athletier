@@ -66,8 +66,8 @@ public class ChallengesTabFragment extends Fragment {
         if (hostChallengerSpinner == null) { System.out.println("null");}
 
         List<String> spinnerOptions =  new ArrayList<>();
-        spinnerOptions.add(getString(R.string.as_host));
-        spinnerOptions.add(getString(R.string.as_challenger));
+        spinnerOptions.add(getString(R.string.you_challenged));
+        spinnerOptions.add(getString(R.string.challenged_you));
         hostChallengerSpinner.setSpinnerOptions(getContext(), spinnerOptions);
     }
 
@@ -87,7 +87,7 @@ public class ChallengesTabFragment extends Fragment {
             @Override
             public void onChanged(String selection) {
                 boolean shouldDisplayHostedChallenges =
-                        selection.equals(getString(R.string.as_host));
+                        selection.equals(getString(R.string.you_challenged));
                 viewModel.setShouldDisplayHostedChallenges(shouldDisplayHostedChallenges);
                 recyclerFragment.updateAsHost(shouldDisplayHostedChallenges);
                 refreshChallengeData();

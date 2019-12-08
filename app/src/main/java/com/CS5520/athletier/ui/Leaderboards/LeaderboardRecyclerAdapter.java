@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,10 +30,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class LeaderboardRecyclerAdapter extends RecyclerView.Adapter<LeaderboardRecyclerAdapter.LeaderboardViewHolder> {
+public class LeaderboardRecyclerAdapter extends
+        RecyclerView.Adapter<LeaderboardRecyclerAdapter.LeaderboardViewHolder> {
 
     private Sport selectedSport;
     private List<SportsAchievementSummary> achievements;
+    private MutableLiveData<String> userImageClickedEvents;
     private DatabaseReference databaseReference;
     private RecyclerView.RecycledViewPool viewPool;
 
@@ -40,8 +43,13 @@ public class LeaderboardRecyclerAdapter extends RecyclerView.Adapter<Leaderboard
     LeaderboardRecyclerAdapter(Sport sport) {
         this.selectedSport = sport;
         this.achievements = new ArrayList<>();
+        this.userImageClickedEvents = new MutableLiveData<>();
         this.databaseReference = FirebaseDatabase.getInstance().getReference();
         this.viewPool = new RecyclerView.RecycledViewPool();
+    }
+
+    LiveData<String> getUserImageClicked() {
+        return userImageClickedEvents;
     }
 
     @NonNull
@@ -76,6 +84,16 @@ public class LeaderboardRecyclerAdapter extends RecyclerView.Adapter<Leaderboard
                         false
                 )
         );
+
+        holder.imageView.setClickable(true);
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (view.getTag() == null) { return; }
+                // Pass imageView's tag (User's email) to LiveData stream
+                userImageClickedEvents.postValue(view.getTag().toString());
+            }
+        });
     }
 
     @Override
@@ -146,6 +164,8 @@ public class LeaderboardRecyclerAdapter extends RecyclerView.Adapter<Leaderboard
                             if (user != null) {
                                 usernameText.setText(user.getUsername());
                                 Picasso.get().load(user.getPhotoUrl()).into(imageView);
+                                // Store User's email address in imageView tag
+                                imageView.setTag(user.getEmailAddress());
                             }
                         }
 

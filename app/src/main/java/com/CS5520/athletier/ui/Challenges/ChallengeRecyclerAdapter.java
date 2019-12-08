@@ -86,12 +86,14 @@ public class ChallengeRecyclerAdapter extends
             }
         });
 
-        // Remove any previously existing on click listeners
+        // Remove any previously existing on click listeners and reset buttons
         holder.leftButton.setOnClickListener(null);
         holder.rightButton.setOnClickListener(null);
         holder.leftButton.setEnabled(true);
         holder.rightButton.setEnabled(true);
         holder.rightButton.getBackground().setAlpha(255);
+        holder.leftButton.setVisibility(View.VISIBLE);
+        holder.rightButton.setVisibility(View.VISIBLE);
 
         // Display or hide winner depending on resultStatus of challenge
         setResultDisplay(holder, challenge);
@@ -127,7 +129,7 @@ public class ChallengeRecyclerAdapter extends
     }
 
     private void configurePendingChallengeHolder(ChallengeViewHolder holder, Challenge challenge) {
-        if (asHost && challenge.getOpponentId() != null) {
+        if (!asHost) {
             holder.leftButton.setText(R.string.accept);
             holder.rightButton.setText(R.string.reject);
             setHolderButtonListener(

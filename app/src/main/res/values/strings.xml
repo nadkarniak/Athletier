@@ -45,8 +45,8 @@
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="create_a_new_account">Create a new account</string>
-    <string name="as_host">AS HOST</string>
-    <string name="as_challenger">AS CHALLENGER</string>
+    <string name="you_challenged">YOU CHALLENGED</string>
+    <string name="challenged_you">CHALLENGED YOU</string>
     <string name="time_title">Time:</string>
     <string name="finish">Finish</string>
     <string name="rate">Rate</string>

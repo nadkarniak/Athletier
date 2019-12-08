@@ -50,16 +50,11 @@ public class CreateChallengeActivityViewModel extends AndroidViewModel {
                        String city, State state,
                        String zipCode,
                        LatLng latLng) {
-        // If the opponentId is null, this is a Challenge created on the Map so the host is the
-        // current User. Otherwise, the current User is challenging another User and is thus the
-        // opponent (not the host)
-        String hostId = opponentId == null ? user.getUid() : opponentId;
-        String challengerId = opponentId != null ? user.getUid() : opponentId;
 
         // Create new challenge (Note: opponentId may be null if challenge created on map)
         Challenge newChallenge = new Challenge(
-                hostId,
-                challengerId,
+                user.getUid(),
+                opponentId,
                 sport,
                 combineDateAndTime(date, time),
                 streetAddress,

@@ -22,7 +22,9 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.Models.Sport;
+import com.CS5520.athletier.Models.SportsAchievementSummary;
 import com.CS5520.athletier.Models.SportsBadge;
+import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.ui.Challenges.ColoredSpinnerFragment;
 import com.CS5520.athletier.ui.Map.CreateChallenge.CreateChallengeActivity;
@@ -119,7 +121,7 @@ public class FindUserFragment extends Fragment {
                         setupBadges(getContext(), s);
                         Sport sport = Sport.fromString(s);
                         if (sport != null) {
-                            setUpExp(sport);
+                            viewModel.setSelectedSport(sport);
                         }
                     }
                 });
@@ -198,55 +200,38 @@ public class FindUserFragment extends Fragment {
 
     private void launchCreateChallengeActivity() {
         Activity currentActivity = getActivity();
-        String opponentId = viewModel.getOtherUid().getValue();
-        if (currentActivity != null && opponentId != null) {
+        User opponentUser = viewModel.getUserResult().getValue();
+        if (currentActivity != null && opponentUser != null) {
             Intent intent = new Intent(currentActivity, CreateChallengeActivity.class);
-            intent.putExtra(Challenge.opponentIdKey, opponentId);
+            intent.putExtra(Challenge.opponentIdKey, opponentUser.getId());
             startActivity(intent);
             currentActivity.overridePendingTransition(R.anim.slide_up, R.anim.no_slide);
         }
     }
 
     private void setObservers() {
-        viewModel.getOtherUid().observe(getViewLifecycleOwner(), new Observer<String>() {
+        viewModel.getUserResult().observe(getViewLifecycleOwner(), new Observer<User>() {
             @Override
-            public void onChanged(String s) {
-                mRef = FirebaseDatabase.getInstance().getReference().child("users").child(s);
-                mRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String name = dataSnapshot.child("username").getValue().toString();
-                        String photo = dataSnapshot.child("photoUrl").getValue().toString();
-                        UID = dataSnapshot.child("id").getValue().toString();
-                        String email = dataSnapshot.child("emailAddress").getValue().toString();
-                        String sportsmanship = dataSnapshot.child("avgSportsmanshipRating").getValue().toString();
-                        usernameText.setText(name);
-                        followersText.setText(String.valueOf(0));
-                        followingText.setText(String.valueOf(0));
-                        sportsmanshipBar.setRating(Integer.parseInt(sportsmanship));
-                        Picasso.get().load(photo).into(profilePicture);
-                        setUpExp(Sport.fromString("1v1 Basketball"));
-                    }
+            public void onChanged(User user) {
+                System.out.println("Got a user");
+                usernameText.setText(user.getUsername());
+                followersText.setText(user.getFollowers() != null ?
+                        "" + user.getFollowers().size() : "" + 0);
+                followingText.setText(user.getFollowing() != null ?
+                        "" + user.getFollowing().size() : "" + 0);
+                sportsmanshipBar.setRating(user.getAvgSportsmanshipRating());
+                Picasso.get().load(user.getPhotoUrl()).into(profilePicture);
+                viewModel.queryExp(user.getId());
+            }
+        });
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+        viewModel.getSportsAchievementSummary().observe(getViewLifecycleOwner(),
+                new Observer<SportsAchievementSummary>() {
+            @Override
+            public void onChanged(SportsAchievementSummary sas) {
+                expText.setText(String.valueOf(sas.getExp()));
             }
         });
 
     }
-
-    private void setUpExp(Sport s) {
-        System.out.println(s.name());
-        viewModel.getExp(s, UID).observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                expText.setText(s);
-            }
-        });
-    }
-
-
 }

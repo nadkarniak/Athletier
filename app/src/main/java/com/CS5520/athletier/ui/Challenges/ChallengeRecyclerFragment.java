@@ -24,8 +24,6 @@ import com.CS5520.athletier.R;
 import com.CS5520.athletier.Utilities.ChallengeButtonAction;
 import com.CS5520.athletier.ui.Challenges.Rating.RateUserActivity;
 import com.CS5520.athletier.ui.Search.FindUser.FindUserActivity;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;

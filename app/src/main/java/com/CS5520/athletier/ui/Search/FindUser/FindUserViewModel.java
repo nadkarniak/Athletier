@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.SportsAchievementSummary;
+import com.CS5520.athletier.Models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -21,50 +22,62 @@ import com.google.firebase.database.ValueEventListener;
 
 public class FindUserViewModel extends AndroidViewModel {
 
-    private MutableLiveData<String> id;
-    private MutableLiveData<String> expPts;
-    private FirebaseAuth mAuth;
+    private MutableLiveData<User> userResult;
+    private MutableLiveData<SportsAchievementSummary> achievement;
+    private Sport selectedSport;
     private DatabaseReference mRef;
 
     public FindUserViewModel(@NonNull Application application) {
         super(application);
-        this.id = new MutableLiveData<>();
-        this.expPts = new MutableLiveData<>();
+        this.userResult = new MutableLiveData<>();
+        this.achievement = new MutableLiveData<>();
         this.mRef = FirebaseDatabase.getInstance().getReference();
-        this.mAuth = FirebaseAuth.getInstance();
+    }
+
+    void setSelectedSport(Sport sport) {
+        this.selectedSport = sport;
+        User currentUser = userResult.getValue();
+        if (currentUser != null) {
+            queryExp(currentUser.getId());
+        }
     }
 
     void findUserWithEmail(final String email) {
 
+        mRef.child(User.userKey)
+                .orderByChild("emailAddress")
+                .equalTo(email)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshotChild : dataSnapshot.getChildren()) {
+                            User foundUser = snapshotChild.getValue(User.class);
+                            if (foundUser != null) {
+                                userResult.setValue(foundUser);
+                            }
+                        }
+                    }
 
-        mRef.child("users").orderByChild("emailAddress").equalTo(email).
-                addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot data : dataSnapshot.getChildren()) {
-                    String uid = data.child("id").getValue().toString();
-                    id.setValue(uid);
-                }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
+                    }
+                });
     }
-    private void queryExp(String sport, String uid) {
+
+    void queryExp(String userId) {
+        if (selectedSport == null) { return; }
         mRef.child(SportsAchievementSummary.sportsAchievementKey)
-                .child(sport).orderByChild(SportsAchievementSummary.ownerIdKey)
-                .equalTo(uid).addValueEventListener(new ValueEventListener() {
+                .child(selectedSport.name())
+                .child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot data : dataSnapshot.getChildren()) {
-                    String exp = data.child("exp").getValue().toString();
-                    expPts.setValue(exp);
+                SportsAchievementSummary sas =
+                        dataSnapshot.getValue(SportsAchievementSummary.class);
+                if (sas != null) {
+                    achievement.setValue(sas);
                 }
+
             }
 
             @Override
@@ -75,13 +88,12 @@ public class FindUserViewModel extends AndroidViewModel {
     }
 
 
-    LiveData<String> getOtherUid() {
-        return id;
+    LiveData<User> getUserResult() {
+        return userResult;
     }
 
-    LiveData<String> getExp(Sport sport, String UID) {
-        queryExp(sport.name(), UID);
-        return expPts;
+    LiveData<SportsAchievementSummary> getSportsAchievementSummary() {
+        return achievement;
     }
 
 }
