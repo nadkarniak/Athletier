@@ -28,16 +28,13 @@ import java.util.List;
 public class ProfileTabViewModel extends AndroidViewModel {
 
     private MutableLiveData<User> currentUser;
-    private MutableLiveData<String> expPts;
     private FirebaseUser firebaseUser;
     private DatabaseReference databaseReference;
     private MutableLiveData<SportsAchievementSummary> selectedAchievement;
-    private Sport selectedSport;
 
     public ProfileTabViewModel(@NonNull Application application) {
         super(application);
         this.currentUser = new MutableLiveData<>();
-        this.expPts = new MutableLiveData<>();
         this.databaseReference = FirebaseDatabase.getInstance().getReference();
         this.firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         this.selectedAchievement = new MutableLiveData<>();
@@ -49,7 +46,6 @@ public class ProfileTabViewModel extends AndroidViewModel {
     }
 
     void setSelectedSport(Sport sport) {
-        this.selectedSport = sport;
         queryAchievement(sport);
     }
 
