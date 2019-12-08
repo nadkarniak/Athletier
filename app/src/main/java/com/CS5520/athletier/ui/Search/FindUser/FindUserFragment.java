@@ -87,7 +87,6 @@ public class FindUserFragment extends Fragment {
         setupFollowButtonListener();
         setObservers();
         observeSpinnerSelection();
-//        setupBadges(getContext(), "1v1 Basketball");
     }
 
 
@@ -162,6 +161,9 @@ public class FindUserFragment extends Fragment {
                 follow.setText(R.string.following);
                 int x = Integer.parseInt(followersText.getText().toString()) + 1;
                 followersText.setText(String.valueOf(x));
+                // Only allow the user to follow someone once
+                follow.setEnabled(false);
+                follow.getBackground().setAlpha(follow.isEnabled() ? 255 : 128);
             }
         });
     }
