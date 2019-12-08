@@ -146,7 +146,7 @@ public class FindUserFragment extends Fragment {
                     }
                 });
     }
-    
+
     private void setupViews(View view) {
         // Find views using id's
         FragmentManager manager = getFragmentManager();
