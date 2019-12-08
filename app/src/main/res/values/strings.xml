@@ -45,8 +45,8 @@
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="create_a_new_account">Create a new account</string>
-    <string name="as_host">AS HOST</string>
-    <string name="as_challenger">AS CHALLENGER</string>
+    <string name="you_challenged">YOU CHALLENGED</string>
+    <string name="challenged_you">CHALLENGED YOU</string>
     <string name="time_title">Time:</string>
     <string name="finish">Finish</string>
     <string name="rate">Rate</string>
@@ -65,6 +65,16 @@
     <string name="logout">Logout</string>
     <string name="exp">Exp</string>
     <string name="waiting_for_confirmation">Waiting for confirmation</string>
+    <string name="waiting_on_user">Awaiting your report…</string>
     <string name="result_disputed">Opponent disputed winner…</string>
     <string name="change_winner">Change Winner</string>
+    <string name="rate_sportsmanship">Rate Sportsmanship</string>
+    <string name="award_badges">Award Badges</string>
+    <string name="plus">+</string>
+    <string name="minus">-</string>
+    <string name="rate_opponent">Rate Your Opponent</string>
+    <string name="challenge_me">Challenge Me</string>
+    <string name="max_badge_count">99+</string>
+    <string name="sportsmanship_rating">Sportsmanship Rating</string>
+    <string name="congratulations">Congratulations!</string>
 </resources>

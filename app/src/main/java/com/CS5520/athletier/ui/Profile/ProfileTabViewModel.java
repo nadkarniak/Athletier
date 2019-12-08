@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.SportsAchievementSummary;
@@ -24,29 +23,30 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileTabViewModel extends AndroidViewModel {
 
     private MutableLiveData<User> currentUser;
-    private MutableLiveData<String> expPts;
-    private MutableLiveData<List<SportsAchievementSummary>> achievements;
     private FirebaseUser firebaseUser;
     private DatabaseReference databaseReference;
+    private MutableLiveData<SportsAchievementSummary> selectedAchievement;
 
     public ProfileTabViewModel(@NonNull Application application) {
         super(application);
         this.currentUser = new MutableLiveData<>();
-        this.achievements = new MutableLiveData<>();
-        this.expPts = new MutableLiveData<>();
         this.databaseReference = FirebaseDatabase.getInstance().getReference();
         this.firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        this.selectedAchievement = new MutableLiveData<>();
 
         // Query Firebase for current User
         queryCurrentUser();
         // Query Firebase for current User's SportsAchievementSummary's
         queryAchievements();
+    }
+
+    void setSelectedSport(Sport sport) {
+        queryAchievement(sport);
     }
 
     // Query the Firebase Database for User with the firebaseUser's ID
@@ -70,15 +70,17 @@ public class ProfileTabViewModel extends AndroidViewModel {
                 });
     }
 
-    private void queryExp(Sport sport) {
-        databaseReference.child(SportsAchievementSummary.sportsAchievementKey)
-                .child(sport.name()).orderByChild(SportsAchievementSummary.ownerIdKey)
-                .equalTo(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
+    private void queryAchievement(Sport sport) {
+        databaseReference
+                .child(SportsAchievementSummary.sportsAchievementKey)
+                .child(sport.name())
+                .child(firebaseUser.getUid()).addListenerForSingleValueEvent(
+                        new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot data : dataSnapshot.getChildren()) {
-                    String exp = data.child("exp").getValue().toString();
-                    expPts.setValue(exp);
+                SportsAchievementSummary sas = dataSnapshot.getValue(SportsAchievementSummary.class);
+                if (sas != null) {
+                    selectedAchievement.setValue(sas);
                 }
             }
 
@@ -92,7 +94,6 @@ public class ProfileTabViewModel extends AndroidViewModel {
     private void queryAchievements() {
         databaseReference
                 .child(SportsAchievementSummary.sportsAchievementKey)
-                // TODO: Come up with a better way of determining if a User has achievements...
                 .child(Sport.ONE_V_ONE_BASKETBALL.name())
                 .orderByChild(SportsAchievementSummary.ownerIdKey)
                 .equalTo(firebaseUser.getUid())
@@ -101,14 +102,10 @@ public class ProfileTabViewModel extends AndroidViewModel {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         // If SportsAchievementSummaries exist, pass them to achievements LiveData
                         // stream
-                        if (dataSnapshot.getChildrenCount() > 0) {
-                            achievements.setValue(
-                                    DataSnapShotParser.parseToSummaryList(dataSnapshot)
-                            );
-                        // Else, create a SportsAchievementSummary for each sport for currentUser
-                        } else {
+                        if (dataSnapshot.getChildrenCount() == 0) {
                             createNewAchievements();
                         }
+
                     }
 
                     @Override
@@ -155,13 +152,8 @@ public class ProfileTabViewModel extends AndroidViewModel {
         return currentUser;
     }
 
-    LiveData<List<SportsAchievementSummary>> getAchievements() {
-        return achievements;
-    }
-
-    LiveData<String> getExp(Sport sport) {
-        queryExp(sport);
-        return expPts;
+    LiveData<SportsAchievementSummary> getSelectedAchievement() {
+        return selectedAchievement;
     }
 
 

@@ -95,4 +95,10 @@ public class User {
         return userTeams;
     }
 
+    public void addSportsmanshipRating(int rating) {
+        if (rating >= 0 && rating <= 5) {
+            totalSportsmanshipRating += rating;
+            numberOfRatings += 1;
+        }
+    }
 }

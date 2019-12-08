@@ -29,6 +29,7 @@ public class CreateChallengeActivityViewModel extends AndroidViewModel {
     private DatabaseReference databaseReference;
     private FirebaseUser user;
     private FirebaseAuth mAuth;
+    private String opponentId;
 
     public CreateChallengeActivityViewModel(@NonNull Application application) {
         super(application);
@@ -36,6 +37,10 @@ public class CreateChallengeActivityViewModel extends AndroidViewModel {
         this.databaseReference = FirebaseDatabase.getInstance().getReference();
         this.mAuth = FirebaseAuth.getInstance();
         this.user = mAuth.getCurrentUser();
+    }
+
+    void setOpponentId(String opponentId) {
+        this.opponentId = opponentId;
     }
 
     void makeChallenge(Sport sport,
@@ -46,13 +51,10 @@ public class CreateChallengeActivityViewModel extends AndroidViewModel {
                        String zipCode,
                        LatLng latLng) {
 
-        if (user == null) {
-            return;
-        }
-
-        // Create challenge and pass to createdChallenge LiveData
-        final Challenge newChallenge = new Challenge(
+        // Create new challenge (Note: opponentId may be null if challenge created on map)
+        Challenge newChallenge = new Challenge(
                 user.getUid(),
+                opponentId,
                 sport,
                 combineDateAndTime(date, time),
                 streetAddress,
@@ -63,7 +65,9 @@ public class CreateChallengeActivityViewModel extends AndroidViewModel {
                 latLng.longitude
         );
 
-        databaseReference.child("challenges").child(newChallenge.getId()).setValue(newChallenge)
+        databaseReference.child(Challenge.challengeKey)
+                .child(newChallenge.getId())
+                .setValue(newChallenge)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

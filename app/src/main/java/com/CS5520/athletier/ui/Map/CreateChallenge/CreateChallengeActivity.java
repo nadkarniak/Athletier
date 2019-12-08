@@ -18,6 +18,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.Models.State;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.Utilities.GeocoderInput;
@@ -45,10 +46,16 @@ public class CreateChallengeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_challenge);
         viewModel = ViewModelProviders.of(this).get(CreateChallengeActivityViewModel.class);
+
+        // Check if the intent contains an opponentId
+        String opponentId = getIntent().getStringExtra(Challenge.opponentIdKey);
+        if (opponentId != null) {
+            viewModel.setOpponentId(opponentId);
+        }
+
         setupActionBar();
         setupFragments();
         setupCreateButtonListener();
-
     }
 
     @Override

@@ -3,4 +3,5 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#121212</color>
+    <color name="salmon">#ff6459</color>
 </resources>

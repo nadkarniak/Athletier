@@ -26,6 +26,12 @@ public class FindUserActivity extends FragmentActivity {
         findUserFragment.setArguments(bundle);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
     private void setupFragment() {
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.fragment_container, findUserFragment).commit();

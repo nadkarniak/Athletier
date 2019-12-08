@@ -86,11 +86,14 @@ public class ChallengeRecyclerAdapter extends
             }
         });
 
-        // Remove any previously existing on click listeners
+        // Remove any previously existing on click listeners and reset buttons
         holder.leftButton.setOnClickListener(null);
         holder.rightButton.setOnClickListener(null);
         holder.leftButton.setEnabled(true);
         holder.rightButton.setEnabled(true);
+        holder.rightButton.getBackground().setAlpha(255);
+        holder.leftButton.setVisibility(View.VISIBLE);
+        holder.rightButton.setVisibility(View.VISIBLE);
 
         // Display or hide winner depending on resultStatus of challenge
         setResultDisplay(holder, challenge);
@@ -126,7 +129,7 @@ public class ChallengeRecyclerAdapter extends
     }
 
     private void configurePendingChallengeHolder(ChallengeViewHolder holder, Challenge challenge) {
-        if (asHost && challenge.getOpponentId() != null) {
+        if (!asHost) {
             holder.leftButton.setText(R.string.accept);
             holder.rightButton.setText(R.string.reject);
             setHolderButtonListener(
@@ -172,10 +175,10 @@ public class ChallengeRecyclerAdapter extends
                 (asHost && !challenge.getHostDidRate()) ||
                         (!asHost && !challenge.getOpponentDidRate())
         );
+        holder.rightButton.getBackground().setAlpha(holder.rightButton.isEnabled() ? 255 : 128);
         setHolderButtonListener(holder.rightButton,
                 challenge,
-                asHost ? ChallengeButtonAction.HOST_RATE :
-                        ChallengeButtonAction.OPPONENT_RATE
+                ChallengeButtonAction.RATE
         );
     }
 
@@ -187,7 +190,19 @@ public class ChallengeRecyclerAdapter extends
                 break;
             case AWAITING_CONFIRMATION:
                 toggleResultStatusVisibility(holder, false);
-                holder.resultStatusText.setText(R.string.waiting_for_confirmation);
+                // Set result status message such that it indicates if the challenge is waiting for
+                // the opponent to report a winner or the current user to report a winner
+                int statusMsgId;
+                if (asHost) {
+                    statusMsgId = challenge.getHostReportedWinner() != null ?
+                            R.string.waiting_for_confirmation :
+                            R.string.waiting_on_user;
+                } else {
+                    statusMsgId = challenge.getOpponentReportedWinner() != null ?
+                            R.string.waiting_for_confirmation :
+                            R.string.waiting_on_user;
+                }
+                holder.resultStatusText.setText(statusMsgId);
                 break;
             case DISPUTED:
                 toggleResultStatusVisibility(holder, false);

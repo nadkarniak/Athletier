@@ -14,6 +14,7 @@ import com.CS5520.athletier.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -44,7 +45,18 @@ public class BadgeRecyclerAdapter extends RecyclerView.Adapter<BadgeRecyclerAdap
             holder.badgeImageView.setImageResource(badge.getResId());
             holder.badgeTitleText.setText(badge.getName());
 
-            // TODO: Display badge count...
+            // Display the number of times User has received badge
+            Map<String, Integer> badgeMap = achievement.getBadgeMap();
+            if (badgeMap != null && badgeMap.containsKey(badge.getName())) {
+                Integer badgeCount = badgeMap.get(badge.getName());
+                if (badgeCount == null) {
+                    holder.badgeCountText.setText(String.valueOf(0));
+                } else if (badgeCount > 99) {
+                    holder.badgeCountText.setText(R.string.max_badge_count);
+                } else {
+                    holder.badgeCountText.setText(String.valueOf(badgeCount));
+                }
+            }
         }
     }
 
@@ -56,12 +68,14 @@ public class BadgeRecyclerAdapter extends RecyclerView.Adapter<BadgeRecyclerAdap
     final class BadgeViewHolder extends RecyclerView.ViewHolder {
         private CircleImageView badgeImageView;
         private TextView badgeTitleText;
+        private TextView badgeCountText;
 
 
         BadgeViewHolder(@NonNull View itemView) {
             super(itemView);
             this.badgeImageView = itemView.findViewById(R.id.badgeCellIcon);
             this.badgeTitleText = itemView.findViewById(R.id.badgeNameTextView);
+            this.badgeCountText = itemView.findViewById(R.id.badgeCountText);
         }
     }
 
