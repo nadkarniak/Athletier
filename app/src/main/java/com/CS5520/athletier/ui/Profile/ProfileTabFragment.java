@@ -17,12 +17,16 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.CS5520.athletier.Models.Sport;
+import com.CS5520.athletier.Models.SportsAchievementSummary;
 import com.CS5520.athletier.Models.SportsBadge;
 import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.ui.Challenges.ColoredSpinnerFragment;
+import com.CS5520.athletier.ui.Leaderboards.BadgeRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
@@ -38,14 +42,16 @@ public class ProfileTabFragment extends Fragment {
     private TextView followersText;
     private TextView followingText;
     private RatingBar sportsmanshipBar;
-    private ImageView firstBadge;
-    private ImageView secondBadge;
-    private ImageView thirdBadge;
-    private ImageView fourthBadge;
-    private ImageView fifthBadge;
+//    private ImageView firstBadge;
+//    private ImageView secondBadge;
+//    private ImageView thirdBadge;
+//    private ImageView fourthBadge;
+//    private ImageView fifthBadge;
     private ImageView profilePicture;
     private Button logOut;
     private LinearLayout backgroundPicture;
+    private RecyclerView badgeRecycler;
+    private BadgeRecyclerAdapter adapter;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -67,8 +73,9 @@ public class ProfileTabFragment extends Fragment {
         super.onStart();
         setupObservers();
         observeSpinnerSelection();
-        setupBadges(getContext(), "1v1 Basketball");
-        setUpExp(Sport.fromString("1v1 Basketball"));
+        observeSelectedAchievement();
+//        setupBadges(getContext(), "1v1 Basketball");
+//        setUpExp(Sport.fromString("1v1 Basketball"));
     }
 
     private void setupViews(View view) {
@@ -91,12 +98,13 @@ public class ProfileTabFragment extends Fragment {
         followersText = view.findViewById(R.id.followers);
         followingText = view.findViewById(R.id.following);
         sportsmanshipBar = view.findViewById(R.id.ratingBar);
-        firstBadge = view.findViewById(R.id.first_badge);
-        secondBadge = view.findViewById(R.id.second_badge);
-        thirdBadge = view.findViewById(R.id.third_badge);
-        fourthBadge = view.findViewById(R.id.fourth_badge);
-        fifthBadge = view.findViewById(R.id.fifth_badge);
+//        firstBadge = view.findViewById(R.id.first_badge);
+//        secondBadge = view.findViewById(R.id.second_badge);
+//        thirdBadge = view.findViewById(R.id.third_badge);
+//        fourthBadge = view.findViewById(R.id.fourth_badge);
+//        fifthBadge = view.findViewById(R.id.fifth_badge);
         profilePicture = view.findViewById(R.id.profilePic);
+        badgeRecycler = view.findViewById(R.id.profileBadgeRecycler);
     }
 
     private void setupSportsSpinner() {
@@ -118,40 +126,44 @@ public class ProfileTabFragment extends Fragment {
                 new Observer<String>() {
                     @Override
                     public void onChanged(String s) {
-                        setupBadges(getContext(), s);
-                        setUpExp(Sport.fromString(s));
+                        Sport selectedSport = Sport.fromString(s);
+                        if (selectedSport != null) {
+                            profileTabViewModel.setSelectedSport(selectedSport);
+                        }
+//                        setupBadges(getContext(), s);
+//                        setUpExp(Sport.fromString(s));
                     }
                 });
     }
 
 
-    private List<SportsBadge> getBadgeList(Context context, String s) {
-        switch(s) {
-            case("1v1 Basketball"):
-                backgroundPicture.setBackgroundResource(R.drawable.basketball_background);
-                return Sport.ONE_V_ONE_BASKETBALL.getBadgeOptions();
-            case("Golf"):
-                backgroundPicture.setBackgroundResource(R.drawable.golf_background);
-                return Sport.GOLF.getBadgeOptions();
-            case("Tennis"):
-                backgroundPicture.setBackgroundResource(R.drawable.tennis_background);
-                return Sport.TENNIS.getBadgeOptions();
-            default:
-                return new ArrayList<>();
-        }
-    }
-
-    // TODO: Change this so it comes from SportsAchievementSummary
-    private void setupBadges(Context context, String s) {
-        List<SportsBadge> badges = getBadgeList(context, s);
-        if(badges.size() > 0) {
-            firstBadge.setImageResource(badges.get(0).getResId());
-            secondBadge.setImageResource(badges.get(1).getResId());
-            thirdBadge.setImageResource(badges.get(2).getResId());
-            fourthBadge.setImageResource(badges.get(3).getResId());
-            fifthBadge.setImageResource(badges.get(4).getResId());
-        }
-    }
+//    private List<SportsBadge> getBadgeList(Context context, String s) {
+//        switch(s) {
+//            case("1v1 Basketball"):
+//                backgroundPicture.setBackgroundResource(R.drawable.basketball_background);
+//                return Sport.ONE_V_ONE_BASKETBALL.getBadgeOptions();
+//            case("Golf"):
+//                backgroundPicture.setBackgroundResource(R.drawable.golf_background);
+//                return Sport.GOLF.getBadgeOptions();
+//            case("Tennis"):
+//                backgroundPicture.setBackgroundResource(R.drawable.tennis_background);
+//                return Sport.TENNIS.getBadgeOptions();
+//            default:
+//                return new ArrayList<>();
+//        }
+//    }
+//
+//    // TODO: Change this so it comes from SportsAchievementSummary
+//    private void setupBadges(Context context, String s) {
+//        List<SportsBadge> badges = getBadgeList(context, s);
+//        if(badges.size() > 0) {
+//            firstBadge.setImageResource(badges.get(0).getResId());
+//            secondBadge.setImageResource(badges.get(1).getResId());
+//            thirdBadge.setImageResource(badges.get(2).getResId());
+//            fourthBadge.setImageResource(badges.get(3).getResId());
+//            fifthBadge.setImageResource(badges.get(4).getResId());
+//        }
+//    }
 
 
     private void setupObservers() {
@@ -175,14 +187,30 @@ public class ProfileTabFragment extends Fragment {
 //        });
     }
 
-    private void setUpExp(Sport s) {
-        profileTabViewModel.getExp(s).observe(getViewLifecycleOwner(), new Observer<String>() {
+//    private void setUpExp(Sport s) {
+//        profileTabViewModel.getExp(s).observe(getViewLifecycleOwner(), new Observer<String>() {
+//            @Override
+//            public void onChanged(String s) {
+//                expText.setText(s);
+//            }
+//        });
+//    }
+
+    private void observeSelectedAchievement() {
+        profileTabViewModel.getSelectedAchievement().observe(getViewLifecycleOwner(),
+                new Observer<SportsAchievementSummary>() {
             @Override
-            public void onChanged(String s) {
-                expText.setText(s);
+            public void onChanged(SportsAchievementSummary sportsAchievementSummary) {
+                expText.setText(String.valueOf(sportsAchievementSummary.getExp()));
+                adapter = new BadgeRecyclerAdapter(sportsAchievementSummary);
+                badgeRecycler.setAdapter(adapter);
+                badgeRecycler.setLayoutManager(new LinearLayoutManager(
+                        getContext(),
+                        LinearLayoutManager.HORIZONTAL,
+                        false)
+                );
             }
         });
     }
-
 
 }
