@@ -91,6 +91,7 @@ public class ChallengeRecyclerAdapter extends
         holder.rightButton.setOnClickListener(null);
         holder.leftButton.setEnabled(true);
         holder.rightButton.setEnabled(true);
+        holder.rightButton.getBackground().setAlpha(255);
 
         // Display or hide winner depending on resultStatus of challenge
         setResultDisplay(holder, challenge);

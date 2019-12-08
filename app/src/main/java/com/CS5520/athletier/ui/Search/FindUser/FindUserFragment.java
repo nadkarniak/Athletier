@@ -1,7 +1,9 @@
 package com.CS5520.athletier.ui.Search.FindUser;
 
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,10 +20,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.Models.Sport;
 import com.CS5520.athletier.Models.SportsBadge;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.ui.Challenges.ColoredSpinnerFragment;
+import com.CS5520.athletier.ui.Map.CreateChallenge.CreateChallengeActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -40,6 +44,7 @@ public class FindUserFragment extends Fragment {
 
     private FindUserViewModel viewModel;
     private Button follow;
+    private Button challengeButton;
     private String email;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
@@ -62,7 +67,10 @@ public class FindUserFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        email = getArguments().getString("email");
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            email = arguments.getString("email");
+        }
         View view = inflater.inflate(R.layout.fragment_find_user, container, false);
         setupViews(view);
         setupSportsSpinner();
@@ -76,6 +84,7 @@ public class FindUserFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         viewModel.findUserWithEmail(email);
+        setupChallengeButton();
     }
 
     @Override
@@ -108,7 +117,10 @@ public class FindUserFragment extends Fragment {
                     @Override
                     public void onChanged(String s) {
                         setupBadges(getContext(), s);
-                        setUpExp(Sport.fromString(s));
+                        Sport sport = Sport.fromString(s);
+                        if (sport != null) {
+                            setUpExp(sport);
+                        }
                     }
                 });
     }
@@ -142,6 +154,8 @@ public class FindUserFragment extends Fragment {
     private void setupViews(View view) {
         // Find views using id's
         FragmentManager manager = getFragmentManager();
+        if (manager == null) { return; }
+
         sportsSpinner = (ColoredSpinnerFragment)
                 manager.findFragmentById(R.id.sportsSpinnerFragment);
 
@@ -158,6 +172,7 @@ public class FindUserFragment extends Fragment {
         fifthBadge = ((LinearLayout)view).findViewById(R.id.fifth_badge);
         profilePicture = ((LinearLayout)view).findViewById(R.id.profilePic);
         follow = view.findViewById(R.id.follow);
+        challengeButton = view.findViewById(R.id.challengeMeButton);
     }
 
 
@@ -170,6 +185,26 @@ public class FindUserFragment extends Fragment {
                 followersText.setText(String.valueOf(x));
             }
         });
+    }
+
+    private void setupChallengeButton() {
+        challengeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchCreateChallengeActivity();
+            }
+        });
+    }
+
+    private void launchCreateChallengeActivity() {
+        Activity currentActivity = getActivity();
+        String opponentId = viewModel.getOtherUid().getValue();
+        if (currentActivity != null && opponentId != null) {
+            Intent intent = new Intent(currentActivity, CreateChallengeActivity.class);
+            intent.putExtra(Challenge.opponentIdKey, opponentId);
+            startActivity(intent);
+            currentActivity.overridePendingTransition(R.anim.slide_up, R.anim.no_slide);
+        }
     }
 
     private void setObservers() {

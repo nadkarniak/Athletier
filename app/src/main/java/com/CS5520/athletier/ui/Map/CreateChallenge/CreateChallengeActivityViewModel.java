@@ -29,6 +29,7 @@ public class CreateChallengeActivityViewModel extends AndroidViewModel {
     private DatabaseReference databaseReference;
     private FirebaseUser user;
     private FirebaseAuth mAuth;
+    private String opponentId;
 
     public CreateChallengeActivityViewModel(@NonNull Application application) {
         super(application);
@@ -38,6 +39,10 @@ public class CreateChallengeActivityViewModel extends AndroidViewModel {
         this.user = mAuth.getCurrentUser();
     }
 
+    void setOpponentId(String opponentId) {
+        this.opponentId = opponentId;
+    }
+
     void makeChallenge(Sport sport,
                        Date date,
                        Date time,
@@ -45,14 +50,16 @@ public class CreateChallengeActivityViewModel extends AndroidViewModel {
                        String city, State state,
                        String zipCode,
                        LatLng latLng) {
+        // If the opponentId is null, this is a Challenge created on the Map so the host is the
+        // current User. Otherwise, the current User is challenging another User and is thus the
+        // opponent (not the host)
+        String hostId = opponentId == null ? user.getUid() : opponentId;
+        String challengerId = opponentId != null ? user.getUid() : opponentId;
 
-        if (user == null) {
-            return;
-        }
-
-        // Create challenge and pass to createdChallenge LiveData
-        final Challenge newChallenge = new Challenge(
-                user.getUid(),
+        // Create new challenge (Note: opponentId may be null if challenge created on map)
+        Challenge newChallenge = new Challenge(
+                hostId,
+                challengerId,
                 sport,
                 combineDateAndTime(date, time),
                 streetAddress,
@@ -63,7 +70,9 @@ public class CreateChallengeActivityViewModel extends AndroidViewModel {
                 latLng.longitude
         );
 
-        databaseReference.child("challenges").child(newChallenge.getId()).setValue(newChallenge)
+        databaseReference.child(Challenge.challengeKey)
+                .child(newChallenge.getId())
+                .setValue(newChallenge)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

@@ -24,7 +24,6 @@ public class FindUserViewModel extends AndroidViewModel {
     private MutableLiveData<String> id;
     private MutableLiveData<String> expPts;
     private FirebaseAuth mAuth;
-    private FirebaseUser searchedUser;
     private DatabaseReference mRef;
 
     public FindUserViewModel(@NonNull Application application) {
@@ -57,13 +56,11 @@ public class FindUserViewModel extends AndroidViewModel {
 
     }
     private void queryExp(String sport, String uid) {
-        System.out.println(uid);
         mRef.child(SportsAchievementSummary.sportsAchievementKey)
                 .child(sport).orderByChild(SportsAchievementSummary.ownerIdKey)
                 .equalTo(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                System.out.println(dataSnapshot);
                 for(DataSnapshot data : dataSnapshot.getChildren()) {
                     String exp = data.child("exp").getValue().toString();
                     expPts.setValue(exp);

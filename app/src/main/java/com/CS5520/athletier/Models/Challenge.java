@@ -75,8 +75,9 @@ public class Challenge implements Parcelable {
         this.zip = zip;
     }
 
-    // Constructor for newly created challenge from Map Screen
+    // Constructor for newly created challenge
     public Challenge(String hostId,
+                     String opponentId,
                      Sport sport,
                      Date date,
                      String streetName,
@@ -87,6 +88,7 @@ public class Challenge implements Parcelable {
                      double longitude) {
         this.id = hostId + System.currentTimeMillis() + sport.toString();
         this.hostId = hostId;
+        this.opponentId = opponentId;
         this.sport = sport.toString();
         this.challengeStatus = ChallengeStatus.AWAITING_PLAYERS.name();
         this.acceptanceStatus = AcceptanceStatus.PENDING.name();
