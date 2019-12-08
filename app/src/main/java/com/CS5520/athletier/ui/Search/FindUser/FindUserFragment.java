@@ -19,6 +19,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.CS5520.athletier.Models.Challenge;
 import com.CS5520.athletier.Models.Sport;
@@ -27,6 +29,7 @@ import com.CS5520.athletier.Models.SportsBadge;
 import com.CS5520.athletier.Models.User;
 import com.CS5520.athletier.R;
 import com.CS5520.athletier.ui.Challenges.ColoredSpinnerFragment;
+import com.CS5520.athletier.ui.Leaderboards.BadgeRecyclerAdapter;
 import com.CS5520.athletier.ui.Map.CreateChallenge.CreateChallengeActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -57,14 +60,16 @@ public class FindUserFragment extends Fragment {
     private TextView followingText;
     private RatingBar sportsmanshipBar;
     private ColoredSpinnerFragment sportsSpinner;
-    private ImageView firstBadge;
-    private ImageView secondBadge;
-    private ImageView thirdBadge;
-    private ImageView fourthBadge;
-    private ImageView fifthBadge;
+//    private ImageView firstBadge;
+//    private ImageView secondBadge;
+//    private ImageView thirdBadge;
+//    private ImageView fourthBadge;
+//    private ImageView fifthBadge;
     private ImageView profilePicture;
     private LinearLayout backgroundPicture;
-    private String UID;
+//    private String UID;
+    private BadgeRecyclerAdapter adapter;
+    private RecyclerView badgeRecycler;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -95,7 +100,7 @@ public class FindUserFragment extends Fragment {
         setupFollowButtonListener();
         setObservers();
         observeSpinnerSelection();
-        setupBadges(getContext(), "1v1 Basketball");
+//        setupBadges(getContext(), "1v1 Basketball");
     }
 
 
@@ -118,41 +123,30 @@ public class FindUserFragment extends Fragment {
                 new Observer<String>() {
                     @Override
                     public void onChanged(String s) {
-                        setupBadges(getContext(), s);
                         Sport sport = Sport.fromString(s);
                         if (sport != null) {
                             viewModel.setSelectedSport(sport);
+                            switch (sport) {
+                                case ONE_V_ONE_BASKETBALL:
+                                    backgroundPicture.setBackgroundResource(
+                                            R.drawable.basketball_background
+                                    );
+                                    break;
+                                case TENNIS:
+                                    backgroundPicture.setBackgroundResource(
+                                            R.drawable.tennis_background
+                                    );
+                                    break;
+                                case GOLF:
+                                    backgroundPicture.setBackgroundResource(
+                                            R.drawable.golf_background
+                                    );
+                            }
                         }
                     }
                 });
     }
-
-    private List<SportsBadge> getBadgeList(Context context, String s) {
-        switch(s) {
-            case("1v1 Basketball"):
-                backgroundPicture.setBackgroundResource(R.drawable.basketball_background);
-                return Sport.ONE_V_ONE_BASKETBALL.getBadgeOptions();
-            case("Golf"):
-                backgroundPicture.setBackgroundResource(R.drawable.golf_background);
-                return Sport.GOLF.getBadgeOptions();
-            case("Tennis"):
-                backgroundPicture.setBackgroundResource(R.drawable.tennis_background);
-                return Sport.TENNIS.getBadgeOptions();
-            default:
-                return new ArrayList<>();
-        }
-    }
-
-    private void setupBadges(Context context, String s) {
-        List<SportsBadge> badges = getBadgeList(context, s);
-        if(badges.size() > 0) {
-            firstBadge.setImageResource(badges.get(0).getResId());
-            secondBadge.setImageResource(badges.get(1).getResId());
-            thirdBadge.setImageResource(badges.get(2).getResId());
-            fourthBadge.setImageResource(badges.get(3).getResId());
-            fifthBadge.setImageResource(badges.get(4).getResId());
-        }
-    }
+    
     private void setupViews(View view) {
         // Find views using id's
         FragmentManager manager = getFragmentManager();
@@ -167,14 +161,10 @@ public class FindUserFragment extends Fragment {
         followersText = ((LinearLayout)view).findViewById(R.id.followers);
         followingText = ((LinearLayout)view).findViewById(R.id.following);
         sportsmanshipBar = ((LinearLayout)view).findViewById(R.id.ratingBar);
-        firstBadge = ((LinearLayout)view).findViewById(R.id.first_badge);
-        secondBadge = ((LinearLayout)view).findViewById(R.id.second_badge);
-        thirdBadge = ((LinearLayout)view).findViewById(R.id.third_badge);
-        fourthBadge = ((LinearLayout)view).findViewById(R.id.fourth_badge);
-        fifthBadge = ((LinearLayout)view).findViewById(R.id.fifth_badge);
         profilePicture = ((LinearLayout)view).findViewById(R.id.profilePic);
         follow = view.findViewById(R.id.follow);
         challengeButton = view.findViewById(R.id.challengeMeButton);
+        badgeRecycler = view.findViewById(R.id.findUserBadgeRecycler);
     }
 
 
@@ -235,6 +225,12 @@ public class FindUserFragment extends Fragment {
             @Override
             public void onChanged(SportsAchievementSummary sas) {
                 expText.setText(String.valueOf(sas.getExp()));
+                adapter = new BadgeRecyclerAdapter(sas);
+                badgeRecycler.setAdapter(adapter);
+                badgeRecycler.setLayoutManager(new LinearLayoutManager(getContext(),
+                        LinearLayoutManager.HORIZONTAL,
+                        false)
+                );
             }
         });
 
